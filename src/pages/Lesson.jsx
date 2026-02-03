@@ -15,6 +15,10 @@ import LanguageToggle from '@/components/common/LanguageToggle';
 import LanguageFallbackNotice from '@/components/common/LanguageFallbackNotice';
 import ProgressBar from '@/components/common/ProgressBar';
 import QuizContainer from '@/components/quiz/QuizContainer';
+import CommentSection from '@/components/lesson/CommentSection';
+import Breadcrumbs from '@/components/common/Breadcrumbs';
+import MobileNav from '@/components/common/MobileNav';
+import { jsPDF } from 'jspdf';
 
 export default function Lesson() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -142,6 +146,30 @@ export default function Lesson() {
 
   const isComplete = progress?.completed === true;
 
+  const downloadPDF = () => {
+    const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const margin = 15;
+    let y = 20;
+
+    pdf.setFontSize(20);
+    pdf.text(title, margin, y);
+    y += 15;
+
+    pdf.setFontSize(12);
+    const lines = pdf.splitTextToSize(content, pageWidth - 2 * margin);
+    lines.forEach(line => {
+      if (y > pdf.internal.pageSize.getHeight() - 20) {
+        pdf.addPage();
+        y = 20;
+      }
+      pdf.text(line, margin, y);
+      y += 7;
+    });
+
+    pdf.save(`lesson-${lessonId}.pdf`);
+  };
+
   const text = {
     en: {
       backToCourse: "Back to course",
@@ -150,7 +178,9 @@ export default function Lesson() {
       previous: "Previous",
       next: "Next",
       attachments: "Attachments",
-      quiz: "Quiz"
+      quiz: "Quiz",
+      downloadPDF: "Download PDF",
+      moduleProgress: "Module Progress"
     },
     es: {
       backToCourse: "Volver al curso",
@@ -159,7 +189,9 @@ export default function Lesson() {
       previous: "Anterior",
       next: "Siguiente",
       attachments: "Archivos adjuntos",
-      quiz: "Quiz"
+      quiz: "Quiz",
+      downloadPDF: "Descargar PDF",
+      moduleProgress: "Progreso del Módulo"
     }
   };
 
@@ -179,56 +211,90 @@ export default function Lesson() {
 
   const embedUrl = getYouTubeEmbedUrl(lesson.video_url) || getVimeoEmbedUrl(lesson.video_url);
 
+  const completedInModule = moduleLessons.filter(l => 
+    allProgress.some(p => p.lesson_id === l.id && p.completed)
+  ).length;
+  const moduleProgress = moduleLessons.length > 0 ? Math.round((completedInModule / moduleLessons.length) * 100) : 0;
+
+  const { data: allProgress = [] } = useQuery({
+    queryKey: ['moduleProgress', user?.email, lesson?.module_id],
+    queryFn: () => base44.entities.Progress.filter({ 
+      user_email: user?.email,
+      module_id: lesson?.module_id
+    }),
+    enabled: !!user?.email && !!lesson?.module_id
+  });
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-20 md:pb-6">
       {/* Header */}
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
           <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center">
               <Star className="w-5 h-5 text-white" />
             </div>
             <span className="font-semibold text-slate-900 hidden sm:block">Waypoint Institute</span>
           </Link>
-          <LanguageToggle currentLang={lang} onToggle={setLang} />
+          <div className="hidden md:block">
+            <LanguageToggle currentLang={lang} onToggle={setLang} />
+          </div>
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-12">
         {/* Breadcrumb */}
         {course && (
-          <Link
-            to={createPageUrl(`Course?id=${course.id}&lang=${lang}`)}
-            className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-6 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            {t.backToCourse}: {courseTitle}
-          </Link>
+          <Breadcrumbs 
+            items={[
+              { label: courseTitle, href: createPageUrl(`Course?id=${course.id}&lang=${lang}`) },
+              { label: moduleTitle },
+              { label: title }
+            ]}
+            lang={lang}
+          />
         )}
 
         {showFallback && <LanguageFallbackNotice requestedLang={lang} />}
 
         {/* Lesson Header */}
         <div className="mb-8">
-          {moduleTitle && (
-            <p className="text-sm text-[#1e3a5f] font-medium mb-2">{moduleTitle}</p>
-          )}
-          <h1 className="text-4xl font-light text-slate-900 mb-4">{title}</h1>
+          <div className="flex justify-between items-start mb-4">
+            <h1 className="text-3xl md:text-4xl font-light text-slate-900">{title}</h1>
+            <Button variant="outline" size="lg" onClick={downloadPDF} className="shrink-0">
+              <Download className="w-5 h-5 md:mr-2" />
+              <span className="hidden md:inline">{t.downloadPDF}</span>
+            </Button>
+          </div>
           
-          <div className="flex flex-wrap items-center gap-4 text-slate-500">
+          <div className="flex flex-wrap items-center gap-4 text-slate-500 mb-6">
             {lesson.estimated_minutes && (
-              <span className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
+              <span className="flex items-center gap-1 text-base">
+                <Clock className="w-5 h-5" />
                 {lesson.estimated_minutes} min
               </span>
             )}
             {isComplete && (
-              <span className="flex items-center gap-1 text-emerald-600">
-                <CheckCircle2 className="w-4 h-4" />
+              <span className="flex items-center gap-1 text-emerald-600 text-base font-semibold">
+                <CheckCircle2 className="w-5 h-5" />
                 {t.completed}
               </span>
             )}
           </div>
+
+          {/* Module Progress Bar */}
+          {moduleLessons.length > 1 && (
+            <div className="bg-slate-50 rounded-xl p-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-slate-700">{t.moduleProgress}</span>
+                <span className="text-sm font-semibold text-[#1e3a5f]">{moduleProgress}%</span>
+              </div>
+              <ProgressBar value={moduleProgress} />
+              <div className="text-xs text-slate-500 mt-2">
+                {completedInModule} / {moduleLessons.length} {lang === 'es' ? 'lecciones' : 'lessons'}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Video */}
@@ -311,8 +377,15 @@ export default function Lesson() {
           </Card>
         )}
 
+        {/* Comments */}
+        {user && (
+          <div className="mb-12">
+            <CommentSection lessonId={lessonId} user={user} lang={lang} />
+          </div>
+        )}
+
         {/* Navigation */}
-        <div className="flex justify-between items-center pt-8 border-t border-slate-100">
+        <div className="hidden md:flex justify-between items-center pt-8 border-t border-slate-100">
           {prevLesson ? (
             <Link
               to={createPageUrl(`Lesson?id=${prevLesson.id}&lang=${lang}`)}
@@ -328,7 +401,7 @@ export default function Lesson() {
             <div />
           )}
 
-          {nextLesson ? (
+          {nextLesson && (
             <Link
               to={createPageUrl(`Lesson?id=${nextLesson.id}&lang=${lang}`)}
               className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors text-right"
@@ -339,11 +412,22 @@ export default function Lesson() {
               </div>
               <ArrowRight className="w-4 h-4" />
             </Link>
-          ) : (
-            <div />
           )}
         </div>
+
+        {/* Mobile Next Button */}
+        {nextLesson && (
+          <div className="md:hidden fixed bottom-20 left-0 right-0 p-4 bg-gradient-to-t from-white via-white to-transparent">
+            <Link to={createPageUrl(`Lesson?id=${nextLesson.id}&lang=${lang}`)}>
+              <Button size="lg" className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] text-lg py-6">
+                {t.next} <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
+
+      <MobileNav lang={lang} currentPage="Courses" />
     </div>
   );
 }
