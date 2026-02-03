@@ -125,6 +125,13 @@ export default function WeekEditor({ courseId, lang }) {
                     <Textarea rows={6} placeholder="Written assignment instructions and requirements..." value={editingWeek.written_assignment_en || ''} onChange={(e) => setEditingWeek({...editingWeek, written_assignment_en: e.target.value})} />
                   </div>
                 )}
+
+                {editingWeek.has_discussion && (
+                  <div>
+                    <Label>{t.discussion} Prompt</Label>
+                    <Textarea rows={4} placeholder="What should students discuss?" value={editingWeek.discussion_prompt_en || ''} onChange={(e) => setEditingWeek({...editingWeek, discussion_prompt_en: e.target.value})} />
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="es" className="space-y-4 mt-4">
@@ -153,6 +160,13 @@ export default function WeekEditor({ courseId, lang }) {
                   <div>
                     <Label>{t.written}</Label>
                     <Textarea rows={6} placeholder="Instrucciones de la tarea..." value={editingWeek.written_assignment_es || ''} onChange={(e) => setEditingWeek({...editingWeek, written_assignment_es: e.target.value})} />
+                  </div>
+                )}
+
+                {editingWeek.has_discussion && (
+                  <div>
+                    <Label>{t.discussion} Prompt</Label>
+                    <Textarea rows={4} placeholder="¿Qué deben discutir los estudiantes?" value={editingWeek.discussion_prompt_es || ''} onChange={(e) => setEditingWeek({...editingWeek, discussion_prompt_es: e.target.value})} />
                   </div>
                 )}
               </TabsContent>

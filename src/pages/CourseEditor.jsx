@@ -418,8 +418,15 @@ export default function CourseEditor() {
 
           <div className="flex justify-end gap-3">
             <Link to={createPageUrl(`Admin?lang=${lang}`)}>
-              <Button variant="outline">{lang === 'es' ? 'Cancelar' : 'Cancel'}</Button>
+              <Button variant="outline">{lang === 'es' ? 'Volver' : 'Back'}</Button>
             </Link>
+            {courseId && (
+              <Link to={createPageUrl(`Course?id=${courseId}&lang=${lang}`)}>
+                <Button variant="outline">
+                  {lang === 'es' ? 'Vista Estudiante' : 'Student View'}
+                </Button>
+              </Link>
+            )}
             <Button
               type="submit"
               disabled={saveMutation.isPending || !formData.title_en}

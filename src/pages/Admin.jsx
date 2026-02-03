@@ -36,22 +36,24 @@ export default function Admin() {
 
   const text = {
     en: {
-      title: "Admin Dashboard",
+      title: user?.role === 'admin' ? "Admin Dashboard" : "Instructor Dashboard",
       tabs: {
         courses: "Courses",
         pathways: "Pathways",
         users: "Users",
         analytics: "Analytics"
-      }
+      },
+      instructorView: "Instructor View"
     },
     es: {
-      title: "Panel de Administración",
+      title: user?.role === 'admin' ? "Panel de Administración" : "Panel del Instructor",
       tabs: {
         courses: "Cursos",
         pathways: "Rutas",
         users: "Usuarios",
         analytics: "Analíticas"
-      }
+      },
+      instructorView: "Vista Instructor"
     }
   };
 
@@ -79,9 +81,16 @@ export default function Admin() {
 
           <div className="flex items-center gap-4">
             <LanguageToggle currentLang={lang} onToggle={setLang} />
+            {user?.role === 'instructor' && (
+              <Link to={createPageUrl(`InstructorDashboard?lang=${lang}`)}>
+                <Button variant="outline" size="sm">
+                  {t.instructorView}
+                </Button>
+              </Link>
+            )}
             <Link to={createPageUrl(`Dashboard?lang=${lang}`)}>
               <Button variant="outline" size="sm">
-                {lang === 'es' ? 'Mi Panel' : 'Dashboard'}
+                {lang === 'es' ? 'Vista Estudiante' : 'Student View'}
               </Button>
             </Link>
           </div>

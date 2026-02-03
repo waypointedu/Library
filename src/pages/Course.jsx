@@ -41,6 +41,13 @@ export default function Course() {
     enabled: !!courseId
   });
 
+  const { data: weeks = [] } = useQuery({
+    queryKey: ['weeks', courseId],
+    queryFn: () => base44.entities.Week.filter({ course_id: courseId }),
+    select: (data) => data.sort((a, b) => a.week_number - b.week_number),
+    enabled: !!courseId
+  });
+
   const { data: modules = [] } = useQuery({
     queryKey: ['modules', courseId],
     queryFn: () => base44.entities.Module.filter({ course_id: courseId }),
@@ -156,6 +163,7 @@ export default function Course() {
     enrollMutation.mutate();
   };
 
+  const firstWeek = weeks[0];
   const firstLesson = lessons.sort((a, b) => a.order_index - b.order_index)[0];
 
   const text = {
@@ -284,7 +292,14 @@ export default function Course() {
                         </div>
                         <ProgressBar value={progressPercent} />
                       </div>
-                      {firstLesson && (
+                      {firstWeek ? (
+                       <Link to={createPageUrl(`Week?id=${firstWeek.id}&lang=${lang}`)}>
+                         <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2 mb-3">
+                           <PlayCircle className="w-4 h-4" />
+                           {progressPercent > 0 ? t.continue : t.start}
+                         </Button>
+                       </Link>
+                      ) : firstLesson && (
                        <Link to={createPageUrl(`Lesson?id=${firstLesson.id}&lang=${lang}`)}>
                          <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2 mb-3">
                            <PlayCircle className="w-4 h-4" />
