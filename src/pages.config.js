@@ -53,6 +53,8 @@ import Course from './pages/Course';
 import Lesson from './pages/Lesson';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import About from './pages/About';
+import CourseEditor from './pages/CourseEditor';
 
 
 export const PAGES = {
@@ -62,6 +64,8 @@ export const PAGES = {
     "Lesson": Lesson,
     "Dashboard": Dashboard,
     "Admin": Admin,
+    "About": About,
+    "CourseEditor": CourseEditor,
 }
 
 export const pagesConfig = {
