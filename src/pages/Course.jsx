@@ -67,6 +67,15 @@ export default function Course() {
     enabled: !!user?.email && !!courseId
   });
 
+  const { data: userPrefs } = useQuery({
+    queryKey: ['userPrefs', user?.email],
+    queryFn: async () => {
+      const prefs = await base44.entities.UserPreferences.filter({ user_email: user?.email });
+      return prefs[0];
+    },
+    enabled: !!user?.email
+  });
+
   const { data: progress = [] } = useQuery({
     queryKey: ['progress', courseId, user?.email],
     queryFn: () => base44.entities.Progress.filter({ course_id: courseId, user_email: user?.email, completed: true }),
@@ -177,7 +186,10 @@ export default function Course() {
             </div>
             <span className="font-semibold text-slate-900 hidden sm:block">Waypoint Institute</span>
           </Link>
-          <LanguageToggle currentLang={lang} onToggle={setLang} />
+          <div className="flex items-center gap-2">
+            {user && <AccessibilityMenu user={user} userPrefs={userPrefs} lang={lang} />}
+            <LanguageToggle currentLang={lang} onToggle={setLang} />
+          </div>
         </div>
       </header>
 
