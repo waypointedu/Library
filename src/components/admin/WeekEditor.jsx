@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Save, Edit2, Trash2, ChevronDown, ChevronUp, Calendar, FileText } from 'lucide-react';
 import FileUploader from '@/components/upload/FileUploader';
+import WeekQuizEditor from '@/components/admin/WeekQuizEditor';
 
 export default function WeekEditor({ courseId, lang }) {
   const [expandedWeek, setExpandedWeek] = useState(null);
@@ -172,6 +173,10 @@ export default function WeekEditor({ courseId, lang }) {
               }}
               lang={lang}
             />
+
+            {editingWeek.has_quiz && editingWeek.id && (
+              <WeekQuizEditor weekId={editingWeek.id} lang={lang} />
+            )}
 
             <div className="flex gap-3 justify-end">
               <Button variant="outline" onClick={() => setEditingWeek(null)}>{t.cancel}</Button>
