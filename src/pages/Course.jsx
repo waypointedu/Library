@@ -102,6 +102,21 @@ export default function Course() {
     }
   }, [course, lang]);
 
+  if (!courseId) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-slate-500 mb-4">{lang === 'es' ? 'No se especificó ningún curso' : 'No course specified'}</p>
+          <Link to={createPageUrl(`Catalog?lang=${lang}`)}>
+            <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+              {lang === 'es' ? 'Ir al catálogo' : 'Go to catalog'}
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
