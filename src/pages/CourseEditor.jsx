@@ -18,6 +18,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Save, Star, Plus, Edit2, Trash2 } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
+import ModuleLessonEditor from '@/components/admin/ModuleLessonEditor';
+import QuizEditor from '@/components/admin/QuizEditor';
 
 export default function CourseEditor() {
   const urlParams = new URLSearchParams(window.location.search);

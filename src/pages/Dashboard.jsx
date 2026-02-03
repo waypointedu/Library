@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Star, BookOpen, Trophy, Clock, ArrowRight, 
-  GraduationCap, Target, ChevronRight 
+  GraduationCap, Target, ChevronRight, FileText 
 } from "lucide-react";
 import CourseCard from '@/components/courses/CourseCard';
 import LanguageToggle from '@/components/common/LanguageToggle';
@@ -137,6 +137,12 @@ export default function Dashboard() {
 
           <div className="flex items-center gap-4">
             <LanguageToggle currentLang={lang} onToggle={setLang} />
+            <Link to={createPageUrl(`Transcript?lang=${lang}`)}>
+              <Button variant="outline" size="sm">
+                <FileText className="w-4 h-4 mr-1" />
+                {lang === 'es' ? 'Expediente' : 'Transcript'}
+              </Button>
+            </Link>
             {user.role === 'admin' && (
               <Link to={createPageUrl(`Admin?lang=${lang}`)}>
                 <Button variant="outline" size="sm">Admin</Button>
