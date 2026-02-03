@@ -79,6 +79,17 @@ export default function Dashboard() {
     enabled: !!user?.email
   });
 
+  const { data: pathwayEnrollments = [] } = useQuery({
+    queryKey: ['pathwayEnrollments', user?.email],
+    queryFn: () => base44.entities.PathwayEnrollment.filter({ user_email: user?.email }),
+    enabled: !!user?.email
+  });
+
+  const { data: allPathways = [] } = useQuery({
+    queryKey: ['allPathways'],
+    queryFn: () => base44.entities.Pathway.list()
+  });
+
   const updateStreakMutation = useMutation({
     mutationFn: async () => {
       const today = new Date().toISOString().split('T')[0];
@@ -139,6 +150,17 @@ export default function Dashboard() {
   const totalLessonsCompleted = allProgress.length;
   const passedQuizzes = quizAttempts.filter(a => a.passed).length;
 
+  const getPathwayProgress = (pathwayId) => {
+    const pathway = allPathways.find(p => p.id === pathwayId);
+    if (!pathway || !pathway.course_ids) return 0;
+    
+    const completedInPathway = pathway.course_ids.filter(cid =>
+      enrollments.some(e => e.course_id === cid && e.status === 'completed')
+    ).length;
+    
+    return Math.round((completedInPathway / pathway.course_ids.length) * 100);
+  };
+
   const { data: resumeLesson } = useQuery({
     queryKey: ['resumeLesson', userPrefs?.last_lesson_id],
     queryFn: async () => {
@@ -162,6 +184,9 @@ export default function Dashboard() {
         lessons: "Lessons Completed",
         quizzes: "Quizzes Passed"
       },
+      pathways: "My Programs",
+      pathwayProgress: "Program Progress",
+      viewPathway: "View Program",
       noCourses: "You haven't enrolled in any courses yet.",
       browseButton: "Browse Courses",
       continue: "Continue Learning",
@@ -180,6 +205,9 @@ export default function Dashboard() {
         lessons: "Lecciones Completadas",
         quizzes: "Quizzes Aprobados"
       },
+      pathways: "Mis Programas",
+      pathwayProgress: "Progreso del Programa",
+      viewPathway: "Ver Programa",
       noCourses: "Aún no te has inscrito en ningún curso.",
       browseButton: "Explorar Cursos",
       continue: "Continuar Aprendiendo",
@@ -268,6 +296,56 @@ export default function Dashboard() {
           )}
           <StreakDisplay streak={streak} lang={lang} />
         </div>
+
+        {/* Pathway Progress */}
+        {pathwayEnrollments.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold text-slate-900 mb-6">{t.pathwayProgress}</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {pathwayEnrollments.map(enrollment => {
+                const pathway = allPathways.find(p => p.id === enrollment.pathway_id);
+                if (!pathway) return null;
+                const progress = getPathwayProgress(pathway.id);
+                const completedCourses = pathway.course_ids?.filter(cid =>
+                  enrollments.some(e => e.course_id === cid && e.status === 'completed')
+                ).length || 0;
+                const totalCourses = pathway.course_ids?.length || 0;
+                
+                return (
+                  <Card key={enrollment.id} className="border-amber-200 bg-gradient-to-br from-amber-50 to-white">
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <GraduationCap className="w-5 h-5 text-amber-600" />
+                            <CardTitle className="text-lg">{pathway[`title_${lang}`] || pathway.title_en}</CardTitle>
+                          </div>
+                          <p className="text-sm text-slate-600">{pathway[`description_${lang}`] || pathway.description_en}</p>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div>
+                          <div className="flex justify-between text-sm mb-2">
+                            <span className="text-slate-600">{completedCourses} of {totalCourses} courses completed</span>
+                            <span className="font-semibold text-amber-700">{progress}%</span>
+                          </div>
+                          <ProgressBar value={progress} className="h-3" />
+                        </div>
+                        <Link to={createPageUrl(`Pathway?id=${pathway.id}&lang=${lang}`)}>
+                          <Button className="w-full bg-amber-600 hover:bg-amber-700">
+                            {t.viewPathway} <ArrowRight className="w-4 h-4 ml-2" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
