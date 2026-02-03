@@ -39,6 +39,7 @@ export default function Admin() {
       title: "Admin Dashboard",
       tabs: {
         courses: "Courses",
+        pathways: "Pathways",
         users: "Users",
         analytics: "Analytics"
       }
@@ -47,6 +48,7 @@ export default function Admin() {
       title: "Panel de Administración",
       tabs: {
         courses: "Cursos",
+        pathways: "Rutas",
         users: "Usuarios",
         analytics: "Analíticas"
       }
@@ -92,12 +94,17 @@ export default function Admin() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-8">
             <TabsTrigger value="courses">{t.tabs.courses}</TabsTrigger>
+            <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>
             <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>
             <TabsTrigger value="analytics">{t.tabs.analytics}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="courses">
             <CourseManager lang={lang} />
+          </TabsContent>
+
+          <TabsContent value="pathways">
+            <PathwayManager lang={lang} />
           </TabsContent>
 
           <TabsContent value="users">

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import FileUploader from '@/components/upload/FileUploader';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Plus, Trash2, Save, Edit2, BookOpen } from "lucide-react";
@@ -244,6 +245,26 @@ export default function ModuleLessonEditor({ courseId, modules, lessons, lang })
                         <Label>{t.lessonContent} (ES)</Label>
                         <Textarea rows={8} value={newLesson.content_es || ''} onChange={(e) => setNewLesson({...newLesson, content_es: e.target.value})} placeholder="# Título de la Lección\n\nTu contenido markdown..." />
                       </div>
+
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <FileUploader
+                          label="Upload Video"
+                          accept="video/*"
+                          onUploadComplete={(url) => setNewLesson({ ...newLesson, video_url: url })}
+                          lang={lang}
+                        />
+                        <FileUploader
+                          label="Upload Audio/Document"
+                          accept="audio/*,.pdf,.doc,.docx,image/*"
+                          onUploadComplete={(url) => {
+                            const attachments = newLesson.attachments || [];
+                            attachments.push({ title: 'Attachment', url });
+                            setNewLesson({ ...newLesson, attachments });
+                          }}
+                          lang={lang}
+                        />
+                      </div>
+
                       <div className="grid md:grid-cols-3 gap-4">
                         <div>
                           <Label>{t.order}</Label>
