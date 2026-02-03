@@ -17,7 +17,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Save, Star, Plus, Edit2, Trash2 } from "lucide-react";
-import LanguageToggle from '../components/common/LanguageToggle';
+import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function CourseEditor() {
   const urlParams = new URLSearchParams(window.location.search);

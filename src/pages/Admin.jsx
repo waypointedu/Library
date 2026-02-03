@@ -6,10 +6,10 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star } from "lucide-react";
-import LanguageToggle from '../components/common/LanguageToggle';
-import CourseManager from '../components/admin/CourseManager';
-import UserManager from '../components/admin/UserManager';
-import Analytics from '../components/admin/Analytics';
+import LanguageToggle from '@/components/common/LanguageToggle';
+import CourseManager from '@/components/admin/CourseManager';
+import UserManager from '@/components/admin/UserManager';
+import Analytics from '@/components/admin/Analytics';
 
 export default function Admin() {
   const urlParams = new URLSearchParams(window.location.search);

@@ -5,8 +5,8 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, GraduationCap, Users, Globe, Star, ChevronRight } from "lucide-react";
-import CourseCard from '../components/courses/CourseCard';
-import LanguageToggle from '../components/common/LanguageToggle';
+import CourseCard from '@/components/courses/CourseCard';
+import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function Home() {
   const [lang, setLang] = useState(() => {

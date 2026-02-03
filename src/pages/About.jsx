@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Star, Heart, Globe, BookOpen, Target } from "lucide-react";
-import LanguageToggle from '../components/common/LanguageToggle';
+import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function About() {
   const urlParams = new URLSearchParams(window.location.search);

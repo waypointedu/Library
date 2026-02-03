@@ -9,9 +9,9 @@ import {
   Star, BookOpen, Trophy, Clock, ArrowRight, 
   GraduationCap, Target, ChevronRight 
 } from "lucide-react";
-import CourseCard from '../components/courses/CourseCard';
-import LanguageToggle from '../components/common/LanguageToggle';
-import ProgressBar from '../components/common/ProgressBar';
+import CourseCard from '@/components/courses/CourseCard';
+import LanguageToggle from '@/components/common/LanguageToggle';
+import ProgressBar from '@/components/common/ProgressBar';
 
 export default function Dashboard() {
   const urlParams = new URLSearchParams(window.location.search);

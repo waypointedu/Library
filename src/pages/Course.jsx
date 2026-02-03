@@ -10,10 +10,10 @@ import {
   ArrowLeft, Clock, BookOpen, Star, Users, CheckCircle2, 
   Target, GraduationCap, PlayCircle 
 } from "lucide-react";
-import ModuleAccordion from '../components/courses/ModuleAccordion';
-import LanguageToggle from '../components/common/LanguageToggle';
-import LanguageFallbackNotice from '../components/common/LanguageFallbackNotice';
-import ProgressBar from '../components/common/ProgressBar';
+import ModuleAccordion from '@/components/courses/ModuleAccordion';
+import LanguageToggle from '@/components/common/LanguageToggle';
+import LanguageFallbackNotice from '@/components/common/LanguageFallbackNotice';
+import ProgressBar from '@/components/common/ProgressBar';
 
 export default function Course() {
   const urlParams = new URLSearchParams(window.location.search);

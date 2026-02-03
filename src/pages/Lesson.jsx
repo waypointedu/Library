@@ -11,10 +11,10 @@ import {
   ArrowLeft, ArrowRight, Star, Clock, CheckCircle2, 
   Download, PlayCircle, Circle 
 } from "lucide-react";
-import LanguageToggle from '../components/common/LanguageToggle';
-import LanguageFallbackNotice from '../components/common/LanguageFallbackNotice';
-import ProgressBar from '../components/common/ProgressBar';
-import QuizContainer from '../components/quiz/QuizContainer';
+import LanguageToggle from '@/components/common/LanguageToggle';
+import LanguageFallbackNotice from '@/components/common/LanguageFallbackNotice';
+import ProgressBar from '@/components/common/ProgressBar';
+import QuizContainer from '@/components/quiz/QuizContainer';
 
 export default function Lesson() {
   const urlParams = new URLSearchParams(window.location.search);
