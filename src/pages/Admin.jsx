@@ -94,26 +94,32 @@ export default function Admin() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-8">
             <TabsTrigger value="courses">{t.tabs.courses}</TabsTrigger>
-            <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>
-            <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>
-            <TabsTrigger value="analytics">{t.tabs.analytics}</TabsTrigger>
+            {user.role === 'admin' && <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>}
+            {user.role === 'admin' && <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>}
+            {user.role === 'admin' && <TabsTrigger value="analytics">{t.tabs.analytics}</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="courses">
             <CourseManager lang={lang} />
           </TabsContent>
 
-          <TabsContent value="pathways">
-            <PathwayManager lang={lang} />
-          </TabsContent>
+          {user.role === 'admin' && (
+            <TabsContent value="pathways">
+              <PathwayManager lang={lang} />
+            </TabsContent>
+          )}
 
-          <TabsContent value="users">
-            <UserManager lang={lang} />
-          </TabsContent>
+          {user.role === 'admin' && (
+            <TabsContent value="users">
+              <UserManager lang={lang} />
+            </TabsContent>
+          )}
 
-          <TabsContent value="analytics">
-            <Analytics lang={lang} />
-          </TabsContent>
+          {user.role === 'admin' && (
+            <TabsContent value="analytics">
+              <Analytics lang={lang} />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>

@@ -47,39 +47,39 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Home from './pages/Home';
+import About from './pages/About';
+import Achievements from './pages/Achievements';
+import Admin from './pages/Admin';
 import Catalog from './pages/Catalog';
 import Course from './pages/Course';
-import Lesson from './pages/Lesson';
-import Dashboard from './pages/Dashboard';
-import Admin from './pages/Admin';
-import About from './pages/About';
 import CourseEditor from './pages/CourseEditor';
-import Transcript from './pages/Transcript';
-import Achievements from './pages/Achievements';
 import CourseForum from './pages/CourseForum';
+import Dashboard from './pages/Dashboard';
 import ForumPost from './pages/ForumPost';
+import Home from './pages/Home';
 import InstructorDashboard from './pages/InstructorDashboard';
-import Pathways from './pages/Pathways';
+import Lesson from './pages/Lesson';
 import Pathway from './pages/Pathway';
+import Pathways from './pages/Pathways';
+import Transcript from './pages/Transcript';
 
 
 export const PAGES = {
-    "Home": Home,
+    "About": About,
+    "Achievements": Achievements,
+    "Admin": Admin,
     "Catalog": Catalog,
     "Course": Course,
-    "Lesson": Lesson,
-    "Dashboard": Dashboard,
-    "Admin": Admin,
-    "About": About,
     "CourseEditor": CourseEditor,
-    "Transcript": Transcript,
-    "Achievements": Achievements,
     "CourseForum": CourseForum,
+    "Dashboard": Dashboard,
     "ForumPost": ForumPost,
+    "Home": Home,
     "InstructorDashboard": InstructorDashboard,
-    "Pathways": Pathways,
+    "Lesson": Lesson,
     "Pathway": Pathway,
+    "Pathways": Pathways,
+    "Transcript": Transcript,
 }
 
 export const pagesConfig = {
