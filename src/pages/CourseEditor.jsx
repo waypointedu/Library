@@ -18,8 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Save, Star, Plus, Edit2, Trash2 } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
-import ModuleLessonEditor from '@/components/admin/ModuleLessonEditor';
-import QuizEditor from '@/components/admin/QuizEditor';
+import WeekEditor from '@/components/admin/WeekEditor';
 
 export default function CourseEditor() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -432,27 +431,10 @@ export default function CourseEditor() {
           </div>
         </form>
 
-        {/* Modules & Lessons */}
+        {/* Week-based Course Structure */}
         {courseId && (
           <div className="mt-12">
-            <ModuleLessonEditor
-              courseId={courseId}
-              modules={modules}
-              lessons={lessons}
-              lang={lang}
-            />
-          </div>
-        )}
-
-        {/* Quiz Editor */}
-        {courseId && lessons.length > 0 && (
-          <div className="mt-12">
-            <QuizEditor
-              lessons={lessons}
-              quizzes={quizzes}
-              questions={questions}
-              lang={lang}
-            />
+            <WeekEditor courseId={courseId} lang={lang} />
           </div>
         )}
       </div>
