@@ -10,6 +10,7 @@ import LanguageToggle from '@/components/common/LanguageToggle';
 import CourseManager from '@/components/admin/CourseManager';
 import UserManager from '@/components/admin/UserManager';
 import Analytics from '@/components/admin/Analytics';
+import DetailedAnalytics from '@/components/admin/DetailedAnalytics';
 
 export default function Admin() {
   const urlParams = new URLSearchParams(window.location.search);

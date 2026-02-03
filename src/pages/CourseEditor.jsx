@@ -62,6 +62,45 @@ export default function CourseEditor() {
     enabled: !!courseId
   });
 
+  const { data: modules = [] } = useQuery({
+    queryKey: ['modules', courseId],
+    queryFn: () => base44.entities.Module.filter({ course_id: courseId }),
+    enabled: !!courseId
+  });
+
+  const { data: lessons = [] } = useQuery({
+    queryKey: ['lessons', courseId],
+    queryFn: async () => {
+      if (modules.length === 0) return [];
+      const moduleIds = modules.map(m => m.id);
+      const allLessons = await base44.entities.Lesson.list();
+      return allLessons.filter(l => moduleIds.includes(l.module_id));
+    },
+    enabled: !!courseId && modules.length > 0
+  });
+
+  const { data: quizzes = [] } = useQuery({
+    queryKey: ['quizzes', courseId],
+    queryFn: async () => {
+      if (lessons.length === 0) return [];
+      const lessonIds = lessons.map(l => l.id);
+      const allQuizzes = await base44.entities.Quiz.list();
+      return allQuizzes.filter(q => lessonIds.includes(q.lesson_id));
+    },
+    enabled: !!courseId && lessons.length > 0
+  });
+
+  const { data: questions = [] } = useQuery({
+    queryKey: ['questions', courseId],
+    queryFn: async () => {
+      if (quizzes.length === 0) return [];
+      const quizIds = quizzes.map(q => q.id);
+      const allQuestions = await base44.entities.Question.list();
+      return allQuestions.filter(q => quizIds.includes(q.quiz_id));
+    },
+    enabled: !!courseId && quizzes.length > 0
+  });
+
   useEffect(() => {
     if (course) {
       setFormData(course);
@@ -390,6 +429,30 @@ export default function CourseEditor() {
             </Button>
           </div>
         </form>
+
+        {/* Modules & Lessons */}
+        {courseId && (
+          <div className="mt-12">
+            <ModuleLessonEditor
+              courseId={courseId}
+              modules={modules}
+              lessons={lessons}
+              lang={lang}
+            />
+          </div>
+        )}
+
+        {/* Quiz Editor */}
+        {courseId && lessons.length > 0 && (
+          <div className="mt-12">
+            <QuizEditor
+              lessons={lessons}
+              quizzes={quizzes}
+              questions={questions}
+              lang={lang}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
