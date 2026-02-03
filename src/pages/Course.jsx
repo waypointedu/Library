@@ -8,8 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   ArrowLeft, Clock, BookOpen, Star, Users, CheckCircle2, 
-  Target, GraduationCap, PlayCircle 
+  Target, GraduationCap, PlayCircle, MessageSquare 
 } from "lucide-react";
+import AccessibilityMenu from '@/components/accessibility/AccessibilityMenu';
 import ModuleAccordion from '@/components/courses/ModuleAccordion';
 import LanguageToggle from '@/components/common/LanguageToggle';
 import LanguageFallbackNotice from '@/components/common/LanguageFallbackNotice';
@@ -155,7 +156,8 @@ export default function Course() {
       progress: "Progress",
       prerequisites: "Prerequisites",
       outcomes: "Learning Outcomes",
-      curriculum: "Curriculum"
+      curriculum: "Curriculum",
+      forum: "Course Forum"
     },
     es: {
       backToCatalog: "Volver al catálogo",
@@ -169,7 +171,8 @@ export default function Course() {
       progress: "Progreso",
       prerequisites: "Requisitos previos",
       outcomes: "Resultados de Aprendizaje",
-      curriculum: "Contenido del curso"
+      curriculum: "Contenido del curso",
+      forum: "Foro del Curso"
     }
   };
 
@@ -267,24 +270,30 @@ export default function Course() {
                         <ProgressBar value={progressPercent} />
                       </div>
                       {firstLesson && (
-                        <Link to={createPageUrl(`Lesson?id=${firstLesson.id}&lang=${lang}`)}>
-                          <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
-                            <PlayCircle className="w-4 h-4" />
-                            {progressPercent > 0 ? t.continue : t.start}
-                          </Button>
-                        </Link>
+                       <Link to={createPageUrl(`Lesson?id=${firstLesson.id}&lang=${lang}`)}>
+                         <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2 mb-3">
+                           <PlayCircle className="w-4 h-4" />
+                           {progressPercent > 0 ? t.continue : t.start}
+                         </Button>
+                       </Link>
                       )}
-                    </>
-                  ) : (
-                    <Button
+                      <Link to={createPageUrl(`CourseForum?courseId=${courseId}&lang=${lang}`)}>
+                       <Button variant="outline" className="w-full gap-2">
+                         <MessageSquare className="w-4 h-4" />
+                         {t.forum}
+                       </Button>
+                      </Link>
+                      </>
+                      ) : (
+                      <Button
                       onClick={handleEnroll}
                       disabled={enrollMutation.isPending}
                       className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]"
-                    >
+                      >
                       {enrollMutation.isPending ? '...' : t.enroll}
-                    </Button>
-                  )}
-                </CardContent>
+                      </Button>
+                      )}
+                      </CardContent>
               </Card>
             </div>
           </div>
