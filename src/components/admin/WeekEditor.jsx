@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Save, Edit2, Trash2, ChevronDown, ChevronUp, Calendar, FileText } from 'lucide-react';
 import FileUploader from '@/components/upload/FileUploader';
 import WeekQuizEditor from '@/components/admin/WeekQuizEditor';
+import RichTextEditor from '@/components/editor/RichTextEditor';
+import WrittenAssignmentGrading from '@/components/assignments/WrittenAssignmentGrading';
 
 export default function WeekEditor({ courseId, lang }) {
   const [expandedWeek, setExpandedWeek] = useState(null);
@@ -104,8 +106,12 @@ export default function WeekEditor({ courseId, lang }) {
                 </div>
 
                 <div>
-                  <Label>{t.lesson} (Markdown supported)</Label>
-                  <Textarea rows={10} placeholder="# Lesson Title\n\nYour lesson content in markdown..." value={editingWeek.lesson_content_en || ''} onChange={(e) => setEditingWeek({...editingWeek, lesson_content_en: e.target.value})} />
+                  <Label>{t.lesson}</Label>
+                  <RichTextEditor
+                    value={editingWeek.lesson_content_en || ''}
+                    onChange={(content) => setEditingWeek({...editingWeek, lesson_content_en: content})}
+                    placeholder="Write your lesson content here..."
+                  />
                 </div>
 
                 <div>
@@ -131,7 +137,11 @@ export default function WeekEditor({ courseId, lang }) {
 
                 <div>
                   <Label>{t.lesson}</Label>
-                  <Textarea rows={10} placeholder="Contenido de la lección..." value={editingWeek.lesson_content_es || ''} onChange={(e) => setEditingWeek({...editingWeek, lesson_content_es: e.target.value})} />
+                  <RichTextEditor
+                    value={editingWeek.lesson_content_es || ''}
+                    onChange={(content) => setEditingWeek({...editingWeek, lesson_content_es: content})}
+                    placeholder="Escribe el contenido de la lección aquí..."
+                  />
                 </div>
 
                 <div>
@@ -176,6 +186,13 @@ export default function WeekEditor({ courseId, lang }) {
 
             {editingWeek.has_quiz && editingWeek.id && (
               <WeekQuizEditor weekId={editingWeek.id} lang={lang} />
+            )}
+
+            {editingWeek.has_written_assignment && editingWeek.id && (
+              <div className="border-t pt-4 mt-4">
+                <h4 className="font-semibold mb-4">{lang === 'es' ? 'Envíos de Tareas' : 'Assignment Submissions'}</h4>
+                <WrittenAssignmentGrading weekId={editingWeek.id} courseId={courseId} lang={lang} />
+              </div>
             )}
 
             <div className="flex gap-3 justify-end">
