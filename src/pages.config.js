@@ -60,6 +60,8 @@ import Achievements from './pages/Achievements';
 import CourseForum from './pages/CourseForum';
 import ForumPost from './pages/ForumPost';
 import InstructorDashboard from './pages/InstructorDashboard';
+import Pathways from './pages/Pathways';
+import Pathway from './pages/Pathway';
 
 
 export const PAGES = {
@@ -76,6 +78,8 @@ export const PAGES = {
     "CourseForum": CourseForum,
     "ForumPost": ForumPost,
     "InstructorDashboard": InstructorDashboard,
+    "Pathways": Pathways,
+    "Pathway": Pathway,
 }
 
 export const pagesConfig = {

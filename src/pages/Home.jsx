@@ -234,6 +234,7 @@ export default function Home() {
                 <h4 className="font-semibold mb-4">{lang === 'es' ? 'Explorar' : 'Explore'}</h4>
                 <ul className="space-y-2 text-slate-400 text-sm">
                   <li><Link to={createPageUrl(`Catalog?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Cursos' : 'Courses'}</Link></li>
+                  <li><Link to={createPageUrl(`Pathways?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Rutas Académicas' : 'Pathways'}</Link></li>
                   <li><Link to={createPageUrl(`About?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Cómo funciona' : 'How it works'}</Link></li>
                 </ul>
               </div>
