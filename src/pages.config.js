@@ -56,6 +56,7 @@ import Admin from './pages/Admin';
 import About from './pages/About';
 import CourseEditor from './pages/CourseEditor';
 import Transcript from './pages/Transcript';
+import Achievements from './pages/Achievements';
 
 
 export const PAGES = {
@@ -68,6 +69,7 @@ export const PAGES = {
     "About": About,
     "CourseEditor": CourseEditor,
     "Transcript": Transcript,
+    "Achievements": Achievements,
 }
 
 export const pagesConfig = {
