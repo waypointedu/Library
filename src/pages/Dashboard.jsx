@@ -12,6 +12,9 @@ import {
 import CourseCard from '@/components/courses/CourseCard';
 import LanguageToggle from '@/components/common/LanguageToggle';
 import ProgressBar from '@/components/common/ProgressBar';
+import MobileNav from '@/components/common/MobileNav';
+import StreakDisplay from '@/components/gamification/StreakDisplay';
+import { useMutation } from '@tanstack/react-query';
 
 export default function Dashboard() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -58,6 +61,64 @@ export default function Dashboard() {
     enabled: !!user?.email
   });
 
+  const { data: userPrefs } = useQuery({
+    queryKey: ['userPrefs', user?.email],
+    queryFn: async () => {
+      const prefs = await base44.entities.UserPreferences.filter({ user_email: user?.email });
+      return prefs[0];
+    },
+    enabled: !!user?.email
+  });
+
+  const { data: streak } = useQuery({
+    queryKey: ['streak', user?.email],
+    queryFn: async () => {
+      const streaks = await base44.entities.Streak.filter({ user_email: user?.email });
+      return streaks[0];
+    },
+    enabled: !!user?.email
+  });
+
+  const updateStreakMutation = useMutation({
+    mutationFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const lastDate = streak?.last_activity_date;
+      
+      if (lastDate === today) return streak;
+
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+      const newStreak = lastDate === yesterdayStr 
+        ? (streak?.current_streak || 0) + 1 
+        : 1;
+
+      const data = {
+        user_email: user.email,
+        current_streak: newStreak,
+        longest_streak: Math.max(newStreak, streak?.longest_streak || 0),
+        last_activity_date: today,
+        total_points: streak?.total_points || 0
+      };
+
+      if (streak?.id) {
+        return base44.entities.Streak.update(streak.id, data);
+      } else {
+        return base44.entities.Streak.create(data);
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (user?.email && streak !== undefined) {
+      const today = new Date().toISOString().split('T')[0];
+      if (streak?.last_activity_date !== today) {
+        updateStreakMutation.mutate();
+      }
+    }
+  }, [user?.email, streak]);
+
   const enrolledCourses = courses.filter(c => 
     enrollments.some(e => e.course_id === c.id)
   );
@@ -78,11 +139,23 @@ export default function Dashboard() {
   const totalLessonsCompleted = allProgress.length;
   const passedQuizzes = quizAttempts.filter(a => a.passed).length;
 
+  const { data: resumeLesson } = useQuery({
+    queryKey: ['resumeLesson', userPrefs?.last_lesson_id],
+    queryFn: async () => {
+      if (!userPrefs?.last_lesson_id) return null;
+      const lessons = await base44.entities.Lesson.filter({ id: userPrefs.last_lesson_id });
+      return lessons[0];
+    },
+    enabled: !!userPrefs?.last_lesson_id
+  });
+
   const text = {
     en: {
       welcome: "Welcome back",
       myCourses: "My Courses",
       exploreCourses: "Explore more courses",
+      resumeLearning: "Resume Learning",
+      continueFrom: "Continue from",
       stats: {
         enrolled: "Courses Enrolled",
         completed: "Courses Completed",
@@ -99,6 +172,8 @@ export default function Dashboard() {
       welcome: "Bienvenido de nuevo",
       myCourses: "Mis Cursos",
       exploreCourses: "Explorar más cursos",
+      resumeLearning: "Continuar Aprendiendo",
+      continueFrom: "Continuar desde",
       stats: {
         enrolled: "Cursos Inscritos",
         completed: "Cursos Completados",
@@ -124,10 +199,10 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
       {/* Header */}
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
           <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center">
               <Star className="w-5 h-5 text-white" />
@@ -135,23 +210,28 @@ export default function Dashboard() {
             <span className="font-semibold text-slate-900 hidden sm:block">Waypoint Institute</span>
           </Link>
 
-          <div className="flex items-center gap-4">
-            <LanguageToggle currentLang={lang} onToggle={setLang} />
-            <Link to={createPageUrl(`Transcript?lang=${lang}`)}>
+          <div className="flex items-center gap-2 md:gap-4">
+            <div className="hidden md:block">
+              <LanguageToggle currentLang={lang} onToggle={setLang} />
+            </div>
+            <Link to={createPageUrl(`Transcript?lang=${lang}`)} className="hidden md:block">
               <Button variant="outline" size="sm">
                 <FileText className="w-4 h-4 mr-1" />
                 {lang === 'es' ? 'Expediente' : 'Transcript'}
               </Button>
             </Link>
-            {user.role === 'admin' && (
+            {(user.role === 'admin' || user.role === 'instructor') && (
               <Link to={createPageUrl(`Admin?lang=${lang}`)}>
-                <Button variant="outline" size="sm">Admin</Button>
+                <Button variant="outline" size="sm">
+                  {user.role === 'admin' ? 'Admin' : (lang === 'es' ? 'Instructor' : 'Instructor')}
+                </Button>
               </Link>
             )}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => base44.auth.logout()}
+              className="hidden md:flex"
             >
               {lang === 'es' ? 'Cerrar sesión' : 'Sign out'}
             </Button>
@@ -159,12 +239,34 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
         {/* Welcome */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-light text-slate-900 mb-2">
+        <div className="mb-8">
+          <h1 className="text-2xl md:text-3xl font-light text-slate-900 mb-2">
             {t.welcome}, <span className="font-semibold">{user.full_name || user.email}</span>
           </h1>
+        </div>
+
+        {/* Resume Learning + Streak */}
+        <div className="grid md:grid-cols-2 gap-4 mb-8">
+          {resumeLesson && (
+            <Card className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] text-white border-0">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <BookOpen className="w-6 h-6" />
+                  <h3 className="font-semibold">{t.resumeLearning}</h3>
+                </div>
+                <p className="text-sm opacity-90 mb-4">{t.continueFrom}:</p>
+                <p className="font-medium mb-4">{resumeLesson[`title_${lang}`] || resumeLesson.title_en}</p>
+                <Link to={createPageUrl(`Lesson?id=${resumeLesson.id}&lang=${lang}`)}>
+                  <Button size="lg" variant="secondary" className="w-full">
+                    {t.continue} <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
+          <StreakDisplay streak={streak} lang={lang} />
         </div>
 
         {/* Stats */}
@@ -231,6 +333,8 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      <MobileNav lang={lang} currentPage="Profile" />
     </div>
   );
 }
