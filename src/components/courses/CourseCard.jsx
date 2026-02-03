@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Clock, BookOpen, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import ProgressBar from '../common/ProgressBar';
+import ProgressBar from '@/components/common/ProgressBar';
 
 export default function CourseCard({ course, lang = 'en', progress = 0, enrolled = false }) {
   const title = course[`title_${lang}`] || course.title_en;
