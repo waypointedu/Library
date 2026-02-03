@@ -24,7 +24,7 @@ export default function Admin() {
 
   useEffect(() => {
     base44.auth.me().then((u) => {
-      if (u.role !== 'admin') {
+      if (u.role !== 'admin' && u.role !== 'instructor') {
         window.location.href = createPageUrl('Dashboard');
       }
       setUser(u);

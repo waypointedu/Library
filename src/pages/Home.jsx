@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, GraduationCap, Users, Globe, Star, ChevronRight } from "lucide-react";
 import CourseCard from '@/components/courses/CourseCard';
 import LanguageToggle from '@/components/common/LanguageToggle';
+import MobileNav from '@/components/common/MobileNav';
 
 export default function Home() {
   const [lang, setLang] = useState(() => {
@@ -244,6 +245,8 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      <MobileNav lang={lang} currentPage="Home" />
     </div>
   );
 }
