@@ -62,6 +62,7 @@ import Lesson from './pages/Lesson';
 import Pathway from './pages/Pathway';
 import Pathways from './pages/Pathways';
 import Transcript from './pages/Transcript';
+import Week from './pages/Week';
 
 
 export const PAGES = {
@@ -80,6 +81,7 @@ export const PAGES = {
     "Pathway": Pathway,
     "Pathways": Pathways,
     "Transcript": Transcript,
+    "Week": Week,
 }
 
 export const pagesConfig = {
