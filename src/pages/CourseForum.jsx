@@ -35,7 +35,21 @@ export default function CourseForum() {
 
   const { data: forums = [] } = useQuery({
     queryKey: ['forums', courseId],
-    queryFn: () => base44.entities.Forum.filter({ course_id: courseId }),
+    queryFn: async () => {
+      const existing = await base44.entities.Forum.filter({ course_id: courseId });
+      if (existing.length === 0) {
+        // Auto-create default forum for this course
+        const newForum = await base44.entities.Forum.create({
+          course_id: courseId,
+          title_en: 'General Discussion',
+          title_es: 'Discusión General',
+          description_en: 'General course discussions',
+          description_es: 'Discusiones generales del curso'
+        });
+        return [newForum];
+      }
+      return existing;
+    },
     enabled: !!courseId
   });
 
@@ -58,9 +72,19 @@ export default function CourseForum() {
     }
   });
 
-  const handleCreatePost = () => {
-    const defaultForum = forums[0];
-    if (!defaultForum) return;
+  const handleCreatePost = async () => {
+    if (!newPost.title.trim() || !newPost.content.trim()) return;
+    
+    let defaultForum = forums[0];
+    if (!defaultForum) {
+      // Create forum if it doesn't exist
+      defaultForum = await base44.entities.Forum.create({
+        course_id: courseId,
+        title_en: 'General Discussion',
+        title_es: 'Discusión General'
+      });
+      queryClient.invalidateQueries({ queryKey: ['forums', courseId] });
+    }
 
     createPostMutation.mutate({
       forum_id: defaultForum.id,
