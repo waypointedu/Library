@@ -16,6 +16,11 @@ import ApplicationsManager from '@/components/admin/ApplicationsManager';
 import AcademicCalendar from '@/components/admin/AcademicCalendar';
 import SemesterManager from '@/components/admin/SemesterManager';
 import InstructorApprovalManager from '@/components/admin/InstructorApprovalManager';
+import GamificationManager from '@/components/admin/GamificationManager';
+import AdvancedCourseManager from '@/components/admin/AdvancedCourseManager';
+import AnnouncementManager from '@/components/communication/AnnouncementManager';
+import Inbox from '@/components/communication/Inbox';
+import EnhancedAnalyticsDashboard from '@/components/admin/EnhancedAnalyticsDashboard';
 
 export default function Admin() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -47,7 +52,12 @@ export default function Admin() {
         courses: "Courses",
         pathways: "Pathways",
         users: "Users",
-        analytics: "Analytics"
+        analytics: "Analytics",
+        gamification: "Gamification",
+        courseCatalog: "Course Catalog",
+        announcements: "Announcements",
+        messages: "Messages",
+        advancedAnalytics: "Advanced Analytics"
       },
       instructorView: "Instructor View"
     },
@@ -58,7 +68,12 @@ export default function Admin() {
         courses: "Cursos",
         pathways: "Rutas",
         users: "Usuarios",
-        analytics: "Analíticas"
+        analytics: "Analíticas",
+        gamification: "Gamificación",
+        courseCatalog: "Catálogo de Cursos",
+        announcements: "Anuncios",
+        messages: "Mensajes",
+        advancedAnalytics: "Analíticas Avanzadas"
       },
       instructorView: "Vista Instructor"
     }
@@ -112,16 +127,21 @@ export default function Admin() {
         <h1 className="text-3xl font-light text-slate-900 mb-8">{t.title}</h1>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-8">
-            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="overview">{t.tabs.overview}</TabsTrigger>}
-            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="applications">{lang === 'es' ? 'Solicitudes' : 'Applications'}</TabsTrigger>}
-            <TabsTrigger value="courses">{t.tabs.courses}</TabsTrigger>
-            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="instructors">{lang === 'es' ? 'Instructores' : 'Instructors'}</TabsTrigger>}
-            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="calendar">{lang === 'es' ? 'Calendario' : 'Calendar'}</TabsTrigger>}
-            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>}
-            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>}
-            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="analytics">{t.tabs.analytics}</TabsTrigger>}
-          </TabsList>
+           <TabsList className="mb-8 flex-wrap">
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="overview">{t.tabs.overview}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="applications">{lang === 'es' ? 'Solicitudes' : 'Applications'}</TabsTrigger>}
+             <TabsTrigger value="courses">{t.tabs.courses}</TabsTrigger>
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="courseCatalog">{t.tabs.courseCatalog}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="instructors">{lang === 'es' ? 'Instructores' : 'Instructors'}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="calendar">{lang === 'es' ? 'Calendario' : 'Calendar'}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="gamification">{t.tabs.gamification}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="announcements">{t.tabs.announcements}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="messages">{t.tabs.messages}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="advancedAnalytics">{t.tabs.advancedAnalytics}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="analytics">{t.tabs.analytics}</TabsTrigger>}
+           </TabsList>
 
           {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="overview">
@@ -167,12 +187,42 @@ export default function Admin() {
           )}
 
           {(user.role === 'admin' || user.user_type === 'admin') && (
+            <TabsContent value="courseCatalog">
+              <AdvancedCourseManager />
+            </TabsContent>
+          )}
+
+          {(user.role === 'admin' || user.user_type === 'admin') && (
+            <TabsContent value="gamification">
+              <GamificationManager />
+            </TabsContent>
+          )}
+
+          {(user.role === 'admin' || user.user_type === 'admin') && (
+            <TabsContent value="announcements">
+              <AnnouncementManager />
+            </TabsContent>
+          )}
+
+          {(user.role === 'admin' || user.user_type === 'admin') && (
+            <TabsContent value="messages">
+              <Inbox />
+            </TabsContent>
+          )}
+
+          {(user.role === 'admin' || user.user_type === 'admin') && (
+            <TabsContent value="advancedAnalytics">
+              <EnhancedAnalyticsDashboard />
+            </TabsContent>
+          )}
+
+          {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="analytics">
               <Analytics lang={lang} />
             </TabsContent>
           )}
-        </Tabs>
-      </div>
-    </div>
-  );
-}
+          </Tabs>
+          </div>
+          </div>
+          );
+          }
