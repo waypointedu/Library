@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   ArrowLeft, Clock, BookOpen, Star, Users, CheckCircle2, 
   Target, GraduationCap, PlayCircle, MessageSquare 
@@ -20,6 +21,7 @@ export default function Course() {
   const urlParams = new URLSearchParams(window.location.search);
   const courseId = urlParams.get('id');
   const [lang, setLang] = useState(urlParams.get('lang') || localStorage.getItem('waypoint_lang') || 'en');
+  const [courseLang, setCourseLang] = useState('en');
   const [user, setUser] = useState(null);
   const [showFallback, setShowFallback] = useState(false);
   const queryClient = useQueryClient();
@@ -145,10 +147,23 @@ export default function Course() {
     );
   }
 
-  const title = course[`title_${lang}`] || course.title_en;
-  const description = course[`description_${lang}`] || course.description_en;
-  const prerequisites = course[`prerequisites_${lang}`] || course.prerequisites_en;
-  const outcomes = course[`learning_outcomes_${lang}`] || course.learning_outcomes_en || [];
+  const availableLanguages = course?.language_availability || ['en'];
+  
+  useEffect(() => {
+    if (course && availableLanguages.length > 0) {
+      const urlCourseLang = urlParams.get('courseLang');
+      if (urlCourseLang && availableLanguages.includes(urlCourseLang)) {
+        setCourseLang(urlCourseLang);
+      } else if (!availableLanguages.includes(courseLang)) {
+        setCourseLang(availableLanguages[0]);
+      }
+    }
+  }, [course, availableLanguages]);
+
+  const title = course[`title_${courseLang}`] || course.title_en;
+  const description = course[`description_${courseLang}`] || course.description_en;
+  const prerequisites = course[`prerequisites_${courseLang}`] || course.prerequisites_en;
+  const outcomes = course[`learning_outcomes_${courseLang}`] || course.learning_outcomes_en || [];
   
   const completedLessonIds = progress.map(p => p.lesson_id);
   const totalLessons = lessons.length;
@@ -213,6 +228,20 @@ export default function Course() {
             <span className="font-semibold text-slate-900 hidden sm:block">Waypoint Institute</span>
           </Link>
           <div className="flex items-center gap-2">
+            {availableLanguages.length > 1 && (
+              <Select value={courseLang} onValueChange={(val) => setCourseLang(val)}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableLanguages.includes('en') && <SelectItem value="en">English</SelectItem>}
+                  {availableLanguages.includes('es') && <SelectItem value="es">Spanish</SelectItem>}
+                  {availableLanguages.includes('ps') && <SelectItem value="ps">Pashtu</SelectItem>}
+                  {availableLanguages.includes('fa') && <SelectItem value="fa">Persian</SelectItem>}
+                  {availableLanguages.includes('km') && <SelectItem value="km">Khmer</SelectItem>}
+                </SelectContent>
+              </Select>
+            )}
             {user && <AccessibilityMenu user={user} userPrefs={userPrefs} lang={lang} />}
             <LanguageToggle currentLang={lang} onToggle={setLang} />
           </div>
@@ -293,7 +322,7 @@ export default function Course() {
                         <ProgressBar value={progressPercent} />
                       </div>
                       {firstWeek ? (
-                       <Link to={createPageUrl(`Week?id=${firstWeek.id}&lang=${lang}`)}>
+                       <Link to={createPageUrl(`Week?id=${firstWeek.id}&lang=${lang}&courseLang=${courseLang}`)}>
                          <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2 mb-3">
                            <PlayCircle className="w-4 h-4" />
                            {progressPercent > 0 ? t.continue : t.start}
@@ -362,11 +391,11 @@ export default function Course() {
                 {weeks.length > 0 ? (
                   <div className="space-y-3">
                     {weeks.map((week) => {
-                      const weekTitle = week[`title_${lang}`] || week.title_en;
+                     const weekTitle = week[`title_${courseLang}`] || week.title_en;
                       return (
                         <Link
-                          key={week.id}
-                          to={createPageUrl(`Week?id=${week.id}&lang=${lang}`)}
+                         key={week.id}
+                         to={createPageUrl(`Week?id=${week.id}&lang=${lang}&courseLang=${courseLang}`)}
                           className="block p-6 bg-white rounded-xl border border-slate-100 hover:shadow-md transition-shadow"
                         >
                           <div className="flex items-center justify-between">
