@@ -7,16 +7,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit2, Award, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Edit2, Award, Trash2, GripVertical, Users, UserPlus } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
-export default function PathwayManager({ lang }) {
+export default function PathwayManager({ lang, user }) {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({
     title_en: '', title_es: '', description_en: '', description_es: '',
     type: 'certificate', course_ids: [], estimated_months: 0, total_credits: 0,
     status: 'draft', certificate_template: ''
   });
+  const [manageStudents, setManageStudents] = useState(null);
+  const [studentEmail, setStudentEmail] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: pathways = [] } = useQuery({
@@ -27,6 +32,16 @@ export default function PathwayManager({ lang }) {
   const { data: courses = [] } = useQuery({
     queryKey: ['courses'],
     queryFn: () => base44.entities.Course.list()
+  });
+
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['allUsers'],
+    queryFn: () => base44.entities.User.list()
+  });
+
+  const { data: pathwayEnrollments = [] } = useQuery({
+    queryKey: ['pathwayEnrollments'],
+    queryFn: () => base44.entities.PathwayEnrollment.list()
   });
 
   const saveMutation = useMutation({
@@ -46,7 +61,31 @@ export default function PathwayManager({ lang }) {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Pathway.delete(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['pathways'] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pathways'] });
+      setDeleteConfirm(null);
+    }
+  });
+
+  const enrollStudentMutation = useMutation({
+    mutationFn: async ({ pathwayId, email }) => {
+      const student = allUsers.find(u => u.email === email);
+      return base44.entities.PathwayEnrollment.create({
+        pathway_id: pathwayId,
+        user_email: email,
+        status: 'active',
+        enrolled_date: new Date().toISOString()
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pathwayEnrollments'] });
+      setStudentEmail('');
+    }
+  });
+
+  const removeStudentMutation = useMutation({
+    mutationFn: (enrollmentId) => base44.entities.PathwayEnrollment.delete(enrollmentId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['pathwayEnrollments'] })
   });
 
   const handleEdit = (pathway) => {
@@ -72,9 +111,29 @@ export default function PathwayManager({ lang }) {
     setForm({ ...form, course_ids: form.course_ids.filter(id => id !== courseId) });
   };
 
+  const getEnrolledStudents = (pathwayId) => {
+    return pathwayEnrollments.filter(e => e.pathway_id === pathwayId);
+  };
+
   const text = {
-    en: { title: 'Pathway Manager', new: 'New Pathway', save: 'Save', cancel: 'Cancel', delete: 'Delete', edit: 'Edit', courses: 'Courses in Pathway', addCourse: 'Add Course', type: 'Type', status: 'Status', estimated: 'Est. Months', credits: 'Total Credits', certificate: 'Certificate Template' },
-    es: { title: 'Gestor de Rutas', new: 'Nueva Ruta', save: 'Guardar', cancel: 'Cancelar', delete: 'Eliminar', edit: 'Editar', courses: 'Cursos en la Ruta', addCourse: 'Añadir Curso', type: 'Tipo', status: 'Estado', estimated: 'Meses Est.', credits: 'Créditos Totales', certificate: 'Plantilla de Certificado' }
+    en: { 
+      title: 'Pathway Manager', new: 'New Pathway', save: 'Save', cancel: 'Cancel', delete: 'Delete', edit: 'Edit', 
+      courses: 'Courses in Pathway', addCourse: 'Add Course', type: 'Type', status: 'Status', 
+      estimated: 'Est. Months', credits: 'Total Credits', certificate: 'Certificate Template',
+      manageStudents: 'Manage Students', enrollStudent: 'Enroll Student', studentEmail: 'Student Email',
+      enroll: 'Enroll', enrolled: 'Enrolled Students', remove: 'Remove', noStudents: 'No students enrolled',
+      deleteConfirm: 'Delete Pathway?', deleteWarning: 'This action cannot be undone. All student enrollments will be lost.',
+      confirmDelete: 'Yes, Delete'
+    },
+    es: { 
+      title: 'Gestor de Rutas', new: 'Nueva Ruta', save: 'Guardar', cancel: 'Cancelar', delete: 'Eliminar', edit: 'Editar',
+      courses: 'Cursos en la Ruta', addCourse: 'Añadir Curso', type: 'Tipo', status: 'Estado',
+      estimated: 'Meses Est.', credits: 'Créditos Totales', certificate: 'Plantilla de Certificado',
+      manageStudents: 'Gestionar Estudiantes', enrollStudent: 'Inscribir Estudiante', studentEmail: 'Email del Estudiante',
+      enroll: 'Inscribir', enrolled: 'Estudiantes Inscritos', remove: 'Eliminar', noStudents: 'No hay estudiantes inscritos',
+      deleteConfirm: '¿Eliminar Ruta?', deleteWarning: 'Esta acción no se puede deshacer. Todas las inscripciones se perderán.',
+      confirmDelete: 'Sí, Eliminar'
+    }
   };
   const t = text[lang];
 
@@ -194,14 +253,120 @@ export default function PathwayManager({ lang }) {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => setManageStudents(pathway)}>
+                    <Users className="w-4 h-4 mr-1" />
+                    {t.manageStudents}
+                  </Button>
                   <Button size="sm" variant="outline" onClick={() => handleEdit(pathway)}><Edit2 className="w-4 h-4" /></Button>
-                  <Button size="sm" variant="outline" onClick={() => deleteMutation.mutate(pathway.id)}><Trash2 className="w-4 h-4" /></Button>
+                  {(user?.role === 'admin' || user?.user_type === 'admin') && (
+                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirm(pathway)}><Trash2 className="w-4 h-4" /></Button>
+                  )}
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Manage Students Dialog */}
+      {manageStudents && (
+        <Dialog open={!!manageStudents} onOpenChange={() => setManageStudents(null)}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>{t.manageStudents}: {manageStudents[`title_${lang}`] || manageStudents.title_en}</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <Select value={studentEmail} onValueChange={setStudentEmail}>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder={t.studentEmail} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allUsers
+                      .filter(u => (u.user_type === 'student' || (!u.user_type && u.role === 'user')))
+                      .filter(u => !getEnrolledStudents(manageStudents.id).some(e => e.user_email === u.email))
+                      .map(u => (
+                        <SelectItem key={u.id} value={u.email}>
+                          {u.full_name} ({u.email})
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <Button 
+                  onClick={() => enrollStudentMutation.mutate({ pathwayId: manageStudents.id, email: studentEmail })}
+                  disabled={!studentEmail}
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  {t.enroll}
+                </Button>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-2">{t.enrolled}</h4>
+                {getEnrolledStudents(manageStudents.id).length === 0 ? (
+                  <p className="text-sm text-slate-500">{t.noStudents}</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{lang === 'es' ? 'Estudiante' : 'Student'}</TableHead>
+                        <TableHead>{lang === 'es' ? 'Estado' : 'Status'}</TableHead>
+                        <TableHead>{lang === 'es' ? 'Inscrito' : 'Enrolled'}</TableHead>
+                        <TableHead></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {getEnrolledStudents(manageStudents.id).map(enrollment => {
+                        const student = allUsers.find(u => u.email === enrollment.user_email);
+                        return (
+                          <TableRow key={enrollment.id}>
+                            <TableCell>{student?.full_name || enrollment.user_email}</TableCell>
+                            <TableCell><Badge>{enrollment.status}</Badge></TableCell>
+                            <TableCell className="text-sm text-slate-500">
+                              {new Date(enrollment.enrolled_date).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                onClick={() => removeStudentMutation.mutate(enrollment.id)}
+                              >
+                                {t.remove}
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {deleteConfirm && (
+        <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t.deleteConfirm}</DialogTitle>
+              <DialogDescription>{t.deleteWarning}</DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeleteConfirm(null)}>{t.cancel}</Button>
+              <Button 
+                variant="destructive" 
+                onClick={() => deleteMutation.mutate(deleteConfirm.id)}
+              >
+                {t.confirmDelete}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
