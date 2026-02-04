@@ -71,6 +71,7 @@ import HowItWorks from './pages/HowItWorks';
 import Support from './pages/Support';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
+import Profile from './pages/Profile';
 
 
 export const PAGES = {
@@ -98,6 +99,7 @@ export const PAGES = {
     "Support": Support,
     "FAQ": FAQ,
     "Contact": Contact,
+    "Profile": Profile,
 }
 
 export const pagesConfig = {
