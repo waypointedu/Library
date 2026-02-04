@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ClipboardCheck, MessageSquare, Eye, FileText, TrendingUp, Users } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
-import AvailabilityManager from '@/components/instructor/AvailabilityManager';
+import InstructorAvailability from '@/components/instructor/InstructorAvailability';
 import CourseCalendar from '@/components/calendar/CourseCalendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -257,7 +257,7 @@ export default function InstructorDashboard() {
                       {t.viewCourse}
                     </Button>
                   </Link>
-                  <Link to={createPageUrl(`Admin?tab=courses&lang=${lang}`)}>
+                  <Link to={createPageUrl(`CourseEditor?id=${course.id}&lang=${lang}`)}>
                     <Button size="sm" className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]">
                       {t.editCourse}
                     </Button>
@@ -290,9 +290,9 @@ export default function InstructorDashboard() {
                             </p>
                           </div>
                           <Link to={createPageUrl(`InstructorGradebook?course_id=${sub.course_id}&lang=${lang}`)}>
-                           <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
-                             {t.gradeNow}
-                           </Button>
+                            <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
+                              {t.gradeNow}
+                            </Button>
                           </Link>
                         </div>
                       ))}
@@ -335,7 +335,7 @@ export default function InstructorDashboard() {
           </TabsContent>
 
           <TabsContent value="availability">
-            <AvailabilityManager user={user} />
+            <InstructorAvailability user={user} />
           </TabsContent>
         </Tabs>
       </div>

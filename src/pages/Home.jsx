@@ -159,7 +159,7 @@ export default function Home() {
       </header>
 
       {/* Hero Video Section */}
-      <section className="relative h-[75vh] flex items-end overflow-hidden pt-20">
+      <section className="relative h-[75vh] flex items-end overflow-hidden pt-20 bg-gradient-to-br from-[#1e3a5f] via-slate-800 to-black">
         {/* Video Background */}
         <HeroVideo />
 
