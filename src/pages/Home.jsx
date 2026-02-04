@@ -14,10 +14,10 @@ function HeroSlideshow() {
   const [currentSlide, setCurrentSlide] = useState(0);
   
   const slides = [
-    { url: 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=2070', alt: 'Afghanistan mountains' },
-    { url: 'https://images.unsplash.com/photo-1552799446-159ba9523315?q=80&w=2070', alt: 'Myanmar countryside' },
-    { url: 'https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?q=80&w=2070', alt: 'Rural Mexico landscape' },
-    { url: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=2071', alt: 'Sub-Saharan Africa savanna' }
+    { url: 'https://images.unsplash.com/photo-1580837119756-563d608dd119?q=80&w=2070', alt: 'Afghanistan mountains' },
+    { url: 'https://images.unsplash.com/photo-1570647787938-43885b3f5b2f?q=80&w=2070', alt: 'Myanmar rice fields' },
+    { url: 'https://images.unsplash.com/photo-1512813498716-3e640fed3f39?q=80&w=2070', alt: 'Rural Mexico countryside' },
+    { url: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=2071', alt: 'Sub-Saharan Africa savanna' }
   ];
 
   useEffect(() => {
