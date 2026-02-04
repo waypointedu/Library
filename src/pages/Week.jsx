@@ -69,8 +69,20 @@ export default function Week() {
 
   const title = week[`title_${lang}`] || week.title_en;
   const overview = week[`overview_${lang}`] || week.overview_en;
+  const contentBlocks = week[`content_blocks_${lang}`] || week.content_blocks_en || [];
   const lessonContent = week[`lesson_content_${lang}`] || week.lesson_content_en;
   const readingAssignment = week[`reading_assignment_${lang}`] || week.reading_assignment_en;
+
+  const getVideoEmbedUrl = (url) => {
+    if (!url) return '';
+    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    if (youtubeMatch) return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+    const loomMatch = url.match(/loom\.com\/share\/([^?\s]+)/);
+    if (loomMatch) return `https://www.loom.com/embed/${loomMatch[1]}`;
+    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    return url;
+  };
 
   const text = {
     en: {
@@ -138,8 +150,66 @@ export default function Week() {
           </Card>
         )}
 
-        {/* Lesson Content */}
-        {lessonContent && (
+        {/* Lesson Content - Block-based */}
+        {contentBlocks.length > 0 && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-[#1e3a5f]" />
+                {t.lesson}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {contentBlocks.map((block, index) => (
+                <div key={block.id || index}>
+                  {block.type === 'text' && (
+                    <div className="text-slate-700 whitespace-pre-wrap">{block.content}</div>
+                  )}
+                  
+                  {block.type === 'richtext' && (
+                    <div 
+                      className="prose prose-slate max-w-none"
+                      dangerouslySetInnerHTML={{ __html: block.content }}
+                    />
+                  )}
+                  
+                  {block.type === 'video' && block.url && (
+                    <div className="space-y-2">
+                      <div className="aspect-video rounded-lg overflow-hidden bg-slate-100">
+                        <iframe
+                          src={getVideoEmbedUrl(block.url)}
+                          className="w-full h-full"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
+                      {block.caption && (
+                        <p className="text-sm text-slate-500 text-center">{block.caption}</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {block.type === 'image' && block.url && (
+                    <div className="space-y-2">
+                      <img 
+                        src={block.url} 
+                        alt={block.caption || 'Lesson image'} 
+                        className="w-full rounded-lg"
+                      />
+                      {block.caption && (
+                        <p className="text-sm text-slate-500 text-center">{block.caption}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+        
+        {/* Legacy Lesson Content */}
+        {!contentBlocks.length && lessonContent && (
           <Card className="mb-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
