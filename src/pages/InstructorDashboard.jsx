@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star, ClipboardCheck, MessageSquare, Eye, FileText } from "lucide-react";
+import { ClipboardCheck, MessageSquare, Eye, FileText, TrendingUp, Users } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function InstructorDashboard() {
@@ -45,6 +45,16 @@ export default function InstructorDashboard() {
     queryFn: () => base44.entities.ForumPost.list()
   });
 
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ['allEnrollments'],
+    queryFn: () => base44.entities.Enrollment.list()
+  });
+
+  const { data: allProgress = [] } = useQuery({
+    queryKey: ['allProgress'],
+    queryFn: () => base44.entities.Progress.list()
+  });
+
   const text = {
     en: {
       title: "Instructor Dashboard",
@@ -57,7 +67,10 @@ export default function InstructorDashboard() {
       editCourse: "Edit Course",
       gradeNow: "Grade Now",
       noSubmissions: "No submissions to grade",
-      noPosts: "No recent posts"
+      noPosts: "No recent posts",
+      totalStudents: "Total Students",
+      activeStudents: "Active This Week",
+      avgCompletion: "Avg Completion"
     },
     es: {
       title: "Panel del Instructor",
@@ -70,7 +83,10 @@ export default function InstructorDashboard() {
       editCourse: "Editar Curso",
       gradeNow: "Calificar Ahora",
       noSubmissions: "No hay envíos para calificar",
-      noPosts: "No hay publicaciones recientes"
+      noPosts: "No hay publicaciones recientes",
+      totalStudents: "Estudiantes Totales",
+      activeStudents: "Activos Esta Semana",
+      avgCompletion: "Finalización Promedio"
     }
   };
 
@@ -85,6 +101,20 @@ export default function InstructorDashboard() {
   }
 
   const recentPosts = forumPosts.slice(0, 5);
+
+  // Calculate stats
+  const totalStudents = new Set(enrollments.map(e => e.user_email)).size;
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const activeStudents = new Set(
+    allProgress
+      .filter(p => new Date(p.updated_date) > oneWeekAgo)
+      .map(p => p.user_email)
+  ).size;
+  const completedEnrollments = enrollments.filter(e => e.status === 'completed').length;
+  const avgCompletion = enrollments.length > 0 
+    ? Math.round((completedEnrollments / enrollments.length) * 100)
+    : 0;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -118,7 +148,7 @@ export default function InstructorDashboard() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -151,6 +181,42 @@ export default function InstructorDashboard() {
                   <p className="text-3xl font-semibold text-[#1e3a5f]">{courses.length}</p>
                 </div>
                 <FileText className="w-10 h-10 text-[#1e3a5f]/20" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500 mb-1">{t.totalStudents}</p>
+                  <p className="text-3xl font-semibold text-purple-600">{totalStudents}</p>
+                </div>
+                <Users className="w-10 h-10 text-purple-600/20" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500 mb-1">{t.activeStudents}</p>
+                  <p className="text-3xl font-semibold text-emerald-600">{activeStudents}</p>
+                </div>
+                <TrendingUp className="w-10 h-10 text-emerald-600/20" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500 mb-1">{t.avgCompletion}</p>
+                  <p className="text-3xl font-semibold text-[#c4933f]">{avgCompletion}%</p>
+                </div>
+                <TrendingUp className="w-10 h-10 text-[#c4933f]/20" />
               </div>
             </CardContent>
           </Card>

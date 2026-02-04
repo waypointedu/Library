@@ -28,7 +28,14 @@ export default function Dashboard() {
   }, [lang]);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {
+    base44.auth.me().then((u) => {
+      // Redirect admins to Admin dashboard by default
+      if (u.role === 'admin' || u.user_type === 'admin') {
+        window.location.href = createPageUrl(`Admin?lang=${lang}`);
+        return;
+      }
+      setUser(u);
+    }).catch(() => {
       base44.auth.redirectToLogin();
     });
   }, []);

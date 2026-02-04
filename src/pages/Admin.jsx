@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star } from "lucide-react";
+
 import LanguageToggle from '@/components/common/LanguageToggle';
 import CourseManager from '@/components/admin/CourseManager';
 import UserManager from '@/components/admin/UserManager';
@@ -17,7 +17,7 @@ export default function Admin() {
   const urlParams = new URLSearchParams(window.location.search);
   const [lang, setLang] = useState(urlParams.get('lang') || localStorage.getItem('waypoint_lang') || 'en');
   const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState('courses');
+  const [activeTab, setActiveTab] = useState(urlParams.get('tab') || 'overview');
 
   useEffect(() => {
     localStorage.setItem('waypoint_lang', lang);
@@ -39,6 +39,7 @@ export default function Admin() {
     en: {
       title: user?.role === 'admin' ? "Admin Dashboard" : "Instructor Dashboard",
       tabs: {
+        overview: "Overview",
         courses: "Courses",
         pathways: "Pathways",
         users: "Users",
@@ -49,6 +50,7 @@ export default function Admin() {
     es: {
       title: user?.role === 'admin' ? "Panel de Administración" : "Panel del Instructor",
       tabs: {
+        overview: "Resumen",
         courses: "Cursos",
         pathways: "Rutas",
         users: "Usuarios",
@@ -74,10 +76,7 @@ export default function Admin() {
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center">
-              <Star className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-semibold text-slate-900 hidden sm:block">Waypoint Institute</span>
+            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-10" />
           </Link>
 
           <div className="flex items-center gap-4">
@@ -103,11 +102,18 @@ export default function Admin() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-8">
+            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="overview">{t.tabs.overview}</TabsTrigger>}
             <TabsTrigger value="courses">{t.tabs.courses}</TabsTrigger>
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>}
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>}
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="analytics">{t.tabs.analytics}</TabsTrigger>}
           </TabsList>
+
+          {(user.role === 'admin' || user.user_type === 'admin') && (
+            <TabsContent value="overview">
+              <DetailedAnalytics lang={lang} />
+            </TabsContent>
+          )}
 
           <TabsContent value="courses">
             <CourseManager lang={lang} user={user} />
