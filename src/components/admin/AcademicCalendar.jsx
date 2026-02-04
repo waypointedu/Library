@@ -365,15 +365,9 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
     status: 'scheduled'
   });
 
-  const { data: approvedInstructors = [] } = useQuery({
-    queryKey: ['approvedInstructors', formData.course_id],
-    queryFn: () => base44.entities.InstructorAvailability.filter({ course_id: formData.course_id, status: 'approved' }),
-    enabled: !!formData.course_id
-  });
-
   const { data: semesterAvailability = [] } = useQuery({
     queryKey: ['semesterAvailability', formData.term_id],
-    queryFn: () => base44.entities.InstructorSemesterAvailability.filter({ term_id: formData.term_id }),
+    queryFn: () => formData.term_id ? base44.entities.InstructorSemesterAvailability.filter({ term_id: formData.term_id }) : [],
     enabled: !!formData.term_id
   });
 
@@ -407,7 +401,7 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
 
   // Filter instructors: course + term selected, approved for course, available for semester, and under load limit
   const availableInstructors = (!formData.course_id || !formData.term_id) ? [] : instructors.filter(u => {
-    const isApproved = approvedInstructors.some(a => a.instructor_email === u.email);
+    const isApproved = (u.approved_courses || []).includes(formData.course_id);
     if (!isApproved) return false;
     
     const availability = semesterAvailability.find(a => a.instructor_email === u.email);
