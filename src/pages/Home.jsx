@@ -14,34 +14,33 @@ function HeroSlideshow() {
   const [currentSlide, setCurrentSlide] = useState(0);
   
   const slides = [
-    { url: 'https://images.unsplash.com/photo-1580837119756-563d608dd119?q=80&w=2070', alt: 'Afghanistan mountains' },
-    { url: 'https://images.unsplash.com/photo-1570647787938-43885b3f5b2f?q=80&w=2070', alt: 'Myanmar rice fields' },
-    { url: 'https://images.unsplash.com/photo-1512813498716-3e640fed3f39?q=80&w=2070', alt: 'Rural Mexico countryside' },
-    { url: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=2071', alt: 'Sub-Saharan Africa savanna' }
+    { url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/9140496ee_mexi.png', alt: 'Rural Mexico' },
+    { url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/32dbfb305_afr.png', alt: 'Sub-Saharan Africa' },
+    { url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/101f5693e_myan.png', alt: 'Myanmar' }
   ];
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="absolute inset-0 z-0">
+    <div className="absolute inset-0 z-0 overflow-hidden">
       {slides.map((slide, index) => (
         <div
           key={index}
-          className={`absolute inset-0 transition-opacity duration-2000 ${
+          className={`absolute inset-0 transition-opacity duration-1000 ${
             index === currentSlide ? 'opacity-100' : 'opacity-0'
           }`}
         >
           <div 
-            className="w-full h-full bg-cover bg-center"
+            className="w-full h-[120%] bg-cover bg-center"
             style={{ 
               backgroundImage: `url(${slide.url})`,
-              animation: index === currentSlide ? 'slowPan 20s ease-in-out infinite' : 'none',
-              backgroundSize: '110%'
+              animation: index === currentSlide ? 'panUp 20s ease-out forwards' : 'none',
+              backgroundPosition: 'center bottom'
             }}
           />
         </div>
@@ -49,12 +48,12 @@ function HeroSlideshow() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
       
       <style jsx>{`
-        @keyframes slowPan {
+        @keyframes panUp {
           0% { 
-            transform: scale(1.1) translate(0, 0);
+            transform: translateY(0);
           }
           100% { 
-            transform: scale(1.15) translate(-3%, -2%);
+            transform: translateY(-15%);
           }
         }
       `}</style>
