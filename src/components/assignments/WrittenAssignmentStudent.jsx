@@ -24,14 +24,14 @@ export default function WrittenAssignmentStudent({ week, courseId, user, lang })
   });
 
   const submitMutation = useMutation({
-    mutationFn: (url) => {
+    mutationFn: async (url) => {
       if (submission) {
-        return base44.entities.WrittenAssignmentSubmission.update(submission.id, {
+        return await base44.entities.WrittenAssignmentSubmission.update(submission.id, {
           google_docs_url: url,
           submitted_date: new Date().toISOString()
         });
       } else {
-        return base44.entities.WrittenAssignmentSubmission.create({
+        return await base44.entities.WrittenAssignmentSubmission.create({
           week_id: week.id,
           course_id: courseId,
           user_email: user.email,
@@ -45,6 +45,10 @@ export default function WrittenAssignmentStudent({ week, courseId, user, lang })
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['writtenSubmission'] });
       setDocsUrl('');
+    },
+    onError: (error) => {
+      console.error('Submission error:', error);
+      alert(lang === 'es' ? 'Error al enviar la tarea' : 'Error submitting assignment');
     }
   });
 
