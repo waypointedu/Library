@@ -104,28 +104,28 @@ export default function Admin() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-8">
             <TabsTrigger value="courses">{t.tabs.courses}</TabsTrigger>
-            {user.role === 'admin' && <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>}
-            {user.role === 'admin' && <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>}
-            {user.role === 'admin' && <TabsTrigger value="analytics">{t.tabs.analytics}</TabsTrigger>}
+            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>}
+            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>}
+            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="analytics">{t.tabs.analytics}</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="courses">
-            <CourseManager lang={lang} />
+            <CourseManager lang={lang} user={user} />
           </TabsContent>
 
-          {user.role === 'admin' && (
+          {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="pathways">
-              <PathwayManager lang={lang} />
+              <PathwayManager lang={lang} user={user} />
             </TabsContent>
           )}
 
-          {user.role === 'admin' && (
+          {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="users">
               <UserManager lang={lang} />
             </TabsContent>
           )}
 
-          {user.role === 'admin' && (
+          {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="analytics">
               <Analytics lang={lang} />
             </TabsContent>
