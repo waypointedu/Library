@@ -33,11 +33,15 @@ export default function Dashboard() {
   }, [lang]);
 
   useEffect(() => {
+    const viewMode = urlParams.get('view');
+    
     base44.auth.me().then((u) => {
-      // Redirect admins to Admin dashboard by default
-      if (u.role === 'admin' || u.user_type === 'admin') {
-        window.location.href = createPageUrl(`Admin?lang=${lang}`);
-        return;
+      // Only redirect if not explicitly viewing as student
+      if (viewMode !== 'student') {
+        if (u.role === 'admin' || u.user_type === 'admin') {
+          window.location.href = createPageUrl(`Admin?lang=${lang}`);
+          return;
+        }
       }
       setUser(u);
     }).catch(() => {
