@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card, CardContent } from "@/components/ui/card";
-import { Globe, Heart, BookOpen, Cross } from "lucide-react";
+import { base44 } from '@/api/base44Client';
+import { Button } from "@/components/ui/button";
 import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function About() {
