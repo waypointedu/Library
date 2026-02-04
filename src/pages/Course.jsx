@@ -400,9 +400,10 @@ export default function Course() {
                   </p>
                 )}
               </div>
+            </div>
 
-              {/* Sidebar */}
-              <div>
+            {/* Sidebar */}
+            <div>
               {prerequisites && (
                 <Card className="border-slate-100">
                   <CardContent className="p-6">
