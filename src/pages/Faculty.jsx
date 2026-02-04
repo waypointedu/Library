@@ -123,37 +123,38 @@ export default function Faculty() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
             {activeFaculty.map((member, index) => (
               <Card key={index} className="overflow-hidden shadow-xl border-slate-200 hover:shadow-2xl transition-shadow">
-                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-full h-full object-cover object-center"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h3 className="text-2xl md:text-3xl font-semibold mb-1">{member.name}</h3>
-                    <p className="text-base md:text-lg text-white/90">{member.role}</p>
+                <div className="p-8 bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col items-center text-center">
+                  <div className="w-40 h-40 rounded-full overflow-hidden bg-slate-200 mb-6 shadow-lg ring-4 ring-white">
+                    <img 
+                      src={member.image} 
+                      alt={member.name}
+                      className="w-full h-full object-cover object-center"
+                    />
                   </div>
+                  <h3 className="text-2xl md:text-3xl font-semibold text-slate-900 mb-2">{member.name}</h3>
+                  <p className="text-base text-[#1e3a5f] font-medium">{member.role}</p>
                 </div>
                 <CardContent className="p-6 md:p-8">
-                  <p className="text-slate-600 leading-relaxed mb-6 text-base md:text-lg">
+                  <p className="text-slate-600 leading-relaxed mb-6 text-base md:text-lg text-center">
                     {member.bio}
                   </p>
                   <div className="mb-6">
-                    <h4 className="font-semibold text-slate-900 mb-3">Courses</h4>
+                    <h4 className="font-semibold text-slate-900 mb-3 text-center">Courses</h4>
                     <ul className="space-y-1">
                       {member.courses.map((course, i) => (
-                        <li key={i} className="text-sm text-slate-600">• {course}</li>
+                        <li key={i} className="text-sm text-slate-600 text-center">• {course}</li>
                       ))}
                     </ul>
                   </div>
-                  <a 
-                    href={`mailto:${member.email}`}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                  >
-                    <Mail className="w-4 h-4" />
-                    <span className="text-sm font-medium">Email</span>
-                  </a>
+                  <div className="flex justify-center">
+                    <a 
+                      href={`mailto:${member.email}`}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                    >
+                      <Mail className="w-4 h-4" />
+                      <span className="text-sm font-medium">Email</span>
+                    </a>
+                  </div>
                 </CardContent>
               </Card>
             ))}
