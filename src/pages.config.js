@@ -69,6 +69,8 @@ import Week from './pages/Week';
 import Apply from './pages/Apply';
 import HowItWorks from './pages/HowItWorks';
 import Support from './pages/Support';
+import FAQ from './pages/FAQ';
+import Contact from './pages/Contact';
 
 
 export const PAGES = {
@@ -94,6 +96,8 @@ export const PAGES = {
     "Apply": Apply,
     "HowItWorks": HowItWorks,
     "Support": Support,
+    "FAQ": FAQ,
+    "Contact": Contact,
 }
 
 export const pagesConfig = {
