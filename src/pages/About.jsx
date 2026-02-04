@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
+import { Heart, BookOpen, Globe } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function About() {
