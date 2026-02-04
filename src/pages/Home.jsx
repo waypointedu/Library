@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, GraduationCap, Users, Globe, Star, ChevronRight } from "lucide-react";
 import CourseCard from '@/components/courses/CourseCard';
-import LanguageToggle from '@/components/common/LanguageToggle';
 import MobileNav from '@/components/common/MobileNav';
 
 // Hero Background Component
@@ -145,7 +144,6 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <LanguageToggle currentLang={lang} onToggle={setLang} />
             {!user ? (
               <>
                 <Link to={createPageUrl(`Apply?lang=${lang}`)}>

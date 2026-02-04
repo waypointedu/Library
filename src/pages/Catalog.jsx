@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, ArrowLeft, Star } from "lucide-react";
 import CourseCard from '@/components/courses/CourseCard';
-import LanguageToggle from '@/components/common/LanguageToggle';
 import MobileNav from '@/components/common/MobileNav';
 
 export default function Catalog() {
@@ -112,7 +111,6 @@ export default function Catalog() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <LanguageToggle currentLang={lang} onToggle={setLang} />
             <Link to={createPageUrl(`Apply?lang=${lang}`)}>
               <Button size="sm" variant="outline" className="border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white hidden sm:inline-flex">
                 {lang === 'es' ? 'Aplicar' : 'Apply'}

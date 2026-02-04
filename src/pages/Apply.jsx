@@ -10,7 +10,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { CheckCircle2, ArrowRight } from "lucide-react";
-import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function Apply() {
   const [lang, setLang] = useState(() => {
@@ -185,7 +184,6 @@ export default function Apply() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <LanguageToggle currentLang={lang} onToggle={setLang} />
             <Link to={createPageUrl(`Apply?lang=${lang}`)}>
               <Button size="sm" variant="outline" className="border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white hidden sm:inline-flex">
                 {lang === 'es' ? 'Aplicar' : 'Apply'}
