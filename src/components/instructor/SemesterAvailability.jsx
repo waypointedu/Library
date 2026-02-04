@@ -8,7 +8,8 @@ import { Calendar, Plus, Trash2 } from "lucide-react";
 
 export default function SemesterAvailability({ user }) {
   const queryClient = useQueryClient();
-  const [expandedTerm, setExpandedTerm] = useState(null);
+  const [submitted, setSubmitted] = useState({});
+  const [editValues, setEditValues] = useState({});
 
   const { data: terms = [] } = useQuery({
     queryKey: ['academicTerms'],
@@ -25,51 +26,44 @@ export default function SemesterAvailability({ user }) {
 
   const createAvailabilityMutation = useMutation({
     mutationFn: (data) => base44.entities.InstructorSemesterAvailability.create(data),
-    onSuccess: () => {
+    onSuccess: (newRecord) => {
       queryClient.invalidateQueries({ queryKey: ['semesterAvailability'] });
+      setSubmitted(prev => ({ ...prev, [newRecord.term_id]: true }));
     }
   });
 
   const updateAvailabilityMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.InstructorSemesterAvailability.update(id, data),
-    onSuccess: () => {
+    onSuccess: (updatedRecord) => {
       queryClient.invalidateQueries({ queryKey: ['semesterAvailability'] });
+      setSubmitted(prev => ({ ...prev, [updatedRecord.term_id]: true }));
+      setEditValues(prev => {
+        const newState = { ...prev };
+        delete newState[updatedRecord.id];
+        return newState;
+      });
     }
   });
 
-  const deleteAvailabilityMutation = useMutation({
-    mutationFn: (id) => base44.entities.InstructorSemesterAvailability.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['semesterAvailability'] });
+  const handleMarkAvailable = (termId, maxCourses) => {
+    const record = getAvailabilityForTerm(termId);
+    if (record) {
+      updateAvailabilityMutation.mutate({
+        id: record.id,
+        data: { max_courses: maxCourses }
+      });
+    } else {
+      createAvailabilityMutation.mutate({
+        instructor_email: user.email,
+        term_id: termId,
+        max_courses: maxCourses
+      });
     }
-  });
-
-  const handleAddAvailability = (termId) => {
-    createAvailabilityMutation.mutate({
-      instructor_email: user.email,
-      term_id: termId,
-      is_available: true,
-      max_courses: 3
-    });
-    setExpandedTerm(null);
   };
 
-  const handleUpdateMaxCourses = (record, newMax) => {
-    updateAvailabilityMutation.mutate({
-      id: record.id,
-      data: { max_courses: newMax }
-    });
-  };
-
-  const handleToggleAvailable = (record) => {
-    updateAvailabilityMutation.mutate({
-      id: record.id,
-      data: { is_available: !record.is_available }
-    });
-  };
-
-  const handleDelete = (id) => {
-    deleteAvailabilityMutation.mutate(id);
+  const handleMaxCoursesChange = (recordId, termId, value) => {
+    setEditValues(prev => ({ ...prev, [recordId]: value }));
+    setSubmitted(prev => ({ ...prev, [termId]: false }));
   };
 
   const getAvailabilityForTerm = (termId) => {
@@ -96,58 +90,53 @@ export default function SemesterAvailability({ user }) {
               <h3 className="font-semibold text-slate-900 text-sm">Registered For</h3>
               <div className="space-y-2">
                 {registeredTerms.map(term => {
-                  const record = getAvailabilityForTerm(term.id);
-                  return (
-                    <div key={term.id} className="border rounded-lg p-4 hover:bg-slate-50">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-slate-900">{term.name}</h4>
-                          <p className="text-sm text-slate-600">
-                            {new Date(term.start_date).toLocaleDateString()} – {new Date(term.end_date).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <Badge className={record.is_available ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}>
-                          {record.is_available ? 'Available' : 'Unavailable'}
-                        </Badge>
-                      </div>
+                        const record = getAvailabilityForTerm(term.id);
+                        const isSubmitted = submitted[term.id];
+                        const currentValue = editValues[record?.id] !== undefined ? editValues[record?.id] : record?.max_courses;
 
-                      <div className="mt-3 space-y-3">
-                        <div>
-                          <label className="text-sm font-medium text-slate-700 block mb-2">
-                            Max Courses: {record.max_courses}
-                          </label>
-                          <input
-                            type="range"
-                            min="1"
-                            max="5"
-                            value={record.max_courses}
-                            onChange={(e) => handleUpdateMaxCourses(record, parseInt(e.target.value))}
-                            className="w-full"
-                          />
-                        </div>
+                        return (
+                          <div key={term.id} className={`border rounded-lg p-4 transition-all ${isSubmitted ? 'bg-slate-50' : ''}`}>
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-slate-900">{term.name}</h4>
+                                <p className="text-sm text-slate-600">
+                                  {new Date(term.start_date).toLocaleDateString()} – {new Date(term.end_date).toLocaleDateString()}
+                                </p>
+                              </div>
+                              {isSubmitted && (
+                                <Badge className="bg-green-100 text-green-800">Availability submitted</Badge>
+                              )}
+                            </div>
 
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant={record.is_available ? 'default' : 'outline'}
-                            onClick={() => handleToggleAvailable(record)}
-                            className={record.is_available ? 'bg-green-600 hover:bg-green-700' : ''}
-                          >
-                            {record.is_available ? 'Available' : 'Mark Available'}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleDelete(record.id)}
-                            className="text-red-600 border-red-200 hover:bg-red-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                            <div className={`space-y-3 ${isSubmitted ? 'opacity-50 pointer-events-none' : ''}`}>
+                              <div>
+                                <label className="text-sm font-medium text-slate-700 block mb-2">
+                                  Max Courses
+                                </label>
+                                <select
+                                  value={currentValue || 0}
+                                  onChange={(e) => handleMaxCoursesChange(record.id, term.id, parseInt(e.target.value))}
+                                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm"
+                                >
+                                  {[0, 1, 2, 3, 4, 5].map(num => (
+                                    <option key={num} value={num}>{num === 0 ? 'Unavailable' : num}</option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              {!isSubmitted && (
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleMarkAvailable(term.id, currentValue)}
+                                  className="bg-[#1e3a5f] hover:bg-[#2d5a8a] w-full"
+                                >
+                                  Mark Available
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
               </div>
             </div>
           )}
