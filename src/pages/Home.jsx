@@ -14,10 +14,10 @@ function HeroSlideshow() {
   const [currentSlide, setCurrentSlide] = useState(0);
   
   const slides = [
-    { url: 'https://images.unsplash.com/photo-1580837119756-563d608dd119?q=80&w=2070', alt: 'Afghanistan landscape' },
-    { url: 'https://images.unsplash.com/photo-1571336670859-03e82aacc63b?q=80&w=2070', alt: 'Myanmar landscape' },
-    { url: 'https://images.unsplash.com/photo-1518659224226-86915a3a5c32?q=80&w=2070', alt: 'Rural Mexico' },
-    { url: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?q=80&w=2070', alt: 'Sub-Saharan Africa' }
+    { url: 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=2070', alt: 'Afghanistan mountains' },
+    { url: 'https://images.unsplash.com/photo-1552799446-159ba9523315?q=80&w=2070', alt: 'Myanmar countryside' },
+    { url: 'https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?q=80&w=2070', alt: 'Rural Mexico landscape' },
+    { url: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=2071', alt: 'Sub-Saharan Africa savanna' }
   ];
 
   useEffect(() => {
@@ -37,10 +37,11 @@ function HeroSlideshow() {
           }`}
         >
           <div 
-            className="w-full h-full bg-cover bg-center animate-slow-pan"
+            className="w-full h-full bg-cover bg-center"
             style={{ 
               backgroundImage: `url(${slide.url})`,
-              backgroundSize: '120%',
+              animation: index === currentSlide ? 'slowPan 20s ease-in-out infinite' : 'none',
+              backgroundSize: '110%'
             }}
           />
         </div>
@@ -49,12 +50,12 @@ function HeroSlideshow() {
       
       <style jsx>{`
         @keyframes slowPan {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-slow-pan {
-          animation: slowPan 20s ease-in-out infinite;
+          0% { 
+            transform: scale(1.1) translate(0, 0);
+          }
+          100% { 
+            transform: scale(1.15) translate(-3%, -2%);
+          }
         }
       `}</style>
     </div>
@@ -206,12 +207,9 @@ export default function Home() {
 
         {/* Tagline - Bottom Left */}
         <div className="relative z-10 px-8 pb-12 md:px-12 md:pb-16">
-          <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-sm border border-white/10 rounded-full px-5 py-2">
-            <Globe className="w-4 h-4 text-white/90" />
-            <span className="text-sm font-medium text-white/90 italic">
-              to all the nations
-            </span>
-          </div>
+          <h2 className="text-3xl md:text-4xl font-light text-white/95 italic">
+            to all the nations
+          </h2>
         </div>
       </section>
 

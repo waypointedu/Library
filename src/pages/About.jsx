@@ -137,7 +137,7 @@ export default function About() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 hover:shadow-xl transition-shadow">
               <div className="w-16 h-16 rounded-full bg-[#1e3a5f]/10 flex items-center justify-center mb-6">
-                <div className="w-8 h-8 rounded-full bg-[#1e3a5f]"></div>
+                <Heart className="w-8 h-8 text-[#1e3a5f]" />
               </div>
               <h3 className="text-2xl font-semibold text-slate-900 mb-4">Christocentrism</h3>
               <p className="text-slate-600 leading-relaxed">
@@ -146,7 +146,7 @@ export default function About() {
             </div>
             <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 hover:shadow-xl transition-shadow">
               <div className="w-16 h-16 rounded-full bg-[#c4933f]/10 flex items-center justify-center mb-6">
-                <div className="w-8 h-8 rounded-full bg-[#c4933f]"></div>
+                <BookOpen className="w-8 h-8 text-[#c4933f]" />
               </div>
               <h3 className="text-2xl font-semibold text-slate-900 mb-4">Pursuit of Truth</h3>
               <p className="text-slate-600 leading-relaxed italic mb-3">
@@ -156,7 +156,7 @@ export default function About() {
             </div>
             <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 hover:shadow-xl transition-shadow">
               <div className="w-16 h-16 rounded-full bg-[#2d5a8a]/10 flex items-center justify-center mb-6">
-                <div className="w-8 h-8 rounded-full bg-[#2d5a8a]"></div>
+                <Globe className="w-8 h-8 text-[#2d5a8a]" />
               </div>
               <h3 className="text-2xl font-semibold text-slate-900 mb-4">Radical Accessibility</h3>
               <p className="text-slate-600 leading-relaxed">
@@ -176,25 +176,25 @@ export default function About() {
           </div>
           <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-10 md:p-14 border-2 border-slate-200 shadow-xl">
             <h3 className="text-2xl md:text-3xl font-serif italic text-[#1e3a5f] mb-8 text-center">The Apostles' Creed</h3>
-            <div className="text-slate-800 leading-relaxed space-y-3 text-lg max-w-3xl mx-auto">
+            <div className="text-slate-800 leading-relaxed space-y-3 text-lg max-w-3xl mx-auto text-center">
               <p>I believe in God, the Father almighty,</p>
-              <p className="ml-6">maker of heaven and earth.</p>
+              <p>maker of heaven and earth.</p>
               <p className="mt-5">And in Jesus Christ, his only Son, our Lord,</p>
-              <p className="ml-6">who was conceived by the Holy Spirit,</p>
-              <p className="ml-6">born of the Virgin Mary,</p>
-              <p className="ml-6">suffered under Pontius Pilate,</p>
-              <p className="ml-6">was crucified, died, and was buried;</p>
-              <p className="ml-6">he descended to the dead.</p>
-              <p className="ml-6">On the third day he rose again;</p>
-              <p className="ml-6">he ascended into heaven,</p>
-              <p className="ml-6">he is seated at the right hand of the Father,</p>
-              <p className="ml-6">and he will come again to judge the living and the dead.</p>
+              <p>who was conceived by the Holy Spirit,</p>
+              <p>born of the Virgin Mary,</p>
+              <p>suffered under Pontius Pilate,</p>
+              <p>was crucified, died, and was buried;</p>
+              <p>he descended to the dead.</p>
+              <p>On the third day he rose again;</p>
+              <p>he ascended into heaven,</p>
+              <p>he is seated at the right hand of the Father,</p>
+              <p>and he will come again to judge the living and the dead.</p>
               <p className="mt-5">I believe in the Holy Spirit,</p>
-              <p className="ml-6">the holy catholic Church,</p>
-              <p className="ml-6">the communion of saints,</p>
-              <p className="ml-6">the forgiveness of sins,</p>
-              <p className="ml-6">the resurrection of the body,</p>
-              <p className="ml-6">and the life everlasting. Amen.</p>
+              <p>the holy catholic Church,</p>
+              <p>the communion of saints,</p>
+              <p>the forgiveness of sins,</p>
+              <p>the resurrection of the body,</p>
+              <p>and the life everlasting. Amen.</p>
             </div>
           </div>
         </section>
