@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
+import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import LanguageToggle from '@/components/common/LanguageToggle';
 
@@ -95,16 +97,55 @@ export default function FAQ() {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
-            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint" className="h-10" />
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link to={createPageUrl('Home')} className="flex items-center">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" 
+              alt="Waypoint Institute" 
+              className="h-12" 
+            />
           </Link>
-          <LanguageToggle currentLang={lang} onToggle={setLang} />
+
+          <nav className="hidden lg:flex items-center gap-10">
+            <Link to={createPageUrl(`Pathways?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Programas' : 'Programs'}
+            </Link>
+            <Link to={createPageUrl(`About?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Acerca de' : 'About'}
+            </Link>
+            <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Cursos' : 'Courses'}
+            </Link>
+            <Link to={createPageUrl(`HowItWorks?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Cómo Funciona' : 'How it works'}
+            </Link>
+            <Link to={createPageUrl(`Support?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Apoyar' : 'Support'}
+            </Link>
+            <Link to={createPageUrl(`FAQ?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              FAQ
+            </Link>
+            <Link to={createPageUrl(`Contact?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Contacto' : 'Contact'}
+            </Link>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <LanguageToggle currentLang={lang} onToggle={setLang} />
+            <Link to={createPageUrl(`Apply?lang=${lang}`)}>
+              <Button size="sm" variant="outline" className="border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white hidden sm:inline-flex">
+                {lang === 'es' ? 'Aplicar' : 'Apply'}
+              </Button>
+            </Link>
+            <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+              {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
+            </Button>
+          </div>
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-6 py-20">
+      <div className="max-w-5xl mx-auto px-6 py-32">
         <h1 className="text-5xl font-semibold text-slate-900 mb-12 text-center">{t.title}</h1>
 
         <Accordion type="single" collapsible className="space-y-4">

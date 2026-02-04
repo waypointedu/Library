@@ -21,17 +21,12 @@ export default function Support() {
       title: "Support Waypoint Institute",
       subtitle: "Students pay nothing. Your contribution keeps our Christian college certificate tuition-free today and fuels future associate pathways.",
       disclaimer: "We are not currently a 501(c)(3). Contributions are not tax-deductible.",
-      course_creation: "Build a Course",
-      course_creation_amount: "$500",
-      course_creation_desc: "Honorarium for the instructor who authors a reusable course with readings, assignments, and assessments.",
-      course_creation_details: ["Funds evergreen curriculum and media", "Includes initial capstone design"],
-      course_facilitation: "Run a Course",
-      course_facilitation_amount: "$500",
-      course_facilitation_desc: "Honorarium for the instructor who facilitates a course run, reviews capstones, and offers pastoral feedback.",
-      course_facilitation_details: ["Covers capstone evaluation time", "Keeps office hours and feedback flowing"],
-      platform: "Keep Access Open",
-      platform_desc: "Supports translation summaries, technology, and digital library growth so students worldwide can study without tuition.",
-      platform_details: ["Expands multilingual resources", "Maintains low-cost platforms and security"],
+      course_creation: "$500 course creation honorarium",
+      course_creation_desc: "Funds readings, assignments, and initial capstone design for a reusable course.",
+      course_facilitation: "$500 course facilitation honorarium",
+      course_facilitation_desc: "Compensates the instructor who reviews capstones and offers weekly feedback.",
+      platform: "Platform and library growth",
+      platform_desc: "Supports translations, technology upkeep, and digital resources students use at no cost.",
       how_to: "How to Contribute",
       how_to_desc: "We receive contributions directly while we evaluate long-term nonprofit status. Reach out to discuss a one-time or recurring contribution.",
       email_btn: "Email to Contribute"
@@ -61,70 +56,86 @@ export default function Support() {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
-            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint" className="h-10" />
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link to={createPageUrl('Home')} className="flex items-center">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" 
+              alt="Waypoint Institute" 
+              className="h-12" 
+            />
           </Link>
-          <LanguageToggle currentLang={lang} onToggle={setLang} />
+
+          <nav className="hidden lg:flex items-center gap-10">
+            <Link to={createPageUrl(`Pathways?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Programas' : 'Programs'}
+            </Link>
+            <Link to={createPageUrl(`About?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Acerca de' : 'About'}
+            </Link>
+            <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Cursos' : 'Courses'}
+            </Link>
+            <Link to={createPageUrl(`HowItWorks?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Cómo Funciona' : 'How it works'}
+            </Link>
+            <Link to={createPageUrl(`Support?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Apoyar' : 'Support'}
+            </Link>
+            <Link to={createPageUrl(`FAQ?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              FAQ
+            </Link>
+            <Link to={createPageUrl(`Contact?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Contacto' : 'Contact'}
+            </Link>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <LanguageToggle currentLang={lang} onToggle={setLang} />
+            <Link to={createPageUrl(`Apply?lang=${lang}`)}>
+              <Button size="sm" variant="outline" className="border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white hidden sm:inline-flex">
+                {lang === 'es' ? 'Aplicar' : 'Apply'}
+              </Button>
+            </Link>
+            <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+              {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
+            </Button>
+          </div>
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-6 py-20">
+      <div className="max-w-5xl mx-auto px-6 py-32">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-semibold text-slate-900 mb-6">{t.title}</h1>
           <p className="text-xl text-slate-600 mb-4">{t.subtitle}</p>
           <p className="text-sm text-slate-500">{t.disclaimer}</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <Card className="border-2">
-            <CardContent className="p-8">
-              <div className="w-14 h-14 rounded-2xl bg-[#1e3a5f]/10 flex items-center justify-center mb-4">
-                <BookOpen className="w-7 h-7 text-[#1e3a5f]" />
-              </div>
-              <div className="text-3xl font-bold text-[#1e3a5f] mb-2">{t.course_creation_amount}</div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">{t.course_creation}</h3>
-              <p className="text-slate-600 mb-4">{t.course_creation_desc}</p>
-              <ul className="space-y-2">
-                {t.course_creation_details.map((item, i) => (
-                  <li key={i} className="text-sm text-slate-500">• {item}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2">
-            <CardContent className="p-8">
-              <div className="w-14 h-14 rounded-2xl bg-[#c4933f]/10 flex items-center justify-center mb-4">
-                <Users className="w-7 h-7 text-[#c4933f]" />
-              </div>
-              <div className="text-3xl font-bold text-[#c4933f] mb-2">{t.course_facilitation_amount}</div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">{t.course_facilitation}</h3>
-              <p className="text-slate-600 mb-4">{t.course_facilitation_desc}</p>
-              <ul className="space-y-2">
-                {t.course_facilitation_details.map((item, i) => (
-                  <li key={i} className="text-sm text-slate-500">• {item}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card className="border-2 border-slate-200">
-          <CardContent className="p-8">
-            <div className="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mb-4">
-              <DollarSign className="w-7 h-7 text-green-700" />
+        <div className="space-y-6 mb-16">
+          <div className="flex items-start gap-4 p-6 bg-slate-50 rounded-xl">
+            <div className="w-3 h-3 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
+            <div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">{t.course_creation}</h3>
+              <p className="text-slate-600">{t.course_creation_desc}</p>
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-3">{t.platform}</h3>
-            <p className="text-slate-600 mb-4">{t.platform_desc}</p>
-            <ul className="space-y-2">
-              {t.platform_details.map((item, i) => (
-                <li key={i} className="text-sm text-slate-500">• {item}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+          </div>
+
+          <div className="flex items-start gap-4 p-6 bg-slate-50 rounded-xl">
+            <div className="w-3 h-3 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
+            <div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">{t.course_facilitation}</h3>
+              <p className="text-slate-600">{t.course_facilitation_desc}</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 p-6 bg-slate-50 rounded-xl">
+            <div className="w-3 h-3 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
+            <div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">{t.platform}</h3>
+              <p className="text-slate-600">{t.platform_desc}</p>
+            </div>
+          </div>
+        </div>
 
         <div className="mt-16 text-center p-12 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] rounded-2xl">
           <h3 className="text-2xl font-semibold text-white mb-4">{t.how_to}</h3>
