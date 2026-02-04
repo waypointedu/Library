@@ -201,7 +201,9 @@ export default function InstructorDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-500 mb-1">{t.courses}</p>
-                  <p className="text-3xl font-semibold text-[#1e3a5f]">{courses.length}</p>
+                  <p className="text-3xl font-semibold text-[#1e3a5f]">
+                    {courseInstances.filter(ci => ci.instructor_emails?.includes(user.email)).length}
+                  </p>
                 </div>
                 <FileText className="w-10 h-10 text-[#1e3a5f]/20" />
               </div>
