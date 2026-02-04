@@ -66,90 +66,108 @@ export default function Pathways() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
-      <header className="bg-white border-b border-slate-100 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
-          <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center">
-              <Star className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-semibold text-slate-900 hidden sm:block">Waypoint Institute</span>
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link to={createPageUrl('Home')} className="flex items-center">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" 
+              alt="Waypoint Institute" 
+              className="h-12" 
+            />
           </Link>
-          <LanguageToggle currentLang={lang} onToggle={setLang} />
+
+          <nav className="hidden lg:flex items-center gap-10">
+            <Link to={createPageUrl(`Pathways?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Programas' : 'Programs'}
+            </Link>
+            <Link to={createPageUrl(`About?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Acerca de' : 'About'}
+            </Link>
+            <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Cursos' : 'Courses'}
+            </Link>
+            <Link to={createPageUrl(`HowItWorks?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Cómo Funciona' : 'How it works'}
+            </Link>
+            <Link to={createPageUrl(`Support?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Apoyar' : 'Support'}
+            </Link>
+            <Link to={createPageUrl(`FAQ?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              FAQ
+            </Link>
+            <Link to={createPageUrl(`Contact?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Contacto' : 'Contact'}
+            </Link>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <LanguageToggle currentLang={lang} onToggle={setLang} />
+            <Link to={createPageUrl(`Apply?lang=${lang}`)}>
+              <Button size="sm" variant="outline" className="border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white hidden sm:inline-flex">
+                {lang === 'es' ? 'Aplicar' : 'Apply'}
+              </Button>
+            </Link>
+            <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+              {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
+            </Button>
+          </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
-        <div className="mb-10">
-          <h1 className="text-3xl md:text-4xl font-light text-slate-900 mb-3">{t.title}</h1>
-          <p className="text-xl text-slate-600">{t.subtitle}</p>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-32">
+        <div className="mb-16 text-center">
+          <h1 className="text-4xl md:text-5xl font-light text-slate-900 mb-4">Learning Pathway</h1>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            {lang === 'es' 
+              ? 'Completa el certificado gratuito de Formación Bíblica de Waypoint durante el primer año'
+              : 'Complete Waypoint\'s tuition-free Biblical Formation college certificate during year one'}
+          </p>
         </div>
 
-        {user && myPathways.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-semibold text-slate-900 mb-6">{t.myPathways}</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {myPathways.map(enrollment => {
-                const pathway = pathways.find(p => p.id === enrollment.pathway_id);
-                if (!pathway) return null;
-                const progress = getPathwayProgress(pathway);
-                return (
-                  <Card key={enrollment.id} className="hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-3 mb-4">
-                        <Award className="w-6 h-6 text-amber-600" />
-                        <div className="flex-1">
-                          <h3 className="text-xl font-semibold text-slate-900 mb-1">{pathway[`title_${lang}`] || pathway.title_en}</h3>
-                          <Badge>{pathway.type}</Badge>
-                        </div>
-                      </div>
-                      <p className="text-slate-600 mb-4">{pathway[`description_${lang}`] || pathway.description_en}</p>
-                      <div className="mb-4">
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-slate-500">Progress</span>
-                          <span className="font-semibold text-[#1e3a5f]">{progress}%</span>
-                        </div>
-                        <ProgressBar value={progress} />
-                      </div>
-                      <Link to={createPageUrl(`Pathway?id=${pathway.id}&lang=${lang}`)}>
-                        <Button className="w-full bg-[#1e3a5f]">
-                          {t.viewDetails} <ArrowRight className="w-4 h-4 ml-2" />
+        <div className="space-y-16">
+          {pathways.map((pathway, idx) => (
+            <Card key={pathway.id} className="border-slate-200 overflow-hidden">
+              <CardContent className="p-0">
+                <div className="bg-[#1e3a5f] text-white p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-4xl font-light">Year {idx === 0 ? 'One' : 'Two'}</span>
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-semibold mb-3">{pathway[`title_${lang}`] || pathway.title_en}</h3>
+                  <p className="text-white/90 text-lg leading-relaxed">{pathway[`description_${lang}`] || pathway.description_en}</p>
+                </div>
+
+                {user && enrolledIds.includes(pathway.id) && (
+                  <div className="bg-emerald-50 border-t border-emerald-100 p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-medium text-emerald-800">Your Progress</span>
+                      <span className="text-sm font-semibold text-emerald-900">{getPathwayProgress(pathway)}%</span>
+                    </div>
+                    <ProgressBar value={getPathwayProgress(pathway)} className="mb-4" />
+                    <Link to={createPageUrl(`Pathway?id=${pathway.id}&lang=${lang}`)}>
+                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
+                        Continue Learning <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+
+                {!user && (
+                  <div className="p-6 bg-slate-50 border-t">
+                    <div className="flex gap-3">
+                      <Button onClick={() => base44.auth.redirectToLogin()} className="flex-1 bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                        Sign In to Enroll
+                      </Button>
+                      <Link to={createPageUrl(`Apply?lang=${lang}`)}>
+                        <Button variant="outline" className="border-[#1e3a5f] text-[#1e3a5f]">
+                          Apply Now
                         </Button>
                       </Link>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        <div>
-          <h2 className="text-2xl font-semibold text-slate-900 mb-6">{t.available}</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {pathways.filter(p => !enrolledIds.includes(p.id)).map(pathway => (
-              <Card key={pathway.id} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-3 mb-3">
-                    <Award className="w-6 h-6 text-[#1e3a5f]" />
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-900">{pathway[`title_${lang}`] || pathway.title_en}</h3>
-                      <Badge variant="outline">{pathway.type}</Badge>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-600 mb-4 line-clamp-2">{pathway[`description_${lang}`] || pathway.description_en}</p>
-                  <div className="flex flex-wrap gap-3 text-sm text-slate-500 mb-4">
-                    <span className="flex items-center gap-1"><BookOpen className="w-4 h-4" />{pathway.course_ids?.length || 0} {t.courses}</span>
-                    {pathway.estimated_months > 0 && <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{pathway.estimated_months} {t.months}</span>}
-                  </div>
-                  {user ? (
-                    <Button onClick={() => enrollMutation.mutate(pathway.id)} className="w-full bg-[#1e3a5f]">{t.enroll}</Button>
-                  ) : (
-                    <Button onClick={() => base44.auth.redirectToLogin()} className="w-full bg-[#1e3a5f]">{t.enroll}</Button>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
 

@@ -145,85 +145,82 @@ export default function Home() {
       </header>
 
       {/* Hero Section with Background */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20">
-        {/* Background Image */}
+      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden pt-20">
+        {/* Background Video/Image */}
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop" 
             alt="Mountain landscape" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-8">
+        {/* Simple Centered Text */}
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-12">
             <Globe className="w-4 h-4 text-white" />
-            <span className="text-sm font-medium text-white">
-              {lang === 'es' ? 'A todas las naciones' : 'To all the nations'}
+            <span className="text-sm font-medium text-white italic">
+              to all the nations
             </span>
           </div>
 
-          <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-white mb-6 leading-[1.1]">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[1.15]">
             Toward that which truly{' '}
             <em className="text-[#c4933f] font-serif">is.</em>
           </h1>
-
-          <p className="text-xl md:text-2xl text-white/90 mb-4 font-light max-w-3xl mx-auto">
-            {t.tagline}
-          </p>
-
-          <p className="text-base md:text-lg text-white/80 mb-10 max-w-2xl mx-auto">
-            {t.description}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to={createPageUrl(`Catalog?lang=${lang}`)}>
-              <Button size="lg" className="bg-[#1e3a5f] hover:bg-[#2d5a8a] text-white gap-2 w-full sm:w-auto px-8 h-12 text-base">
-                {lang === 'es' ? 'Explorar Cursos' : 'Browse Courses'}
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
-            <Link to={createPageUrl(`Apply?lang=${lang}`)}>
-              <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-[#1e3a5f] w-full sm:w-auto px-8 h-12 text-base bg-transparent">
-                {lang === 'es' ? 'Aplicar Ahora' : 'Apply Now'}
-              </Button>
-            </Link>
-          </div>
         </div>
+      </section>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
-            <div className="w-1 h-3 bg-white/50 rounded-full" />
+      {/* Tagline & Description Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-2xl md:text-3xl text-slate-700 mb-6 font-light">
+            A tuition-free Christian college education that pursues the Good, the True, and the Beautiful.
+          </h2>
+          <p className="text-lg text-slate-600 leading-relaxed mb-10">
+            Waypoint Institute offers a supporter-funded, tuition-free college pathway in Scripture, doctrine, culture, and mission. Learn through self-paced modules, guided checkpoints, and oral capstones that keep formation personal and flexible.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to={createPageUrl(`Apply?lang=${lang}`)}>
+              <Button size="lg" className="bg-[#1e3a5f] hover:bg-[#2d5a8a] text-white gap-2 w-full sm:w-auto px-8 h-12 text-base">
+                {lang === 'es' ? 'Aplicar' : 'Apply'}
+              </Button>
+            </Link>
+            <Link to={createPageUrl(`Support?lang=${lang}`)}>
+              <Button size="lg" variant="outline" className="border-2 border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white w-full sm:w-auto px-8 h-12 text-base">
+                {lang === 'es' ? 'Apoyar' : 'Support'}
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-24 bg-white">
+      <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-light text-slate-900 mb-4">
-              {lang === 'es' ? 'Una Formación Transformadora' : 'A Transformative Education'}
-            </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              {lang === 'es' 
-                ? 'Diseñado para equipar a la próxima generación de líderes cristianos'
-                : 'Designed to equip the next generation of Christian leaders'}
-            </p>
-          </div>
           <div className="grid md:grid-cols-3 gap-12">
-            {t.features.map((feature, i) => (
-              <div key={i} className="text-center">
-                <div className="w-16 h-16 rounded-full bg-[#1e3a5f] flex items-center justify-center mb-6 mx-auto">
-                  <feature.icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">{feature.title}</h3>
-                <p className="text-slate-600 leading-relaxed">{feature.desc}</p>
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-[#1e3a5f] flex items-center justify-center mb-6 mx-auto">
+                <GraduationCap className="w-8 h-8 text-white" />
               </div>
-            ))}
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Tuition-free college</h3>
+              <p className="text-slate-600 leading-relaxed">Your college-level formation is fully covered by supporters, so tuition, testing, and resources never become barriers.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-[#1e3a5f] flex items-center justify-center mb-6 mx-auto">
+                <BookOpen className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Self-paced flexibility</h3>
+              <p className="text-slate-600 leading-relaxed">Move through modular lessons and shared checkpoints so you can study around real life while staying on track.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-[#1e3a5f] flex items-center justify-center mb-6 mx-auto">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Capstones that form witnesses</h3>
+              <p className="text-slate-600 leading-relaxed">Every course ends with a recorded oral examination so faculty can affirm mastery and shepherd growth.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -270,20 +267,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Mission Statement */}
-      <section className="py-24 bg-white border-y border-slate-200">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-light text-slate-900 mb-6 leading-relaxed">
-            {lang === 'es' 
-              ? '"Nuestro compromiso es formar testigos fieles que busquen la verdad, encarnen la belleza y sirvan al bien común."'
-              : '"Our commitment is to form faithful witnesses who seek truth, embody beauty, and serve the common good."'}
-          </h2>
-          <Link to={createPageUrl(`About?lang=${lang}`)}>
-            <Button variant="link" className="text-[#1e3a5f] text-base">
-              {lang === 'es' ? 'Conoce Nuestra Historia' : 'Learn Our Story'}
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </Link>
+      {/* Who We Serve */}
+      <section className="py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-light text-slate-900 mb-8 text-center">Who we serve</h2>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-[#c4933f] mt-2 flex-shrink-0" />
+              <p className="text-lg text-slate-600">Christians and seekers worldwide who need serious formation without cost.</p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-[#c4933f] mt-2 flex-shrink-0" />
+              <p className="text-lg text-slate-600">Students in a variety of languages and contexts who benefit from self-paced weeks with shared milestones.</p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-[#c4933f] mt-2 flex-shrink-0" />
+              <p className="text-lg text-slate-600">Lay leaders and bi-vocational ministers seeking structured study alongside ministry life.</p>
+            </div>
+          </div>
         </div>
       </section>
 
