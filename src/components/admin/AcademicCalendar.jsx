@@ -405,7 +405,7 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
     if (!isApproved) return false;
     
     const availability = semesterAvailability.find(a => a.instructor_email === u.email);
-    if (!availability || !availability.is_available) return false;
+    if (!availability || availability.max_courses <= 0) return false;
 
     const { currentLoad, maxCourses } = getInstructorLoadAndMax(u.email);
     return currentLoad < maxCourses;
