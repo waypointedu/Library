@@ -18,6 +18,7 @@ function HeroBackground() {
         muted
         loop
         playsInline
+        crossOrigin="anonymous"
         className="absolute inset-0 w-full h-full object-cover"
         onError={(e) => {
           e.target.style.display = 'none';
