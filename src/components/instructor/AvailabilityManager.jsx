@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,12 +10,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar, CheckCircle, XCircle } from "lucide-react";
 
 export default function AvailabilityManager({ user }) {
-  const queryClient = useQueryClient();
+   const [selectedTermId, setSelectedTermId] = useState(null);
+   const queryClient = useQueryClient();
 
-  const { data: terms = [] } = useQuery({
-    queryKey: ['academicTerms'],
-    queryFn: () => base44.entities.AcademicTerm.list('-start_date')
-  });
+   const { data: terms = [] } = useQuery({
+     queryKey: ['academicTerms'],
+     queryFn: () => base44.entities.AcademicTerm.list('-start_date')
+   });
+
+   useEffect(() => {
+     if (terms.length > 0 && !selectedTermId) {
+       setSelectedTermId(terms[0].id);
+     }
+   }, [terms]);
 
   const { data: courses = [] } = useQuery({
     queryKey: ['courses'],

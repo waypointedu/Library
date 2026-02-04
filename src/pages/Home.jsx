@@ -12,16 +12,9 @@ import MobileNav from '@/components/common/MobileNav';
 // Hero Video Component
 function HeroVideo() {
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-      >
-        <source src="https://drive.google.com/uc?export=download&id=1XpFnLNADMDfB0gj0v-RxkpMrJs3KTYbG" type="video/mp4" />
-      </video>
+    <div className="absolute inset-0 z-0 overflow-hidden bg-gradient-to-b from-slate-800 to-slate-900">
+      {/* Fallback gradient background if video doesn't load */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f] via-slate-800 to-black opacity-80" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
     </div>
   );
