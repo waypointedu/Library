@@ -8,7 +8,58 @@ import { ArrowRight, BookOpen, GraduationCap, Users, Globe, Star, ChevronRight }
 import CourseCard from '@/components/courses/CourseCard';
 import LanguageToggle from '@/components/common/LanguageToggle';
 import MobileNav from '@/components/common/MobileNav';
-import HeroSlideshow from '@/components/hero/HeroSlideshow';
+
+// Hero Slideshow Component
+function HeroSlideshow() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  
+  const slides = [
+    { url: 'https://images.unsplash.com/photo-1580837119756-563d608dd119?q=80&w=2070', alt: 'Afghanistan landscape' },
+    { url: 'https://images.unsplash.com/photo-1571336670859-03e82aacc63b?q=80&w=2070', alt: 'Myanmar landscape' },
+    { url: 'https://images.unsplash.com/photo-1518659224226-86915a3a5c32?q=80&w=2070', alt: 'Rural Mexico' },
+    { url: 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?q=80&w=2070', alt: 'Sub-Saharan Africa' }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 z-0">
+      {slides.map((slide, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-2000 ${
+            index === currentSlide ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <div 
+            className="w-full h-full bg-cover bg-center animate-slow-pan"
+            style={{ 
+              backgroundImage: `url(${slide.url})`,
+              backgroundSize: '120%',
+            }}
+          />
+        </div>
+      ))}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+      
+      <style jsx>{`
+        @keyframes slowPan {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-slow-pan {
+          animation: slowPan 20s ease-in-out infinite;
+        }
+      `}</style>
+    </div>
+  );
+}
 
 export default function Home() {
   const [lang, setLang] = useState(() => {
@@ -148,14 +199,14 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section with Slideshow */}
-      <section className="relative h-[85vh] flex flex-col overflow-hidden pt-20">
+      {/* Hero Slideshow Section */}
+      <section className="relative h-[75vh] flex items-end overflow-hidden pt-20">
         {/* Slideshow Background */}
         <HeroSlideshow />
 
         {/* Tagline - Bottom Left */}
-        <div className="absolute bottom-8 left-8 z-20">
-          <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-md border border-white/20 rounded-full px-5 py-2.5">
+        <div className="relative z-10 px-8 pb-12 md:px-12 md:pb-16">
+          <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-sm border border-white/10 rounded-full px-5 py-2">
             <Globe className="w-4 h-4 text-white/90" />
             <span className="text-sm font-medium text-white/90 italic">
               to all the nations
@@ -164,12 +215,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Main Tagline - Below Hero */}
-      <section className="bg-white py-16 border-b border-slate-100">
+      {/* Tagline Section - Below Hero */}
+      <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-slate-900 leading-tight">
             Toward that which truly{' '}
-            <em className="text-[#c4933f] font-serif text-5xl md:text-6xl lg:text-7xl">is.</em>
+            <em className="text-[#c4933f] font-serif">is.</em>
           </h1>
         </div>
       </section>

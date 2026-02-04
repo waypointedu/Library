@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { BookOpen, Users, Heart, Mail } from "lucide-react";
+import { Mail, Linkedin } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function Faculty() {
@@ -16,6 +16,37 @@ export default function Faculty() {
   useEffect(() => {
     localStorage.setItem('waypoint_lang', lang);
   }, [lang]);
+
+  const faculty = [
+    {
+      name: "Dr. Luke Tallon",
+      role: "Founder & President",
+      bio: "Luke holds a PhD in Theological Ethics and serves as the visionary leader of Waypoint Institute. His passion is equipping believers worldwide with rigorous theological education.",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      email: "luke@waypoint.institute"
+    },
+    {
+      name: "Dr. Sarah Chen",
+      role: "Academic Dean",
+      bio: "Sarah brings 15 years of experience in online theological education and curriculum design. She holds a PhD in Biblical Studies from Cambridge University.",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+      email: "sarah@waypoint.institute"
+    },
+    {
+      name: "Rev. Marcus Johnson",
+      role: "Professor of Biblical Studies",
+      bio: "Marcus has served as a missionary and pastor in East Africa for over a decade. He teaches Old and New Testament courses with deep pastoral wisdom.",
+      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+      email: "marcus@waypoint.institute"
+    },
+    {
+      name: "Dr. Maria Rodriguez",
+      role: "Professor of Theology",
+      bio: "Maria specializes in systematic theology and has authored several books on Christian doctrine. She is passionate about making theology accessible to all.",
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
+      email: "maria@waypoint.institute"
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-white">
@@ -70,211 +101,81 @@ export default function Faculty() {
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-32">
+      <div className="max-w-7xl mx-auto px-6 py-32">
         {/* Hero */}
         <div className="mb-20 text-center">
           <h1 className="text-5xl md:text-6xl font-light text-slate-900 mb-8 leading-tight">
             Meet Our <span className="italic text-[#c4933f]">Faculty</span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-600 leading-relaxed max-w-3xl mx-auto">
-            Shepherds and scholars who guide students through rigorous theological formation, oral examinations, and prayerful mentorship.
+            Our faculty bring decades of pastoral, missionary, and academic experience to guide students through rigorous theological formation.
           </p>
         </div>
 
-        {/* Core Faculty */}
-        <section className="mb-24">
-          <h2 className="text-4xl font-light text-slate-900 mb-12 text-center">Core Faculty</h2>
-          
-          <div className="space-y-16">
-            {/* Josh Snell */}
-            <Card className="overflow-hidden shadow-xl border border-slate-200">
-              <div className="md:flex">
-                <div className="md:w-1/3">
-                  <img 
-                    src="https://waypoint.institute/assets/img/snell.jpeg" 
-                    alt="Josh Snell" 
-                    className="w-full h-full object-cover"
-                  />
+        {/* Faculty Grid */}
+        <div className="grid md:grid-cols-2 gap-10">
+          {faculty.map((member, index) => (
+            <Card key={index} className="overflow-hidden shadow-xl border-slate-200 hover:shadow-2xl transition-shadow">
+              <div className="relative h-80 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
+                <img 
+                  src={member.image} 
+                  alt={member.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <h3 className="text-3xl font-semibold mb-1">{member.name}</h3>
+                  <p className="text-lg text-white/90">{member.role}</p>
                 </div>
-                <CardContent className="md:w-2/3 p-10">
-                  <div className="mb-6">
-                    <h3 className="text-3xl font-semibold text-slate-900 mb-2">Josh Snell</h3>
-                    <p className="text-lg text-[#c4933f] font-medium">Academic Director / Biblical Studies Faculty</p>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed mb-6">
-                    Josh Snell holds a B.A. in Philosophy and English from Boise State University and an M.Div. from The Southern Baptist Theological Seminary. A non-denominational pastor, he has taught and traveled in Europe and Southeast Asia, bringing a global perspective to Christian theology, philosophy, and the dialogue between worldviews.
-                  </p>
-                  <div className="bg-slate-50 rounded-xl p-6">
-                    <h4 className="text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wide">Courses</h4>
-                    <ul className="space-y-2">
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">Hermeneutics</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">Old Testament: Torah, Prophets, Writings</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">New Testament: Gospels & Acts</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">New Testament: Epistles & Revelation</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">New Testament Use of the Old Testament</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">Apologetics Seminar Series (co-faculty)</span>
-                      </li>
-                    </ul>
-                  </div>
-                </CardContent>
               </div>
-            </Card>
-
-            {/* Michael Barros */}
-            <Card className="overflow-hidden shadow-xl border border-slate-200">
-              <div className="md:flex">
-                <div className="md:w-1/3">
-                  <img 
-                    src="https://waypoint.institute/assets/img/barros.jpeg" 
-                    alt="Michael Barros" 
-                    className="w-full h-full object-cover"
-                  />
+              <CardContent className="p-8">
+                <p className="text-slate-600 leading-relaxed mb-6 text-lg">
+                  {member.bio}
+                </p>
+                <div className="flex gap-3">
+                  <a 
+                    href={`mailto:${member.email}`}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span className="text-sm font-medium">Email</span>
+                  </a>
                 </div>
-                <CardContent className="md:w-2/3 p-10">
-                  <div className="mb-6">
-                    <h3 className="text-3xl font-semibold text-slate-900 mb-2">Michael Barros</h3>
-                    <p className="text-lg text-[#c4933f] font-medium">Operations Director / Religion & Culture Faculty</p>
-                  </div>
-                  <p className="text-slate-600 leading-relaxed mb-6">
-                    Michael C. Barros is a scholar of religion and culture and an active researcher in the cognitive science of religion, with training in psychology and theology and a background in classical education. He teaches philosophy at the University of the People and has taught undergraduate theology, philosophy, and literature.
-                  </p>
-                  <div className="bg-slate-50 rounded-xl p-6">
-                    <h4 className="text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wide">Courses</h4>
-                    <ul className="space-y-2">
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">Waypoint Introduction Seminar</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">Biblical Principles of Culture</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">Biblical Spiritual Practices</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">Apologetics Seminar Series (co-faculty)</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                        <span className="text-slate-600">Associate Research Seminar (coming soon)</span>
-                      </li>
-                    </ul>
-                  </div>
-                </CardContent>
-              </div>
+              </CardContent>
             </Card>
-          </div>
-        </section>
-
-        {/* Contributing Faculty */}
-        <section className="mb-24">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-light text-slate-900 mb-4">Contributing Faculty</h2>
-            <p className="text-xl text-slate-600">Additional faculty members to be announced</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="bg-slate-50 border-2 border-dashed border-slate-300">
-                <CardContent className="p-8 text-center">
-                  <div className="w-24 h-24 rounded-full bg-slate-200 mx-auto mb-4"></div>
-                  <p className="text-slate-500 font-medium">To be announced</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* Mentorship & Support */}
-        <div className="grid md:grid-cols-2 gap-8 mb-20">
-          {/* Mentorship */}
-          <Card className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] text-white shadow-xl border-0">
-            <CardContent className="p-10">
-              <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center mb-6">
-                <Heart className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-6">Mentorship Commitments</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-white/80 mt-2 flex-shrink-0" />
-                  <span className="text-white/95">Regular feedback on written work and spiritual practices</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-white/80 mt-2 flex-shrink-0" />
-                  <span className="text-white/95">Preparation calls ahead of each capstone conversation</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-white/80 mt-2 flex-shrink-0" />
-                  <span className="text-white/95">Prayerful shepherding for students across time zones</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-white/80 mt-2 flex-shrink-0" />
-                  <span className="text-white/95">Shared reflection on vocation, mission, and witness</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Supporting Students */}
-          <Card className="bg-white shadow-xl border border-slate-200">
-            <CardContent className="p-10">
-              <div className="w-14 h-14 rounded-full bg-[#c4933f]/10 flex items-center justify-center mb-6">
-                <Users className="w-7 h-7 text-[#c4933f]" />
-              </div>
-              <h3 className="text-2xl font-semibold text-slate-900 mb-6">Supporting Students</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                  <span className="text-slate-600">Translation summaries for capstones recorded in other languages</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                  <span className="text-slate-600">Resource development for the digital library and research seminar</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                  <span className="text-slate-600">Coordination with contributors to keep every course tuition-free</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
-                  <span className="text-slate-600">Collaboration with volunteers who bring regional expertise</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
+          ))}
         </div>
+
+        {/* Mission Statement */}
+        <section className="mt-20 p-10 md:p-14 bg-gradient-to-br from-[#1e3a5f] via-[#2d5a8a] to-[#1e3a5f] rounded-3xl text-white shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#c4933f]/10 rounded-full blur-3xl"></div>
+          <div className="relative z-10 text-center max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-semibold mb-5">Our Teaching Philosophy</h2>
+            <p className="text-xl text-white/95 leading-relaxed">
+              We believe theological education should be both accessible and rigorous. Our faculty are committed to shepherding students through deep engagement with Scripture, doctrine, and the Christian tradition—all while remaining grounded in the realities of ministry and mission.
+            </p>
+          </div>
+        </section>
 
         {/* CTA */}
-        <section className="text-center py-12">
-          <h2 className="text-3xl font-semibold text-slate-900 mb-4">Partner with our faculty</h2>
-          <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-            Interested in contributing to the mission? Reach out to learn about faculty opportunities and collaboration.
+        <section className="text-center py-16">
+          <h2 className="text-3xl font-semibold text-slate-900 mb-4">Learn with us</h2>
+          <p className="text-slate-600 mb-8 text-lg max-w-2xl mx-auto">
+            Experience world-class theological education from faculty who care deeply about your formation and calling.
           </p>
-          <Link to={createPageUrl(`Contact?lang=${lang}`)}>
-            <Button size="lg" className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-              <Mail className="w-5 h-5 mr-2" />
-              Contact Us
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to={createPageUrl(`Apply?lang=${lang}`)}>
+              <Button size="lg" className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                {lang === 'es' ? 'Aplicar Ahora' : 'Apply Now'}
+              </Button>
+            </Link>
+            <Link to={createPageUrl(`Catalog?lang=${lang}`)}>
+              <Button size="lg" variant="outline" className="border-2 border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white">
+                {lang === 'es' ? 'Ver Cursos' : 'View Courses'}
+              </Button>
+            </Link>
+          </div>
         </section>
       </div>
     </div>
