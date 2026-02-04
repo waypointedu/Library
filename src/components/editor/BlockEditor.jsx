@@ -138,9 +138,10 @@ export default function BlockEditor({ value = [], onChange, lang = 'en' }) {
                           <div className="flex-1 space-y-3">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                {React.createElement(BLOCK_TYPES[block.type]?.icon || Type, {
-                                  className: `w-4 h-4 text-${BLOCK_TYPES[block.type]?.color || 'slate'}-600`
-                                })}
+                                {block.type === 'text' && <Type className="w-4 h-4 text-blue-600" />}
+                                {block.type === 'video' && <Video className="w-4 h-4 text-purple-600" />}
+                                {block.type === 'image' && <ImageIcon className="w-4 h-4 text-green-600" />}
+                                {block.type === 'richtext' && <FileText className="w-4 h-4 text-amber-600" />}
                                 <span className="text-sm font-medium text-slate-700">
                                   {BLOCK_TYPES[block.type]?.label || block.type}
                                 </span>
@@ -236,17 +237,22 @@ export default function BlockEditor({ value = [], onChange, lang = 'en' }) {
           <div className="space-y-3">
             <p className="text-sm font-medium text-slate-700">{t.selectType}</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              {Object.entries(BLOCK_TYPES).map(([type, { icon: Icon, label, color }]) => (
-                <Button
-                  key={type}
-                  variant="outline"
-                  onClick={() => addBlock(type)}
-                  className="h-auto py-4 flex flex-col gap-2"
-                >
-                  <Icon className={`w-6 h-6 text-${color}-600`} />
-                  <span className="text-xs">{label}</span>
-                </Button>
-              ))}
+              <Button variant="outline" onClick={() => addBlock('text')} className="h-auto py-4 flex flex-col gap-2">
+                <Type className="w-6 h-6 text-blue-600" />
+                <span className="text-xs">Text Block</span>
+              </Button>
+              <Button variant="outline" onClick={() => addBlock('video')} className="h-auto py-4 flex flex-col gap-2">
+                <Video className="w-6 h-6 text-purple-600" />
+                <span className="text-xs">Video Embed</span>
+              </Button>
+              <Button variant="outline" onClick={() => addBlock('image')} className="h-auto py-4 flex flex-col gap-2">
+                <ImageIcon className="w-6 h-6 text-green-600" />
+                <span className="text-xs">Image</span>
+              </Button>
+              <Button variant="outline" onClick={() => addBlock('richtext')} className="h-auto py-4 flex flex-col gap-2">
+                <FileText className="w-6 h-6 text-amber-600" />
+                <span className="text-xs">Rich Text</span>
+              </Button>
             </div>
             <Button variant="ghost" onClick={() => setAddingBlock(false)} className="w-full">
               {lang === 'es' ? 'Cancelar' : 'Cancel'}
