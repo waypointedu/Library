@@ -34,13 +34,17 @@ export default function UserManager({ lang = 'en' }) {
 
   const inviteMutation = useMutation({
     mutationFn: async () => {
-      await base44.users.inviteUser(inviteEmail, inviteRole);
-      alert(lang === 'es' ? 'Invitación enviada' : 'Invitation sent!');
+      return await base44.users.inviteUser(inviteEmail, inviteRole);
     },
     onSuccess: () => {
+      alert(lang === 'es' ? 'Invitación enviada exitosamente' : 'Invitation sent successfully!');
       setInviteEmail('');
       setInviteRole('student');
       queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+    },
+    onError: (error) => {
+      alert(lang === 'es' ? `Error al enviar invitación: ${error.message}` : `Failed to send invitation: ${error.message}`);
+      console.error('Invite error:', error);
     }
   });
 
