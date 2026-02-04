@@ -25,6 +25,21 @@ export default function CourseCalendar({ user, userType, lang = 'en' }) {
     queryFn: () => base44.entities.AcademicTerm.list()
   });
 
+  // Semester colors for legend
+  const semesterColors = {
+    'Spring': 'bg-green-100 border-green-400',
+    'Summer': 'bg-yellow-100 border-yellow-400',
+    'Fall': 'bg-orange-100 border-orange-400',
+    'Winter': 'bg-blue-100 border-blue-400'
+  };
+
+  const getSemesterColor = (termName) => {
+    for (const [key, color] of Object.entries(semesterColors)) {
+      if (termName.includes(key)) return color;
+    }
+    return 'bg-slate-100 border-slate-400';
+  };
+
   const { data: enrollments = [] } = useQuery({
     queryKey: ['enrollments', user?.email],
     queryFn: () => base44.entities.Enrollment.filter({ user_email: user?.email }),
@@ -35,6 +50,7 @@ export default function CourseCalendar({ user, userType, lang = 'en' }) {
   const relevantInstances = instances.filter(instance => {
     if (userType === 'admin') return true;
     if (userType === 'instructor') {
+      // Only show courses instructor is assigned to teach
       return instance.instructor_emails?.includes(user?.email);
     }
     if (userType === 'student') {
@@ -70,7 +86,7 @@ export default function CourseCalendar({ user, userType, lang = 'en' }) {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-4">
           <CardTitle className="flex items-center gap-2">
             <Calendar className="w-5 h-5" />
             {userType === 'instructor' ? 'My Teaching Schedule' : 
@@ -83,6 +99,15 @@ export default function CourseCalendar({ user, userType, lang = 'en' }) {
             </span>
             <Button size="sm" variant="outline" onClick={nextMonth}>&rarr;</Button>
           </div>
+        </div>
+        {/* Legend */}
+        <div className="flex flex-wrap gap-3 text-sm">
+          {Object.entries(semesterColors).map(([season, color]) => (
+            <div key={season} className="flex items-center gap-2">
+              <div className={`w-4 h-4 rounded border-2 ${color}`} />
+              <span className="text-slate-600">{season}</span>
+            </div>
+          ))}
         </div>
       </CardHeader>
       <CardContent>
@@ -113,17 +138,19 @@ export default function CourseCalendar({ user, userType, lang = 'en' }) {
                 {instancesOnDay.length > 0 && (
                   <div className="space-y-1">
                     {instancesOnDay.slice(0, 2).map(instance => {
-                      const course = courses.find(c => c.id === instance.course_id);
-                      return (
-                        <div
-                          key={instance.id}
-                          className="text-xs bg-[#1e3a5f] text-white rounded px-1 py-0.5 truncate"
-                          title={`${course?.[`title_${lang}`] || course?.title_en} - ${instance.cohort_name}`}
-                        >
-                          {instance.cohort_name}
-                        </div>
-                      );
-                    })}
+                           const course = courses.find(c => c.id === instance.course_id);
+                           const term = terms.find(t => t.id === instance.term_id);
+                           const color = getSemesterColor(term?.name || '');
+                           return (
+                             <div
+                               key={instance.id}
+                               className={`text-xs rounded px-1 py-0.5 truncate border-l-2 pl-1 ${color}`}
+                               title={`${course?.[`title_${lang}`] || course?.title_en} - ${instance.cohort_name}`}
+                             >
+                               {instance.cohort_name}
+                             </div>
+                           );
+                         })}
                     {instancesOnDay.length > 2 && (
                       <div className="text-xs text-slate-500">+{instancesOnDay.length - 2} more</div>
                     )}

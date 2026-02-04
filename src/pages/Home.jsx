@@ -9,12 +9,11 @@ import CourseCard from '@/components/courses/CourseCard';
 import LanguageToggle from '@/components/common/LanguageToggle';
 import MobileNav from '@/components/common/MobileNav';
 
-// Hero Video Component
-function HeroVideo() {
+// Hero Background Component
+function HeroBackground() {
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden bg-gradient-to-b from-slate-800 to-slate-900">
-      {/* Fallback gradient background if video doesn't load */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f] via-slate-800 to-black opacity-80" />
+    <div className="absolute inset-0 z-0 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f] via-slate-800 to-black" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
     </div>
   );
@@ -158,10 +157,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Video Section */}
-      <section className="relative h-[75vh] flex items-end overflow-hidden pt-20 bg-gradient-to-br from-[#1e3a5f] via-slate-800 to-black">
-        {/* Video Background */}
-        <HeroVideo />
+      {/* Hero Section */}
+      <section className="relative h-[75vh] flex items-end overflow-hidden pt-20">
+        {/* Background */}
+        <HeroBackground />
 
         {/* Tagline - Bottom Left */}
         <div className="relative z-10 px-8 pb-12 md:px-12 md:pb-16">
