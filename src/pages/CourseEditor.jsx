@@ -19,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Save, Star, Plus, Edit2, Trash2 } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
 import WeekEditor from '@/components/admin/WeekEditor';
+import ImageUploader from '@/components/upload/ImageUploader';
 
 export default function CourseEditor() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -47,7 +48,8 @@ export default function CourseEditor() {
 
   useEffect(() => {
     base44.auth.me().then((u) => {
-      if (u.role !== 'admin') {
+      const isAuthorized = u.role === 'admin' || u.user_type === 'admin' || u.user_type === 'instructor';
+      if (!isAuthorized) {
         window.location.href = createPageUrl('Dashboard');
       }
       setUser(u);
@@ -118,7 +120,14 @@ export default function CourseEditor() {
     },
     onSuccess: (savedCourse) => {
       queryClient.invalidateQueries({ queryKey: ['allCourses'] });
-      window.location.href = createPageUrl(`Course?id=${savedCourse.id || courseId}&lang=${lang}`);
+      const newCourseId = savedCourse.id || courseId;
+      if (!courseId) {
+        // New course - navigate to editor with ID so they can add weeks
+        window.location.href = createPageUrl(`CourseEditor?id=${newCourseId}&lang=${lang}`);
+      } else {
+        // Existing course - stay on editor
+        queryClient.invalidateQueries({ queryKey: ['course', courseId] });
+      }
     }
   });
 
@@ -156,7 +165,7 @@ export default function CourseEditor() {
       basicInfo: "Basic Information",
       titleLabel: "Course Title",
       descLabel: "Description",
-      coverUrl: "Cover Image URL",
+      coverUrl: "Cover Image",
       tags: "Tags (comma-separated)",
       status: "Status",
       credits: "Credits",
@@ -174,7 +183,7 @@ export default function CourseEditor() {
       basicInfo: "Información Básica",
       titleLabel: "Título del Curso",
       descLabel: "Descripción",
-      coverUrl: "URL de Imagen",
+      coverUrl: "Imagen de Portada",
       tags: "Etiquetas (separadas por comas)",
       status: "Estado",
       credits: "Créditos",
@@ -395,12 +404,11 @@ export default function CourseEditor() {
                     onChange={(e) => updateField('duration_weeks', parseFloat(e.target.value))}
                   />
                 </div>
-                <div>
-                  <Label>{t.coverUrl}</Label>
-                  <Input
+                <div className="md:col-span-2">
+                  <ImageUploader 
+                    label={t.coverUrl}
                     value={formData.cover_image_url}
-                    onChange={(e) => updateField('cover_image_url', e.target.value)}
-                    placeholder="https://..."
+                    onChange={(url) => updateField('cover_image_url', url)}
                   />
                 </div>
               </div>
