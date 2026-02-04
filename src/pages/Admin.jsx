@@ -14,6 +14,7 @@ import PathwayManager from '@/components/admin/PathwayManager';
 import DetailedAnalytics from '@/components/admin/DetailedAnalytics';
 import ApplicationsManager from '@/components/admin/ApplicationsManager';
 import AcademicCalendar from '@/components/admin/AcademicCalendar';
+import SemesterManager from '@/components/admin/SemesterManager';
 
 export default function Admin() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -138,7 +139,10 @@ export default function Admin() {
 
           {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="calendar">
-              <AcademicCalendar lang={lang} />
+              <div className="space-y-8">
+                <SemesterManager />
+                <AcademicCalendar lang={lang} />
+              </div>
             </TabsContent>
           )}
 
