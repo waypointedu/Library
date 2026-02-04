@@ -24,18 +24,6 @@ export default function CourseInstanceEditor({ instanceId, courseId, termId, onC
     enabled: !!instanceId
   });
 
-  const { data: volunteers = [] } = useQuery({
-    queryKey: ['volunteers', instanceId],
-    queryFn: async () => {
-      const avail = await base44.entities.InstructorAvailability.filter({ 
-        course_instance_id: instanceId,
-        volunteered: true
-      });
-      return avail;
-    },
-    enabled: !!instanceId
-  });
-
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
     queryFn: () => base44.entities.User.list()
@@ -48,6 +36,12 @@ export default function CourseInstanceEditor({ instanceId, courseId, termId, onC
       return courses[0];
     },
     enabled: !!courseId
+  });
+
+  const { data: semesterAvailability = [] } = useQuery({
+    queryKey: ['semesterAvailability', termId],
+    queryFn: () => base44.entities.InstructorSemesterAvailability.filter({ term_id: termId }),
+    enabled: !!termId
   });
 
   const addInstructorMutation = useMutation({
@@ -76,27 +70,17 @@ export default function CourseInstanceEditor({ instanceId, courseId, termId, onC
     }
   });
 
-  const approveVolunteerMutation = useMutation({
-    mutationFn: async (volunteerId) => {
-      const volunteer = volunteers.find(v => v.id === volunteerId);
-      return base44.entities.InstructorAvailability.update(volunteerId, {
-        status: 'approved'
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['volunteers'] });
-    }
-  });
-
-  const availableInstructors = users.filter(u => 
-    u.user_type === 'instructor' && 
-    !selectedInstructor &&
-    (u.approved_courses || []).includes(courseId)
-  );
-
-  const volunteerUsers = volunteers.map(v => {
-    const user = users.find(u => u.email === v.instructor_email);
-    return { ...v, instructor: user };
+  // Filter instructors: approved for course AND available for semester
+  const availableInstructors = users.filter(u => {
+    if (u.user_type !== 'instructor') return false;
+    if (!(u.approved_courses || []).includes(courseId)) return false;
+    
+    const availability = semesterAvailability.find(a => a.instructor_email === u.email);
+    if (!availability || !availability.is_available) return false;
+    
+    // Check course capacity
+    const assignedCount = (instance.instructor_emails || []).length;
+    return assignedCount < availability.max_courses;
   });
 
   if (!instance || !course) {
@@ -127,33 +111,7 @@ export default function CourseInstanceEditor({ instanceId, courseId, termId, onC
                   </DialogHeader>
                   <div className="space-y-3">
                     <div>
-                      <Label>From Volunteers</Label>
-                      <div className="mt-2 space-y-2">
-                        {volunteerUsers.map(v => (
-                          <button
-                            key={v.id}
-                            onClick={() => {
-                              addInstructorMutation.mutate();
-                              setSelectedInstructor(v.instructor_email);
-                            }}
-                            className="w-full text-left p-3 rounded-lg border hover:bg-slate-50 transition-colors"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="font-medium">{v.instructor.full_name}</p>
-                                <p className="text-sm text-slate-600">{v.instructor.email}</p>
-                              </div>
-                              <Badge className="bg-green-100 text-green-800">
-                                {v.status === 'approved' ? 'Approved' : 'Pending'}
-                              </Badge>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="border-t pt-3">
-                      <Label>Or select any approved instructor</Label>
+                      <Label>Available Instructors (Approved & Available)</Label>
                       <Select value={selectedInstructor} onValueChange={setSelectedInstructor}>
                         <SelectTrigger className="mt-2">
                           <SelectValue placeholder="Select instructor..." />
@@ -161,11 +119,14 @@ export default function CourseInstanceEditor({ instanceId, courseId, termId, onC
                         <SelectContent>
                           {availableInstructors.map(instructor => (
                             <SelectItem key={instructor.id} value={instructor.email}>
-                              {instructor.full_name} - {instructor.email}
+                              {instructor.full_name}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
+                      {availableInstructors.length === 0 && (
+                        <p className="text-sm text-amber-600 mt-2">No instructors available (must be approved for this course AND available this semester)</p>
+                      )}
                       {selectedInstructor && (
                         <Button 
                           className="w-full mt-3 bg-[#1e3a5f]"
@@ -202,30 +163,7 @@ export default function CourseInstanceEditor({ instanceId, courseId, termId, onC
             </div>
           </div>
 
-          {/* Pending Volunteers */}
-          {volunteerUsers.some(v => v.status === 'pending') && (
-            <div className="border-t pt-4">
-              <h3 className="font-semibold text-slate-900 mb-3">Pending Volunteers</h3>
-              <div className="space-y-2">
-                {volunteerUsers.filter(v => v.status === 'pending').map(v => (
-                  <div key={v.id} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
-                    <div>
-                      <p className="font-medium">{v.instructor.full_name}</p>
-                      <p className="text-sm text-slate-600">{v.instructor.email}</p>
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={() => approveVolunteerMutation.mutate(v.id)}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      Approve
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+
         </CardContent>
       </Card>
     </div>
