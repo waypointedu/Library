@@ -48,60 +48,60 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import About from './pages/About';
+import AccountSettings from './pages/AccountSettings';
 import Achievements from './pages/Achievements';
 import Admin from './pages/Admin';
+import Apply from './pages/Apply';
 import Catalog from './pages/Catalog';
+import Contact from './pages/Contact';
 import Course from './pages/Course';
 import CourseEditor from './pages/CourseEditor';
 import CourseForum from './pages/CourseForum';
 import Dashboard from './pages/Dashboard';
+import FAQ from './pages/FAQ';
 import ForumPost from './pages/ForumPost';
 import Gradebook from './pages/Gradebook';
 import Home from './pages/Home';
+import HowItWorks from './pages/HowItWorks';
 import InstructorDashboard from './pages/InstructorDashboard';
 import InstructorGradebook from './pages/InstructorGradebook';
 import Lesson from './pages/Lesson';
 import Library from './pages/Library';
 import Pathway from './pages/Pathway';
 import Pathways from './pages/Pathways';
+import Profile from './pages/Profile';
+import Support from './pages/Support';
 import Transcript from './pages/Transcript';
 import Week from './pages/Week';
-import Apply from './pages/Apply';
-import HowItWorks from './pages/HowItWorks';
-import Support from './pages/Support';
-import FAQ from './pages/FAQ';
-import Contact from './pages/Contact';
-import Profile from './pages/Profile';
-import AccountSettings from './pages/AccountSettings';
 
 
 export const PAGES = {
     "About": About,
+    "AccountSettings": AccountSettings,
     "Achievements": Achievements,
     "Admin": Admin,
+    "Apply": Apply,
     "Catalog": Catalog,
+    "Contact": Contact,
     "Course": Course,
     "CourseEditor": CourseEditor,
     "CourseForum": CourseForum,
     "Dashboard": Dashboard,
+    "FAQ": FAQ,
     "ForumPost": ForumPost,
     "Gradebook": Gradebook,
     "Home": Home,
+    "HowItWorks": HowItWorks,
     "InstructorDashboard": InstructorDashboard,
     "InstructorGradebook": InstructorGradebook,
     "Lesson": Lesson,
     "Library": Library,
     "Pathway": Pathway,
     "Pathways": Pathways,
+    "Profile": Profile,
+    "Support": Support,
     "Transcript": Transcript,
     "Week": Week,
-    "Apply": Apply,
-    "HowItWorks": HowItWorks,
-    "Support": Support,
-    "FAQ": FAQ,
-    "Contact": Contact,
-    "Profile": Profile,
-    "AccountSettings": AccountSettings,
 }
 
 export const pagesConfig = {

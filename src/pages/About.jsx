@@ -15,83 +15,6 @@ export default function About() {
     localStorage.setItem('waypoint_lang', lang);
   }, [lang]);
 
-  const text = {
-    en: {
-      title: "About Waypoint Institute",
-      mission_title: "Mission",
-      mission_text: "Guided by the Great Commission (Matthew 28:18–20), we go and make disciples of all nations through accessible, serious Christian learning.",
-      ethos_title: "Ethos",
-      ethos_items: [
-        {
-          title: "Christocentrism",
-          desc: "Jesus is the center of history, our thinking, and every decision we make.",
-          icon: Cross
-        },
-        {
-          title: "Biblical & Useful",
-          desc: "We pursue truth wherever it is honorable, excellent, and expedient for discipleship.",
-          icon: BookOpen
-        },
-        {
-          title: "Accessibility",
-          desc: "We dismantle barriers—academic, cultural, or technological—so learners can encounter Christ together.",
-          icon: Globe
-        }
-      ],
-      faith_title: "Statement of Faith",
-      creed_title: "The Apostles' Creed",
-      creed: [
-        "I believe in God, the Father Almighty, Creator of heaven and earth.",
-        "I believe in Jesus Christ, His only Son, our Lord, who was conceived by the Holy Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, died, and was buried; He descended to the dead. On the third day He rose again; He ascended into heaven, He is seated at the right hand of the Father, and He will come to judge the living and the dead.",
-        "I believe in the Holy Spirit, the holy catholic Church, the communion of saints, the forgiveness of sins, the resurrection of the body, and the life everlasting. Amen."
-      ],
-      who_we_serve: "Who We Serve",
-      who_items: [
-        "Christians and seekers worldwide who need serious formation without cost.",
-        "Students in a variety of languages and contexts who benefit from self-paced weeks with shared milestones.",
-        "Lay leaders and bi-vocational ministers seeking structured study alongside ministry life."
-      ]
-    },
-    es: {
-      title: "Acerca de Waypoint Institute",
-      mission_title: "Misión",
-      mission_text: "Guiados por la Gran Comisión (Mateo 28:18–20), vamos y hacemos discípulos de todas las naciones a través del aprendizaje cristiano accesible y serio.",
-      ethos_title: "Ethos",
-      ethos_items: [
-        {
-          title: "Cristocentrismo",
-          desc: "Jesús es el centro de la historia, nuestro pensamiento y cada decisión que tomamos.",
-          icon: Cross
-        },
-        {
-          title: "Bíblico y Útil",
-          desc: "Perseguimos la verdad dondequiera que sea honorable, excelente y conveniente para el discipulado.",
-          icon: BookOpen
-        },
-        {
-          title: "Accesibilidad",
-          desc: "Desmontamos barreras—académicas, culturales o tecnológicas—para que los estudiantes puedan encontrar a Cristo juntos.",
-          icon: Globe
-        }
-      ],
-      faith_title: "Declaración de Fe",
-      creed_title: "El Credo de los Apóstoles",
-      creed: [
-        "Creo en Dios, Padre todopoderoso, Creador del cielo y de la tierra.",
-        "Creo en Jesucristo, su único Hijo, nuestro Señor, que fue concebido por obra y gracia del Espíritu Santo, nació de Santa María Virgen, padeció bajo el poder de Poncio Pilato, fue crucificado, muerto y sepultado, descendió a los infiernos, al tercer día resucitó de entre los muertos, subió a los cielos y está sentado a la derecha de Dios, Padre todopoderoso. Desde allí ha de venir a juzgar a vivos y muertos.",
-        "Creo en el Espíritu Santo, la santa Iglesia católica, la comunión de los santos, el perdón de los pecados, la resurrección de la carne y la vida eterna. Amén."
-      ],
-      who_we_serve: "A Quién Servimos",
-      who_items: [
-        "Cristianos y buscadores de todo el mundo que necesitan formación seria sin costo.",
-        "Estudiantes en diversos idiomas y contextos que se benefician de semanas a su propio ritmo con hitos compartidos.",
-        "Líderes laicos y ministros bivocacionales que buscan estudio estructurado junto con la vida ministerial."
-      ]
-    }
-  };
-
-  const t = text[lang];
-
   return (
     <div className="min-h-screen bg-white">
       <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200">
@@ -143,68 +66,132 @@ export default function About() {
       </header>
 
       <div className="max-w-4xl mx-auto px-6 py-32">
-        <h1 className="text-5xl font-semibold text-slate-900 mb-16 text-center">{t.title}</h1>
+        <div className="mb-16">
+          <h1 className="text-4xl md:text-5xl font-light text-slate-900 mb-6">Mission, Ethos, and Faith</h1>
+          <p className="text-xl text-slate-600 leading-relaxed">
+            Waypoint Institute exists to obey the Great Commission through a tuition-free Christian college education. Our students pursue the Good, the True, and the Beautiful together, rooted in Christ and welcoming disciples from every nation.
+          </p>
+          <div className="mt-8 p-6 bg-slate-50 rounded-xl border-l-4 border-[#1e3a5f]">
+            <p className="text-lg text-slate-700 italic">
+              "Go therefore and make disciples of all nations… teaching them to observe all that I have commanded you."
+            </p>
+            <p className="text-sm text-slate-500 mt-2">Matthew 28:19–20</p>
+          </div>
+        </div>
 
         {/* Mission */}
-        <div className="mb-16">
-          <div className="flex items-center gap-3 mb-4">
-            <Heart className="w-8 h-8 text-[#c4933f]" />
-            <h2 className="text-3xl font-semibold text-slate-900">{t.mission_title}</h2>
+        <section className="mb-16">
+          <h2 className="text-3xl font-light text-slate-900 mb-6">Our Mission</h2>
+          <div className="space-y-4 text-slate-600 leading-relaxed">
+            <p>
+              Waypoint Institute forms resilient disciples who know Scripture, love the church, and live as witnesses wherever God places them. We do this through tuition-free college courses, pastoral presence, and capstone conversations that call each student to faithful obedience.
+            </p>
+            <p>
+              We steward contributor support to offer rigorous, college-level theological learning without barriers so believers in restricted or resource-limited contexts can be trained for gospel ministry.
+            </p>
+            <h3 className="text-xl font-semibold text-slate-900 mt-8 mb-3">How Mission Shapes the Year</h3>
+            <ul className="space-y-2">
+              <li className="flex items-start gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
+                <span>Courses run on a shared calendar with self-paced weeks and clearly defined checkpoints.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
+                <span>Capstone dialogues function as oral examinations to affirm mastery and shepherd growth.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
+                <span>Future associate pathways will invite students into collaborative research and witness.</span>
+              </li>
+            </ul>
           </div>
-          <p className="text-lg text-slate-600 leading-relaxed">{t.mission_text}</p>
-        </div>
+        </section>
+
+        {/* Tuition Free */}
+        <section className="mb-16 p-8 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] rounded-2xl text-white">
+          <h2 className="text-2xl font-semibold mb-3">Always tuition-free, assessment costs covered</h2>
+          <p className="text-white/90 leading-relaxed">
+            No application fees. No tuition bills. No charges for exams or capstones. Supporters underwrite every course so you never enter a credit card number for your college education, to study, demonstrate mastery, or graduate.
+          </p>
+        </section>
 
         {/* Ethos */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-semibold text-slate-900 mb-8">{t.ethos_title}</h2>
-          <div className="space-y-6">
-            {t.ethos_items.map((item, i) => (
-              <Card key={i}>
-                <CardContent className="p-6">
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-xl bg-[#1e3a5f]/10 flex items-center justify-center">
-                        <item.icon className="w-6 h-6 text-[#1e3a5f]" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-slate-900 mb-2">{item.title}</h3>
-                      <p className="text-slate-600">{item.desc}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+        <section className="mb-16">
+          <h2 className="text-3xl font-light text-slate-900 mb-6">Our Ethos</h2>
+          <p className="text-slate-600 mb-8">These commitments flow from Christ and guide every lesson, discussion, and decision.</p>
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-2xl font-semibold text-slate-900 mb-3">Christocentrism</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Jesus is the center of history, the lens for Scripture, and the anchor of our hope. Every course, conversation, and assessment aims to magnify His lordship.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-2xl font-semibold text-slate-900 mb-3">Pursuit of Truth</h3>
+              <p className="text-slate-600 leading-relaxed italic mb-2">
+                "Whatever is true, whatever is honorable… if there is any excellence, if there is anything worthy of praise, think about these things."
+              </p>
+              <p className="text-sm text-slate-500">(Philippians 4:8)</p>
+            </div>
+            <div>
+              <h3 className="text-2xl font-semibold text-slate-900 mb-3">Radical Accessibility</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Jesus warned the Pharisees against shutting people out of the kingdom (Matthew 23:13). We do the opposite—removing financial, cultural, and technological barriers so every willing disciple can learn freely.
+              </p>
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* Faith */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-semibold text-slate-900 mb-8">{t.faith_title}</h2>
-          <Card className="bg-slate-50 border-2">
-            <CardContent className="p-8">
-              <h3 className="text-xl font-serif italic text-[#1e3a5f] mb-6">{t.creed_title}</h3>
-              <div className="space-y-4">
-                {t.creed.map((line, i) => (
-                  <p key={i} className="text-slate-700 leading-relaxed">{line}</p>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Who We Serve */}
-        <div>
-          <h2 className="text-3xl font-semibold text-slate-900 mb-8">{t.who_we_serve}</h2>
-          <div className="space-y-4">
-            {t.who_items.map((item, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#c4933f] mt-2 flex-shrink-0" />
-                <p className="text-lg text-slate-600">{item}</p>
-              </div>
-            ))}
+        {/* Faith Statement */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-light text-slate-900 mb-6">Mere-Christian Statement of Faith</h2>
+          <p className="text-slate-600 mb-6">
+            We confess the Apostles' Creed with the historic church, standing shoulder to shoulder with believers across traditions and centuries.
+          </p>
+          <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
+            <h3 className="text-xl font-semibold text-slate-900 mb-6">The Apostles' Creed</h3>
+            <div className="text-slate-700 leading-relaxed space-y-3">
+              <p>I believe in God, the Father almighty,</p>
+              <p className="ml-4">maker of heaven and earth.</p>
+              <p className="mt-4">And in Jesus Christ, his only Son, our Lord,</p>
+              <p className="ml-4">who was conceived by the Holy Spirit,</p>
+              <p className="ml-4">born of the Virgin Mary,</p>
+              <p className="ml-4">suffered under Pontius Pilate,</p>
+              <p className="ml-4">was crucified, died, and was buried;</p>
+              <p className="ml-4">he descended to the dead.</p>
+              <p className="ml-4">On the third day he rose again;</p>
+              <p className="ml-4">he ascended into heaven,</p>
+              <p className="ml-4">he is seated at the right hand of the Father,</p>
+              <p className="ml-4">and he will come again to judge the living and the dead.</p>
+              <p className="mt-4">I believe in the Holy Spirit,</p>
+              <p className="ml-4">the holy catholic Church,</p>
+              <p className="ml-4">the communion of saints,</p>
+              <p className="ml-4">the forgiveness of sins,</p>
+              <p className="ml-4">the resurrection of the body,</p>
+              <p className="ml-4">and the life everlasting. Amen.</p>
+            </div>
           </div>
-        </div>
+        </section>
+
+        {/* CTA */}
+        <section className="text-center py-12">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">Join our community</h2>
+          <p className="text-slate-600 mb-8">
+            Step into a learning community that is Christ-centered, truth-seeking, and globally accessible. Biblical Formation begins in 2025.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to={createPageUrl(`Apply?lang=${lang}`)}>
+              <Button size="lg" className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                {lang === 'es' ? 'Aplicar' : 'Apply'}
+              </Button>
+            </Link>
+            <Link to={createPageUrl(`Support?lang=${lang}`)}>
+              <Button size="lg" variant="outline" className="border-2 border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white">
+                {lang === 'es' ? 'Apoyar educación sin matrícula' : 'Support tuition-free college'}
+              </Button>
+            </Link>
+          </div>
+        </section>
       </div>
     </div>
   );
