@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Star, ArrowLeft, BookOpen, FileText, MessageSquare, ClipboardCheck } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
 import WrittenAssignmentStudent from '@/components/assignments/WrittenAssignmentStudent';
@@ -15,6 +16,7 @@ export default function Week() {
   const urlParams = new URLSearchParams(window.location.search);
   const weekId = urlParams.get('id');
   const [lang, setLang] = useState(urlParams.get('lang') || localStorage.getItem('waypoint_lang') || 'en');
+  const [courseLang, setCourseLang] = useState(urlParams.get('courseLang') || 'en');
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -68,11 +70,19 @@ export default function Week() {
     );
   }
 
-  const title = week[`title_${lang}`] || week.title_en;
-  const overview = week[`overview_${lang}`] || week.overview_en;
-  const contentBlocks = week[`content_blocks_${lang}`] || week.content_blocks_en || [];
-  const lessonContent = week[`lesson_content_${lang}`] || week.lesson_content_en;
-  const readingAssignment = week[`reading_assignment_${lang}`] || week.reading_assignment_en;
+  const availableLanguages = course?.language_availability || ['en'];
+  
+  useEffect(() => {
+    if (course && availableLanguages.length > 0 && !availableLanguages.includes(courseLang)) {
+      setCourseLang(availableLanguages[0]);
+    }
+  }, [course, availableLanguages]);
+
+  const title = week[`title_${courseLang}`] || week.title_en;
+  const overview = week[`overview_${courseLang}`] || week.overview_en;
+  const contentBlocks = week[`content_blocks_${courseLang}`] || week.content_blocks_en || [];
+  const lessonContent = week[`lesson_content_${courseLang}`] || week.lesson_content_en;
+  const readingAssignment = week[`reading_assignment_${courseLang}`] || week.reading_assignment_en;
 
   const getVideoEmbedUrl = (url) => {
     if (!url) return '';
@@ -115,7 +125,23 @@ export default function Week() {
           <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
             <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-10" />
           </Link>
-          <LanguageToggle currentLang={lang} onToggle={setLang} />
+          <div className="flex items-center gap-4">
+            {availableLanguages.length > 1 && (
+              <Select value={courseLang} onValueChange={(val) => setCourseLang(val)}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableLanguages.includes('en') && <SelectItem value="en">English</SelectItem>}
+                  {availableLanguages.includes('es') && <SelectItem value="es">Spanish</SelectItem>}
+                  {availableLanguages.includes('ps') && <SelectItem value="ps">Pashtu</SelectItem>}
+                  {availableLanguages.includes('fa') && <SelectItem value="fa">Persian</SelectItem>}
+                  {availableLanguages.includes('km') && <SelectItem value="km">Khmer</SelectItem>}
+                </SelectContent>
+              </Select>
+            )}
+            <LanguageToggle currentLang={lang} onToggle={setLang} />
+          </div>
         </div>
       </header>
 

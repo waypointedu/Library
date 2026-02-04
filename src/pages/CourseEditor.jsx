@@ -31,8 +31,14 @@ export default function CourseEditor() {
   const [formData, setFormData] = useState({
     title_en: '',
     title_es: '',
+    title_ps: '',
+    title_fa: '',
+    title_km: '',
     description_en: '',
     description_es: '',
+    description_ps: '',
+    description_fa: '',
+    description_km: '',
     cover_image_url: '',
     tags: [],
     status: 'draft',
@@ -41,8 +47,14 @@ export default function CourseEditor() {
     duration_weeks: 16,
     prerequisites_en: '',
     prerequisites_es: '',
+    prerequisites_ps: '',
+    prerequisites_fa: '',
+    prerequisites_km: '',
     learning_outcomes_en: [],
     learning_outcomes_es: [],
+    learning_outcomes_ps: [],
+    learning_outcomes_fa: [],
+    learning_outcomes_km: [],
     order_index: 0
   });
 
@@ -234,8 +246,11 @@ export default function CourseEditor() {
         <form onSubmit={handleSubmit}>
           <Tabs defaultValue="en" className="mb-6">
             <TabsList>
-              <TabsTrigger value="en">{t.english}</TabsTrigger>
-              <TabsTrigger value="es">{t.spanish}</TabsTrigger>
+              <TabsTrigger value="en">English</TabsTrigger>
+              <TabsTrigger value="es">Spanish</TabsTrigger>
+              <TabsTrigger value="ps">Pashtu</TabsTrigger>
+              <TabsTrigger value="fa">Persian</TabsTrigger>
+              <TabsTrigger value="km">Khmer</TabsTrigger>
             </TabsList>
 
             <TabsContent value="en" className="space-y-6 mt-6">
@@ -366,6 +381,75 @@ export default function CourseEditor() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {['ps', 'fa', 'km'].map(langCode => {
+              const langNames = { ps: 'Pashtu', fa: 'Persian', km: 'Khmer' };
+              return (
+                <TabsContent key={langCode} value={langCode} className="space-y-6 mt-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>{t.basicInfo} ({langNames[langCode].toUpperCase()})</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label>{t.titleLabel}</Label>
+                        <Input
+                          value={formData[`title_${langCode}`] || ''}
+                          onChange={(e) => updateField(`title_${langCode}`, e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label>{t.descLabel}</Label>
+                        <Textarea
+                          value={formData[`description_${langCode}`] || ''}
+                          onChange={(e) => updateField(`description_${langCode}`, e.target.value)}
+                          rows={4}
+                        />
+                      </div>
+                      <div>
+                        <Label>{t.prerequisites}</Label>
+                        <Textarea
+                          value={formData[`prerequisites_${langCode}`] || ''}
+                          onChange={(e) => updateField(`prerequisites_${langCode}`, e.target.value)}
+                          rows={3}
+                        />
+                      </div>
+                      <div>
+                        <Label>{t.outcomes}</Label>
+                        <div className="space-y-2">
+                          {(formData[`learning_outcomes_${langCode}`] || []).map((outcome, i) => (
+                            <div key={i} className="flex gap-2">
+                              <Input
+                                value={outcome}
+                                onChange={(e) => updateOutcome(langCode, i, e.target.value)}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => removeOutcome(langCode, i)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addOutcome(langCode)}
+                            className="w-full"
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            {t.addOutcome}
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              );
+            })}
           </Tabs>
 
           {/* Settings */}
