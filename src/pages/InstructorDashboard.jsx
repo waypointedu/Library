@@ -90,13 +90,16 @@ export default function InstructorDashboard() {
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center">
-              <Star className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-semibold text-slate-900">Waypoint Institute</span>
+            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-10" />
           </Link>
           <div className="flex items-center gap-4">
             <LanguageToggle currentLang={lang} onToggle={setLang} />
+            <Link to={createPageUrl(`InstructorGradebook?lang=${lang}`)}>
+              <Button variant="outline" size="sm">
+                <ClipboardCheck className="w-4 h-4 mr-1" />
+                {lang === 'es' ? 'Calificaciones' : 'Grades'}
+              </Button>
+            </Link>
             <Link to={createPageUrl(`Admin?lang=${lang}`)}>
               <Button variant="outline" size="sm">
                 {lang === 'es' ? 'Gestión' : 'Manage'}
@@ -107,7 +110,12 @@ export default function InstructorDashboard() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-light text-slate-900 mb-8">{t.title}</h1>
+        <div className="mb-8">
+          <h1 className="text-3xl font-light text-slate-900 mb-2">{t.title}</h1>
+          <p className="text-slate-600">
+            {lang === 'es' ? 'Gestiona calificaciones, foros y contenido del curso' : 'Manage grades, forums, and course content'}
+          </p>
+        </div>
 
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
           <Card>
@@ -147,6 +155,35 @@ export default function InstructorDashboard() {
           </Card>
         </div>
 
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-6">{t.courses}</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {courses.map(course => (
+              <Card key={course.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-lg">{course[`title_${lang}`] || course.title_en}</CardTitle>
+                  <Badge variant="outline" className="w-fit">
+                    {course.status}
+                  </Badge>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Link to={createPageUrl(`Course?id=${course.id}&lang=${lang}`)}>
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Eye className="w-4 h-4 mr-2" />
+                      {t.viewCourse}
+                    </Button>
+                  </Link>
+                  <Link to={createPageUrl(`Admin?tab=courses&lang=${lang}`)}>
+                    <Button size="sm" className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                      {t.editCourse}
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
@@ -168,10 +205,10 @@ export default function InstructorDashboard() {
                           {new Date(sub.submitted_date).toLocaleDateString()}
                         </p>
                       </div>
-                      <Link to={createPageUrl(`Admin?lang=${lang}`)}>
-                        <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
-                          {t.gradeNow}
-                        </Button>
+                      <Link to={createPageUrl(`InstructorGradebook?course_id=${sub.course_id}&lang=${lang}`)}>
+                       <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
+                         {t.gradeNow}
+                       </Button>
                       </Link>
                     </div>
                   ))}
