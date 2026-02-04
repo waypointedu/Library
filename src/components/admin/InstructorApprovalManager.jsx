@@ -24,8 +24,8 @@ export default function InstructorApprovalManager() {
   const instructors = users.filter(u => u.user_type === 'instructor');
 
   const updateApprovedCoursesMutation = useMutation({
-    mutationFn: async ({ email, courseIds }) => {
-      return base44.auth.updateMe({ approved_courses: courseIds }, email);
+    mutationFn: async ({ userId, courseIds }) => {
+      return base44.entities.User.update(userId, { approved_courses: courseIds });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allUsers'] });
@@ -38,7 +38,7 @@ export default function InstructorApprovalManager() {
       ? currentApproved.filter(id => id !== courseId)
       : [...currentApproved, courseId];
     
-    updateApprovedCoursesMutation.mutate({ email: instructor.email, courseIds: updated });
+    updateApprovedCoursesMutation.mutate({ userId: instructor.id, courseIds: updated });
   };
 
   return (
