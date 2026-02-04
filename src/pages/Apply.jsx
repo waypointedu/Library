@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -11,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
-import { base44 } from '@/api/base44Client';
 
 export default function Apply() {
   const [lang, setLang] = useState(() => {
