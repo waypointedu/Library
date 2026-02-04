@@ -70,23 +70,39 @@ export default function Transcript() {
 
   const enrolledCourses = enrollments.map(e => {
     const course = allCourses.find(c => c.id === e.course_id);
-    const courseProgress = allProgress.filter(p => p.course_id === e.course_id);
-    const completedLessons = courseProgress.filter(p => p.completed).length;
-    const courseQuizzes = allQuizAttempts.filter(qa => qa.course_id === e.course_id && qa.passed);
+    const courseQuizzes = allQuizAttempts.filter(qa => qa.course_id === e.course_id);
+    const passedQuizzes = courseQuizzes.filter(qa => qa.passed);
+    
+    // Calculate grade based on quiz performance
+    const avgQuizScore = courseQuizzes.length > 0 
+      ? courseQuizzes.reduce((sum, qa) => sum + qa.score, 0) / courseQuizzes.length 
+      : 0;
+    
+    let grade = 'N/A';
+    if (e.status === 'completed') {
+      if (avgQuizScore >= 90) grade = 'A';
+      else if (avgQuizScore >= 80) grade = 'B';
+      else if (avgQuizScore >= 70) grade = 'C';
+      else if (avgQuizScore >= 60) grade = 'D';
+      else grade = 'F';
+    }
     
     return {
       ...course,
       enrollment: e,
-      completedLessons,
-      passedQuizzes: courseQuizzes.length,
-      credits: course?.credits || 0
+      credits: course?.credits || 0,
+      grade,
+      avgQuizScore: avgQuizScore.toFixed(1)
     };
   }).filter(c => c.id);
 
   const completedCourses = enrolledCourses.filter(c => c.enrollment.status === 'completed');
   const totalCredits = completedCourses.reduce((sum, c) => sum + c.credits, 0);
-  const totalLessonsCompleted = allProgress.filter(p => p.completed).length;
-  const totalQuizzesPassed = allQuizAttempts.filter(qa => qa.passed).length;
+  
+  // Calculate GPA (A=4.0, B=3.0, C=2.0, D=1.0, F=0.0)
+  const gradePoints = { 'A': 4.0, 'B': 3.0, 'C': 2.0, 'D': 1.0, 'F': 0.0, 'N/A': 0 };
+  const totalGradePoints = completedCourses.reduce((sum, c) => sum + (gradePoints[c.grade] || 0), 0);
+  const gpa = completedCourses.length > 0 ? (totalGradePoints / completedCourses.length).toFixed(2) : '0.00';
 
   const downloadPDF = async () => {
     if (!transcriptRef.current) return;
@@ -129,18 +145,16 @@ export default function Transcript() {
       summary: "Academic Summary",
       coursesCompleted: "Courses Completed",
       totalCredits: "Total Credits Earned",
-      lessonsCompleted: "Lessons Completed",
-      quizzesPassed: "Quizzes Passed",
+      gpa: "Cumulative GPA",
       courseHistory: "Course History",
       course: "Course",
+      term: "Term",
+      grade: "Grade",
+      credits: "Credits",
       status: "Status",
       completed: "Completed",
       inProgress: "In Progress",
-      completionDate: "Completion Date",
-      credits: "Credits",
-      lessons: "Lessons",
-      quizzes: "Quizzes",
-      officialRecord: "This is an official academic record from Waypoint Institute.",
+      officialRecord: "This is an unofficial academic record from Waypoint Institute.",
       generatedOn: "Generated on",
       programProgress: "Program Progress",
       program: "Program",
@@ -157,18 +171,16 @@ export default function Transcript() {
       summary: "Resumen Académico",
       coursesCompleted: "Cursos Completados",
       totalCredits: "Créditos Totales",
-      lessonsCompleted: "Lecciones Completadas",
-      quizzesPassed: "Quizzes Aprobados",
+      gpa: "GPA Acumulado",
       courseHistory: "Historial de Cursos",
       course: "Curso",
+      term: "Término",
+      grade: "Calificación",
+      credits: "Créditos",
       status: "Estado",
       completed: "Completado",
       inProgress: "En Progreso",
-      completionDate: "Fecha de Finalización",
-      credits: "Créditos",
-      lessons: "Lecciones",
-      quizzes: "Quizzes",
-      officialRecord: "Este es un registro académico oficial del Instituto Waypoint.",
+      officialRecord: "Este es un registro académico no oficial del Instituto Waypoint.",
       generatedOn: "Generado el",
       programProgress: "Progreso del Programa",
       program: "Programa",
@@ -244,7 +256,7 @@ export default function Transcript() {
           <Card className="mb-8 bg-gradient-to-br from-[#1e3a5f]/5 to-[#c4933f]/5">
             <CardContent className="p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4">{t.summary}</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-[#1e3a5f]">{completedCourses.length}</div>
                   <div className="text-sm text-slate-600">{t.coursesCompleted}</div>
@@ -254,12 +266,8 @@ export default function Transcript() {
                   <div className="text-sm text-slate-600">{t.totalCredits}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-[#1e3a5f]">{totalLessonsCompleted}</div>
-                  <div className="text-sm text-slate-600">{t.lessonsCompleted}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-[#c4933f]">{totalQuizzesPassed}</div>
-                  <div className="text-sm text-slate-600">{t.quizzesPassed}</div>
+                  <div className="text-3xl font-bold text-[#1e3a5f]">{gpa}</div>
+                  <div className="text-sm text-slate-600">{t.gpa}</div>
                 </div>
               </div>
             </CardContent>
@@ -310,49 +318,49 @@ export default function Transcript() {
             </Card>
           )}
 
-          {/* Course History */}
+          {/* Course History Table */}
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-[#1e3a5f]" />
               {t.courseHistory}
             </h3>
-            <div className="space-y-4">
-              {enrolledCourses.map(course => (
-                <Card key={course.id}>
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-slate-900">{course[`title_${lang}`] || course.title_en}</h4>
-                        <div className="text-sm text-slate-500 mt-1">
-                          {course.enrollment.status === 'completed' ? (
-                            <span className="text-green-600 font-medium">✓ {t.completed}</span>
-                          ) : (
-                            <span className="text-blue-600">{t.inProgress}</span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold text-[#1e3a5f]">{course.credits} {t.credits}</div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 text-sm pt-3 border-t">
-                      <div>
-                        <Clock className="w-4 h-4 inline text-slate-400 mr-1" />
-                        {course.completedLessons} {t.lessons}
-                      </div>
-                      <div>
-                        <CheckCircle2 className="w-4 h-4 inline text-slate-400 mr-1" />
-                        {course.passedQuizzes} {t.quizzes}
-                      </div>
-                      {course.enrollment.completed_date && (
-                        <div className="text-right text-slate-600">
-                          {new Date(course.enrollment.completed_date).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="overflow-x-auto border rounded-lg">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 border-b">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold text-slate-900">{t.course}</th>
+                    <th className="px-4 py-3 text-center font-semibold text-slate-900">{t.term}</th>
+                    <th className="px-4 py-3 text-center font-semibold text-slate-900">{t.grade}</th>
+                    <th className="px-4 py-3 text-center font-semibold text-slate-900">{t.credits}</th>
+                    <th className="px-4 py-3 text-center font-semibold text-slate-900">{t.status}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {enrolledCourses.map(course => (
+                    <tr key={course.id} className="border-b hover:bg-slate-50">
+                      <td className="px-4 py-3 text-slate-900 font-medium">{course[`title_${lang}`] || course.title_en}</td>
+                      <td className="px-4 py-3 text-center text-slate-600">
+                        {course.enrollment.enrolled_date 
+                          ? new Date(course.enrollment.enrolled_date).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { year: 'numeric', month: 'short' })
+                          : '-'}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`font-semibold ${course.grade === 'A' ? 'text-green-600' : course.grade === 'B' ? 'text-blue-600' : course.grade === 'C' ? 'text-yellow-600' : 'text-slate-600'}`}>
+                          {course.grade}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center text-slate-600">{course.credits}</td>
+                      <td className="px-4 py-3 text-center">
+                        {course.enrollment.status === 'completed' ? (
+                          <span className="text-green-600 font-medium">✓</span>
+                        ) : (
+                          <span className="text-blue-600 text-xs">In Progress</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 
