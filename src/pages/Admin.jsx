@@ -104,6 +104,7 @@ export default function Admin() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-8">
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="overview">{t.tabs.overview}</TabsTrigger>}
+            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="applications">{lang === 'es' ? 'Solicitudes' : 'Applications'}</TabsTrigger>}
             <TabsTrigger value="courses">{t.tabs.courses}</TabsTrigger>
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>}
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>}
@@ -113,6 +114,12 @@ export default function Admin() {
           {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="overview">
               <DetailedAnalytics lang={lang} />
+            </TabsContent>
+          )}
+
+          {(user.role === 'admin' || user.user_type === 'admin') && (
+            <TabsContent value="applications">
+              <ApplicationsManager lang={lang} />
             </TabsContent>
           )}
 
