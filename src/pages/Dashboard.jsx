@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Star, BookOpen, Trophy, Clock, ArrowRight, 
-  GraduationCap, Target, ChevronRight, FileText 
+  GraduationCap, Target, ChevronRight, FileText, Settings 
 } from "lucide-react";
 import CourseCard from '@/components/courses/CourseCard';
 import LanguageToggle from '@/components/common/LanguageToggle';
@@ -331,7 +331,12 @@ export default function Dashboard() {
                 {lang === 'es' ? 'Mi Cuenta' : 'Account'}
               </Button>
             </Link>
-          </div>
+            <Link to={createPageUrl(`AccessibilitySettings?lang=${lang}`)}>
+              <Button variant="ghost" size="sm">
+                <Settings className="w-4 h-4" />
+              </Button>
+            </Link>
+            </div>
         </div>
       </header>
 
