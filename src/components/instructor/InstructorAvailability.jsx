@@ -147,15 +147,24 @@ export default function InstructorAvailability({ user }) {
                               <XCircle className="w-4 h-4 mr-1" />
                               Withdraw
                             </Button>
+                          ) : isVolunteered ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => volunteerMutation.mutate({ instanceId: instance.id, available: false })}
+                              className="text-orange-600 border-orange-200 hover:bg-orange-50"
+                            >
+                              <XCircle className="w-4 h-4 mr-1" />
+                              Unvolunteer
+                            </Button>
                           ) : (
                             <Button
                               size="sm"
                               onClick={() => volunteerMutation.mutate({ instanceId: instance.id, available: true })}
-                              disabled={isVolunteered}
-                              className={isVolunteered ? 'opacity-50' : 'bg-[#1e3a5f]'}
+                              className="bg-[#1e3a5f]"
                             >
                               <CheckCircle className="w-4 h-4 mr-1" />
-                              {isVolunteered ? 'Volunteered (Pending Approval)' : 'Volunteer'}
+                              Volunteer
                             </Button>
                           )}
                         </div>

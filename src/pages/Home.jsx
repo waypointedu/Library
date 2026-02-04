@@ -23,7 +23,7 @@ function HeroBackground() {
           e.target.style.display = 'none';
         }}
       >
-        <source src="https://drive.google.com/uc?export=download&id=1XpFnLNADMDfB0gj0v-RxkpMrJs3KTYbG" type="video/mp4" />
+        <source src="https://polarwelskkfeibwhyjf.supabase.co/storage/v1/object/public/publicbucket/panorama%20(1).mp4" type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f] via-slate-800 to-black" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
