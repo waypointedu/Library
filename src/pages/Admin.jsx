@@ -123,8 +123,8 @@ export default function Admin() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-light text-slate-900 mb-8">{t.title}</h1>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-12">
+        <h1 className="text-2xl md:text-3xl font-light text-slate-900 mb-8">{t.title}</h1>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
            <TabsList className="mb-8 flex-wrap">

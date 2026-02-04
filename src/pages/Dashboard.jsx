@@ -340,7 +340,7 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-12">
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="text-2xl md:text-3xl font-light text-slate-900 mb-2">
