@@ -41,10 +41,22 @@ export default function DetailedAnalytics({ lang }) {
     queryFn: () => base44.entities.QuizAttempt.list()
   });
 
+  const { data: pathwayEnrollments = [] } = useQuery({
+    queryKey: ['pathwayEnrollments'],
+    queryFn: () => base44.entities.PathwayEnrollment.list()
+  });
+
+  const { data: streaks = [] } = useQuery({
+    queryKey: ['streaks'],
+    queryFn: () => base44.entities.Streak.list()
+  });
+
   const userStats = users.map(user => {
     const userEnrollments = enrollments.filter(e => e.user_email === user.email);
     const userProgress = progress.filter(p => p.user_email === user.email);
     const userQuizzes = quizAttempts.filter(qa => qa.user_email === user.email);
+    const userStreak = streaks.find(s => s.user_email === user.email);
+    const userPathways = pathwayEnrollments.filter(pe => pe.user_email === user.email);
     
     const completedCourses = userEnrollments.filter(e => e.status === 'completed').length;
     const completedLessons = userProgress.filter(p => p.completed).length;
@@ -53,13 +65,26 @@ export default function DetailedAnalytics({ lang }) {
       ? (userQuizzes.reduce((sum, qa) => sum + qa.score, 0) / userQuizzes.length).toFixed(1)
       : 0;
 
+    // Calculate last activity
+    const allDates = [
+      ...userProgress.map(p => new Date(p.updated_date)),
+      ...userQuizzes.map(q => new Date(q.created_date)),
+      userStreak?.last_activity_date ? new Date(userStreak.last_activity_date) : null
+    ].filter(Boolean);
+    const lastActivity = allDates.length > 0 
+      ? new Date(Math.max(...allDates))
+      : null;
+
     return {
       ...user,
       enrolledCourses: userEnrollments.length,
       completedCourses,
       completedLessons,
       passedQuizzes,
-      avgQuizScore
+      avgQuizScore,
+      lastActivity,
+      pathwaysEnrolled: userPathways.length,
+      currentStreak: userStreak?.current_streak || 0
     };
   });
 
@@ -107,6 +132,9 @@ export default function DetailedAnalytics({ lang }) {
       lessons: "Lessons",
       quizzes: "Quizzes",
       avgScore: "Avg Score",
+      lastActivity: "Last Active",
+      pathways: "Pathways",
+      streak: "Streak",
       viewTranscript: "View Transcript",
       courseEngagement: "Course Engagement Metrics",
       engagementChart: "Enrollments vs Completions by Course"
@@ -129,6 +157,9 @@ export default function DetailedAnalytics({ lang }) {
       lessons: "Lecciones",
       quizzes: "Quizzes",
       avgScore: "Puntaje Prom.",
+      lastActivity: "Última Actividad",
+      pathways: "Rutas",
+      streak: "Racha",
       viewTranscript: "Ver Expediente",
       courseEngagement: "Métricas de Participación en Cursos",
       engagementChart: "Inscripciones vs Finalizaciones por Curso"
@@ -263,17 +294,20 @@ export default function DetailedAnalytics({ lang }) {
             </Select>
           </div>
 
-          <div className="border rounded-lg overflow-hidden">
+          <div className="border rounded-lg overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>{t.name}</TableHead>
                   <TableHead>{t.email}</TableHead>
                   <TableHead className="text-center">{t.enrolled}</TableHead>
+                  <TableHead className="text-center">{t.pathways}</TableHead>
                   <TableHead className="text-center">{t.completed}</TableHead>
                   <TableHead className="text-center">{t.lessons}</TableHead>
                   <TableHead className="text-center">{t.quizzes}</TableHead>
                   <TableHead className="text-center">{t.avgScore}</TableHead>
+                  <TableHead className="text-center">{t.streak}</TableHead>
+                  <TableHead>{t.lastActivity}</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -281,9 +315,14 @@ export default function DetailedAnalytics({ lang }) {
                 {filteredUsers.map(user => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.full_name}</TableCell>
-                    <TableCell className="text-slate-600">{user.email}</TableCell>
+                    <TableCell className="text-slate-600 text-sm">{user.email}</TableCell>
                     <TableCell className="text-center">
                       <Badge variant="outline">{user.enrolledCourses}</Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                        {user.pathwaysEnrolled}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge className="bg-green-100 text-green-800">{user.completedCourses}</Badge>
@@ -294,6 +333,21 @@ export default function DetailedAnalytics({ lang }) {
                       <span className={user.avgQuizScore >= 70 ? 'text-green-600 font-semibold' : 'text-slate-600'}>
                         {user.avgQuizScore}%
                       </span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {user.currentStreak > 0 ? (
+                        <Badge className="bg-orange-100 text-orange-700">
+                          {user.currentStreak}🔥
+                        </Badge>
+                      ) : (
+                        <span className="text-slate-400">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      {user.lastActivity 
+                        ? new Date(user.lastActivity).toLocaleDateString()
+                        : <span className="text-slate-400">Never</span>
+                      }
                     </TableCell>
                     <TableCell>
                       <Link to={createPageUrl(`Transcript?email=${user.email}&lang=${lang}`)}>
