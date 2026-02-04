@@ -50,7 +50,7 @@ export default function WeekQuizStudent({ weekId, user, lang }) {
       const weeks = await base44.entities.Week.filter({ id: weekId });
       const week = weeks[0];
 
-      return base44.entities.WeekQuizAttempt.create({
+      const attempt = await base44.entities.WeekQuizAttempt.create({
         user_email: user.email,
         quiz_id: quiz.id,
         week_id: weekId,
@@ -62,10 +62,13 @@ export default function WeekQuizStudent({ weekId, user, lang }) {
         passed,
         completed_at: new Date().toISOString()
       });
+
+      return { attempt, finalScore, passed };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['weekQuizAttempts'] });
       setShowResults(true);
+      alert(`${lang === 'es' ? 'Calificación' : 'Grade'}: ${data.finalScore}% - ${data.passed ? (lang === 'es' ? 'Aprobado' : 'Passed') : (lang === 'es' ? 'No Aprobado' : 'Not Passed')}`);
     }
   });
 

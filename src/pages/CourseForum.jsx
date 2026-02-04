@@ -38,13 +38,13 @@ export default function CourseForum() {
     queryFn: async () => {
       const existing = await base44.entities.Forum.filter({ course_id: courseId });
       if (existing.length === 0) {
-        // Auto-create default forum for this course
+        // Auto-create announcement forum for this course
         const newForum = await base44.entities.Forum.create({
           course_id: courseId,
-          title_en: 'General Discussion',
-          title_es: 'Discusión General',
-          description_en: 'General course discussions',
-          description_es: 'Discusiones generales del curso'
+          title_en: 'Announcements',
+          title_es: 'Anuncios',
+          description_en: 'Instructor announcements and course updates',
+          description_es: 'Anuncios del instructor y actualizaciones del curso'
         });
         return [newForum];
       }
@@ -99,30 +99,32 @@ export default function CourseForum() {
 
   const text = {
     en: {
-      title: 'Course Forum',
-      newPost: 'New Discussion',
+      title: 'Announcements',
+      newPost: 'New Announcement',
       postTitle: 'Title',
       postContent: 'Your message...',
       submit: 'Post',
       cancel: 'Cancel',
       replies: 'replies',
       lastActivity: 'Last activity',
-      noPosts: 'No discussions yet. Start one!',
+      noPosts: 'No announcements yet.',
       pinned: 'Pinned',
-      locked: 'Locked'
+      locked: 'Locked',
+      instructorOnly: 'Only instructors can create announcements'
     },
     es: {
-      title: 'Foro del Curso',
-      newPost: 'Nueva Discusión',
+      title: 'Anuncios',
+      newPost: 'Nuevo Anuncio',
       postTitle: 'Título',
       postContent: 'Tu mensaje...',
       submit: 'Publicar',
       cancel: 'Cancelar',
       replies: 'respuestas',
       lastActivity: 'Última actividad',
-      noPosts: '¡Aún no hay discusiones. Inicia una!',
+      noPosts: 'Aún no hay anuncios.',
       pinned: 'Fijado',
-      locked: 'Bloqueado'
+      locked: 'Bloqueado',
+      instructorOnly: 'Solo los instructores pueden crear anuncios'
     }
   };
   const t = text[lang];
@@ -160,10 +162,12 @@ export default function CourseForum() {
 
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-light text-slate-900">{t.title}</h1>
-          <Button onClick={() => setShowNewPost(!showNewPost)} size="lg" className="bg-[#1e3a5f]">
-            <MessageSquare className="w-5 h-5 mr-2" />
-            {t.newPost}
-          </Button>
+          {(user.role === 'admin' || user.role === 'instructor') && (
+            <Button onClick={() => setShowNewPost(!showNewPost)} size="lg" className="bg-[#1e3a5f]">
+              <MessageSquare className="w-5 h-5 mr-2" />
+              {t.newPost}
+            </Button>
+          )}
         </div>
 
         {showNewPost && (
