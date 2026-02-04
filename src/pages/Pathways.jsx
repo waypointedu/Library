@@ -115,60 +115,184 @@ export default function Pathways() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-32">
-        <div className="mb-16 text-center">
-          <h1 className="text-4xl md:text-5xl font-light text-slate-900 mb-4">Learning Pathway</h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            {lang === 'es' 
-              ? 'Completa el certificado gratuito de Formación Bíblica de Waypoint durante el primer año'
-              : 'Complete Waypoint\'s tuition-free Biblical Formation college certificate during year one'}
+        <div className="mb-16">
+          <h1 className="text-4xl md:text-5xl font-light text-slate-900 mb-6">Certificate in Biblical Formation</h1>
+          <p className="text-xl text-slate-600 leading-relaxed max-w-4xl">
+            The Biblical Formation certificate is our launch-year, college-level credential. Students begin with the Waypoint Introduction Seminar, progress through seven core courses, and complete an oral capstone for each class before any future specialization. The intent of this certificate is to be an intermediary credential preceding their Associate's Degree.
           </p>
         </div>
 
-        <div className="space-y-16">
-          {pathways.map((pathway, idx) => (
-            <Card key={pathway.id} className="border-slate-200 overflow-hidden">
-              <CardContent className="p-0">
-                <div className="bg-[#1e3a5f] text-white p-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-4xl font-light">Year {idx === 0 ? 'One' : 'Two'}</span>
-                  </div>
-                  <h3 className="text-2xl md:text-3xl font-semibold mb-3">{pathway[`title_${lang}`] || pathway.title_en}</h3>
-                  <p className="text-white/90 text-lg leading-relaxed">{pathway[`description_${lang}`] || pathway.description_en}</p>
-                </div>
+        {/* Program Overview */}
+        <section className="mb-16 p-8 bg-slate-50 rounded-2xl">
+          <h2 className="text-2xl font-semibold text-slate-900 mb-4">Program overview</h2>
+          <p className="text-slate-600 leading-relaxed">
+            Begin with a two-week introduction seminar covering tools, policies, and study rhythms. Courses run 8 or 16 weeks with shared checkpoints; readings and assignments are self-paced between those checkpoints.
+          </p>
+          <p className="text-slate-600 leading-relaxed mt-4">
+            After completing the Biblical Formation core, you remain connected to peers while awaiting the launch of associate-level pathways and the accompanying research seminar.
+          </p>
+        </section>
 
-                {user && enrolledIds.includes(pathway.id) && (
-                  <div className="bg-emerald-50 border-t border-emerald-100 p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-emerald-800">Your Progress</span>
-                      <span className="text-sm font-semibold text-emerald-900">{getPathwayProgress(pathway)}%</span>
-                    </div>
-                    <ProgressBar value={getPathwayProgress(pathway)} className="mb-4" />
-                    <Link to={createPageUrl(`Pathway?id=${pathway.id}&lang=${lang}`)}>
-                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
-                        Continue Learning <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
-                  </div>
-                )}
+        {/* Year One */}
+        <Card className="mb-16 overflow-hidden border-slate-200">
+          <div className="bg-[#1e3a5f] text-white p-8">
+            <span className="text-sm font-medium text-white/80 mb-2 block">Year One</span>
+            <h2 className="text-3xl font-semibold mb-3">Certificate in Biblical Formation</h2>
+            <p className="text-white/90 text-lg leading-relaxed">
+              Seven 16-week courses (4 cr each), plus a two-week introduction seminar (1 cr) and an integrated apologetics seminar (1 cr). Total 30 credits with guided checkpoints and room for weekly self-paced work.
+            </p>
+          </div>
+          <CardContent className="p-8">
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between py-3 border-b border-slate-100">
+                <span className="text-slate-700">Hermeneutics</span>
+                <span className="text-slate-500 text-sm">16 weeks • 4 cr</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-slate-100">
+                <span className="text-slate-700">Old Testament: Torah, Prophets, Writings</span>
+                <span className="text-slate-500 text-sm">16 weeks • 4 cr</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-slate-100">
+                <span className="text-slate-700">New Testament: Gospels & Acts</span>
+                <span className="text-slate-500 text-sm">16 weeks • 4 cr</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-slate-100">
+                <span className="text-slate-700">New Testament: Epistles & Revelation</span>
+                <span className="text-slate-500 text-sm">16 weeks • 4 cr</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-slate-100">
+                <span className="text-slate-700">New Testament Use of the Old Testament</span>
+                <span className="text-slate-500 text-sm">16 weeks • 4 cr</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-slate-100">
+                <span className="text-slate-700">Biblical Principles of Culture</span>
+                <span className="text-slate-500 text-sm">16 weeks • 4 cr</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-slate-100">
+                <span className="text-slate-700">Biblical Spiritual Practices</span>
+                <span className="text-slate-500 text-sm">16 weeks • 4 cr</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-slate-100">
+                <span className="text-slate-700">Waypoint Introduction Seminar</span>
+                <span className="text-slate-500 text-sm">2 weeks • 1 cr</span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-slate-100">
+                <span className="text-slate-700">Apologetics Seminar Series</span>
+                <span className="text-slate-500 text-sm">integrated • 1 cr</span>
+              </div>
+              <div className="flex justify-between py-4 font-semibold text-slate-900">
+                <span>Total:</span>
+                <span>30 credits</span>
+              </div>
+            </div>
+            <Link to={createPageUrl(`Catalog?lang=${lang}`)}>
+              <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                Open Course Catalog <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
 
-                {!user && (
-                  <div className="p-6 bg-slate-50 border-t">
-                    <div className="flex gap-3">
-                      <Button onClick={() => base44.auth.redirectToLogin()} className="flex-1 bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                        Sign In to Enroll
-                      </Button>
-                      <Link to={createPageUrl(`Apply?lang=${lang}`)}>
-                        <Button variant="outline" className="border-[#1e3a5f] text-[#1e3a5f]">
-                          Apply Now
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* Year Two */}
+        <Card className="mb-16 overflow-hidden border-slate-200">
+          <div className="bg-slate-700 text-white p-8">
+            <span className="text-sm font-medium text-white/80 mb-2 block">Year Two</span>
+            <h2 className="text-3xl font-semibold mb-3">Associate Pathways (coming soon)</h2>
+            <p className="text-white/90 text-lg leading-relaxed">
+              After year one, associate-level tracks will let you deepen focus areas while staying connected to your peers. Titles, syllabi, and research seminar details are forthcoming.
+            </p>
+          </div>
+        </Card>
+
+        {/* Capstones & Assessment */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-light text-slate-900 mb-6">Capstones & Assessment</h2>
+          <p className="text-slate-600 leading-relaxed">
+            Each course culminates in a topical capstone conversation. Students record a 30-minute audio or video discussion with one or two peers. Faculty review individual contributions as an oral examination. If mastery is unclear, we assign remedial work or schedule a one-on-one follow up before granting course credit.
+          </p>
+        </section>
+
+        {/* Technology Requirements */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-light text-slate-900 mb-6">Technology Requirements</h2>
+          <ul className="space-y-3">
+            <li className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
+              <span className="text-slate-600">Reliable internet for reading, submitting assignments, and occasional streaming</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
+              <span className="text-slate-600">Access to Google Docs, Sheets, and Slides</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
+              <span className="text-slate-600">Ability to join at least one 30-minute Google Meet call per course</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <div className="w-2 h-2 rounded-full bg-[#1e3a5f] mt-2 flex-shrink-0" />
+              <span className="text-slate-600">Microphone (and ideally camera) to record capstone conversations in English or your native language</span>
+            </li>
+          </ul>
+          <p className="text-slate-500 text-sm mt-4 italic">
+            Courses are delivered in English. As funding allows, we add translated materials or supplementary resources.
+          </p>
+        </section>
+
+        {/* Study Rhythm */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-light text-slate-900 mb-8">Study Rhythm & Capstones</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Guided pace</h3>
+              <p className="text-slate-600 mb-4 leading-relaxed">
+                Every course stays on a shared calendar with clear milestones, while most work happens in the windows that fit your week.
+              </p>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li>• Weekly checkpoints and reminders keep everyone aligned</li>
+                <li>• Flexible windows for readings, reflections, and assignments</li>
+                <li>• Faculty mentors accompany your progress</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Self-Paced Study</h3>
+              <p className="text-slate-600 mb-4 leading-relaxed">
+                Between checkpoints, you guide your own schedule. Lectures, readings, and practice exercises can be completed whenever you have margin.
+              </p>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li>• Plan for gentle, sustainable study rhythms each week</li>
+                <li>• Google Docs and Sheets host written work and reflections</li>
+                <li>• Capstone preparation includes peer dialogue and prayer</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Capstone Conversations</h3>
+              <p className="text-slate-600 mb-4 leading-relaxed">
+                Each course culminates in a recorded dialogue that serves as an oral examination. Faculty review every participant to confirm mastery.
+              </p>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li>• 30-minute small-group conversations per course</li>
+                <li>• Conducted in English or your local language—translation provided</li>
+                <li>• Remediation or one-on-one follow up offered when needed</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="text-center py-12">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to={createPageUrl(`Catalog?lang=${lang}`)}>
+              <Button size="lg" variant="outline" className="border-2 border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white">
+                Browse courses
+              </Button>
+            </Link>
+            <Link to={createPageUrl(`Apply?lang=${lang}`)}>
+              <Button size="lg" className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                Apply
+              </Button>
+            </Link>
+          </div>
+        </section>
       </div>
 
       <MobileNav lang={lang} currentPage="Courses" />
