@@ -15,6 +15,10 @@ import ProgressBar from '@/components/common/ProgressBar';
 import MobileNav from '@/components/common/MobileNav';
 import StreakDisplay from '@/components/gamification/StreakDisplay';
 import { useMutation } from '@tanstack/react-query';
+import PathwayProgress from '@/components/dashboard/PathwayProgress';
+import WeeklyStudyPlan from '@/components/dashboard/WeeklyStudyPlan';
+import StreakCalendar from '@/components/dashboard/StreakCalendar';
+import QuickStats from '@/components/dashboard/QuickStats';
 
 export default function Dashboard() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -95,6 +99,64 @@ export default function Dashboard() {
   const { data: allPathways = [] } = useQuery({
     queryKey: ['allPathways'],
     queryFn: () => base44.entities.Pathway.list()
+  });
+
+  const { data: weeks = [] } = useQuery({
+    queryKey: ['weeks'],
+    queryFn: () => base44.entities.Week.list()
+  });
+
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile', user?.email],
+    queryFn: async () => {
+      const profiles = await base44.entities.UserProfile.filter({ user_email: user?.email });
+      return profiles[0];
+    },
+    enabled: !!user?.email
+  });
+
+  const { data: userBadges = [] } = useQuery({
+    queryKey: ['userBadges', user?.email],
+    queryFn: () => base44.entities.UserBadge.filter({ user_email: user?.email }),
+    enabled: !!user?.email
+  });
+
+  const { data: endorsements = [] } = useQuery({
+    queryKey: ['endorsements', user?.email],
+    queryFn: () => base44.entities.PeerEndorsement.filter({ endorsed_user_email: user?.email }),
+    enabled: !!user?.email
+  });
+
+  const { data: readingSessions = [] } = useQuery({
+    queryKey: ['readingSessions', user?.email],
+    queryFn: () => base44.entities.ReadingSession.filter({ user_email: user?.email }),
+    enabled: !!user?.email
+  });
+
+  const { data: courseProgress = [] } = useQuery({
+    queryKey: ['courseProgress', user?.email],
+    queryFn: async () => {
+      if (!enrollments.length) return [];
+      
+      const progressData = await Promise.all(
+        enrollments.map(async (enrollment) => {
+          const courseWeeks = weeks.filter(w => w.course_id === enrollment.course_id);
+          const completedWeeks = allProgress.filter(p => 
+            courseWeeks.some(w => w.id === p.week_id) && p.completed
+          ).length;
+          
+          return {
+            course_id: enrollment.course_id,
+            completion_percentage: courseWeeks.length > 0 
+              ? Math.round((completedWeeks / courseWeeks.length) * 100) 
+              : 0
+          };
+        })
+      );
+      
+      return progressData;
+    },
+    enabled: !!user?.email && enrollments.length > 0
   });
 
   const updateStreakMutation = useMutation({
@@ -276,101 +338,59 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        {/* Resume Learning + Streak */}
-        <div className="grid md:grid-cols-2 gap-4 mb-8">
-          {resumeLesson && (
-            <Card className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] text-white border-0">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <BookOpen className="w-6 h-6" />
-                  <h3 className="font-semibold">{t.resumeLearning}</h3>
-                </div>
-                <p className="text-sm opacity-90 mb-4">{t.continueFrom}:</p>
-                <p className="font-medium mb-4">{resumeLesson[`title_${lang}`] || resumeLesson.title_en}</p>
-                <Link to={createPageUrl(`Lesson?id=${resumeLesson.id}&lang=${lang}`)}>
-                  <Button size="lg" variant="secondary" className="w-full">
-                    {t.continue} <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          )}
-          <StreakDisplay streak={streak} lang={lang} />
-        </div>
+        {/* Quick Stats */}
+        <QuickStats 
+          userProfile={userProfile} 
+          userBadges={userBadges}
+          endorsements={endorsements}
+          readingSessions={readingSessions}
+        />
 
-        {/* Pathway Progress */}
-        {pathwayEnrollments.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-semibold text-slate-900 mb-6">{t.pathwayProgress}</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              {pathwayEnrollments.map(enrollment => {
-                const pathway = allPathways.find(p => p.id === enrollment.pathway_id);
-                if (!pathway) return null;
-                const progress = getPathwayProgress(pathway.id);
-                const completedCourses = pathway.course_ids?.filter(cid =>
-                  enrollments.some(e => e.course_id === cid && e.status === 'completed')
-                ).length || 0;
-                const totalCourses = pathway.course_ids?.length || 0;
-                
-                return (
-                  <Card key={enrollment.id} className="border-amber-200 bg-gradient-to-br from-amber-50 to-white">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <GraduationCap className="w-5 h-5 text-amber-600" />
-                            <CardTitle className="text-lg">{pathway[`title_${lang}`] || pathway.title_en}</CardTitle>
-                          </div>
-                          <p className="text-sm text-slate-600">{pathway[`description_${lang}`] || pathway.description_en}</p>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div>
-                          <div className="flex justify-between text-sm mb-2">
-                            <span className="text-slate-600">{completedCourses} of {totalCourses} courses completed</span>
-                            <span className="font-semibold text-amber-700">{progress}%</span>
-                          </div>
-                          <ProgressBar value={progress} className="h-3" />
-                        </div>
-                        <Link to={createPageUrl(`Pathway?id=${pathway.id}&lang=${lang}`)}>
-                          <Button className="w-full bg-amber-600 hover:bg-amber-700">
-                            {t.viewPathway} <ArrowRight className="w-4 h-4 ml-2" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+        {/* Main Dashboard Grid */}
+        <div className="grid lg:grid-cols-3 gap-6 mt-8 mb-8">
+          {/* Left Column - Pathway Progress */}
+          <div className="lg:col-span-2 space-y-6">
+            <PathwayProgress 
+              enrollments={enrollments}
+              courses={courses}
+              progress={courseProgress}
+            />
+            
+            {resumeLesson && (
+              <Card className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] text-white border-0 shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <BookOpen className="w-6 h-6" />
+                    <h3 className="font-semibold text-xl">{t.resumeLearning}</h3>
+                  </div>
+                  <p className="text-sm opacity-90 mb-4">{t.continueFrom}:</p>
+                  <p className="font-medium mb-4 text-lg">{resumeLesson[`title_${lang}`] || resumeLesson.title_en}</p>
+                  <Link to={createPageUrl(`Lesson?id=${resumeLesson.id}&lang=${lang}`)}>
+                    <Button size="lg" variant="secondary" className="w-full">
+                      {t.continue} <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
           </div>
-        )}
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-          {[
-            { label: t.stats.enrolled, value: enrollments.length, icon: BookOpen, color: 'bg-blue-500' },
-            { label: t.stats.completed, value: completedCourses, icon: Trophy, color: 'bg-emerald-500' },
-            { label: t.stats.lessons, value: totalLessonsCompleted, icon: Target, color: 'bg-purple-500' },
-            { label: t.stats.quizzes, value: passedQuizzes, icon: GraduationCap, color: 'bg-amber-500' }
-          ].map((stat, i) => (
-            <Card key={i} className="border-slate-100">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500 mb-1">{stat.label}</p>
-                    <p className="text-3xl font-semibold text-slate-900">{stat.value}</p>
-                  </div>
-                  <div className={`w-10 h-10 rounded-xl ${stat.color}/10 flex items-center justify-center`}>
-                    <stat.icon className={`w-5 h-5 ${stat.color.replace('bg-', 'text-')}`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {/* Right Column - Weekly Plan & Streak */}
+          <div className="space-y-6">
+            <WeeklyStudyPlan 
+              enrollments={enrollments}
+              courses={courses}
+              weeks={weeks}
+            />
+            
+            <StreakCalendar 
+              userProfile={userProfile}
+              readingSessions={readingSessions}
+            />
+          </div>
         </div>
+
+
 
         {/* My Courses */}
         <div className="mb-12">
