@@ -365,6 +365,12 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
     status: 'scheduled'
   });
 
+  const { data: semesterAvailability = [] } = useQuery({
+    queryKey: ['semesterAvailability', formData.term_id],
+    queryFn: () => base44.entities.InstructorSemesterAvailability.filter({ term_id: formData.term_id }),
+    enabled: !!formData.term_id
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit(formData);
@@ -378,6 +384,14 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
       setFormData({...formData, instructor_emails: [...current, email]});
     }
   };
+
+  // Filter instructors: only show if course + term selected, and they're approved for course + available for semester
+  const availableInstructors = (!formData.course_id || !formData.term_id) ? [] : instructors.filter(u => {
+    if (!(u.approved_courses || []).includes(formData.course_id)) return false;
+    
+    const availability = semesterAvailability.find(a => a.instructor_email === u.email);
+    return availability && availability.is_available;
+  });
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -422,19 +436,29 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
 
       <div>
         <Label>Instructors</Label>
-        <div className="border rounded-lg p-3 space-y-2 max-h-40 overflow-y-auto">
-          {instructors.map(instructor => (
-            <label key={instructor.email} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.instructor_emails?.includes(instructor.email)}
-                onChange={() => toggleInstructor(instructor.email)}
-                className="rounded"
-              />
-              <span className="text-sm">{instructor.full_name} ({instructor.email})</span>
-            </label>
-          ))}
-        </div>
+        {!formData.course_id || !formData.term_id ? (
+          <p className="text-sm text-slate-500 p-3 border rounded-lg bg-slate-50">
+            Select a course and term first to see available instructors
+          </p>
+        ) : availableInstructors.length === 0 ? (
+          <p className="text-sm text-amber-600 p-3 border rounded-lg bg-amber-50">
+            No instructors available (must be approved for this course AND available for this semester)
+          </p>
+        ) : (
+          <div className="border rounded-lg p-3 space-y-2 max-h-40 overflow-y-auto">
+            {availableInstructors.map(instructor => (
+              <label key={instructor.email} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.instructor_emails?.includes(instructor.email)}
+                  onChange={() => toggleInstructor(instructor.email)}
+                  className="rounded"
+                />
+                <span className="text-sm">{instructor.full_name} ({instructor.email})</span>
+              </label>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
