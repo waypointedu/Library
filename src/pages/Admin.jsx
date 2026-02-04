@@ -19,8 +19,6 @@ import InstructorApprovalManager from '@/components/admin/InstructorApprovalMana
 import GamificationManager from '@/components/admin/GamificationManager';
 import AdvancedCourseManager from '@/components/admin/AdvancedCourseManager';
 import AnnouncementManager from '@/components/communication/AnnouncementManager';
-import Inbox from '@/components/communication/Inbox';
-import EnhancedAnalyticsDashboard from '@/components/admin/EnhancedAnalyticsDashboard';
 
 export default function Admin() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -128,18 +126,15 @@ export default function Admin() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
            <TabsList className="mb-8 flex-wrap">
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="overview">{t.tabs.overview}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="overview" className="text-xs md:text-sm">{t.tabs.overview}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="applications" className="text-xs md:text-sm">{lang === 'es' ? 'Solicitudes' : 'Applications'}</TabsTrigger>}
              <TabsTrigger value="courses" className="text-xs md:text-sm">{t.tabs.courses}</TabsTrigger>
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="courseCatalog" className="text-xs md:text-sm">{t.tabs.courseCatalog}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="instructors" className="text-xs md:text-sm">{lang === 'es' ? 'Instructores' : 'Instructors'}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="calendar" className="text-xs md:text-sm">{lang === 'es' ? 'Calendario' : 'Calendar'}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="pathways" className="text-xs md:text-sm">{t.tabs.pathways}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="users" className="text-xs md:text-sm">{t.tabs.users}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="gamification" className="text-xs md:text-sm">{t.tabs.gamification}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="announcements" className="text-xs md:text-sm">{t.tabs.announcements}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="messages" className="text-xs md:text-sm">{t.tabs.messages}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="advancedAnalytics" className="text-xs md:text-sm">{t.tabs.advancedAnalytics}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="analytics" className="text-xs md:text-sm">{t.tabs.analytics}</TabsTrigger>}
            </TabsList>
 
@@ -204,17 +199,7 @@ export default function Admin() {
             </TabsContent>
           )}
 
-          {(user.role === 'admin' || user.user_type === 'admin') && (
-            <TabsContent value="messages">
-              <Inbox />
-            </TabsContent>
-          )}
 
-          {(user.role === 'admin' || user.user_type === 'admin') && (
-            <TabsContent value="advancedAnalytics">
-              <EnhancedAnalyticsDashboard />
-            </TabsContent>
-          )}
 
           {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="analytics">
