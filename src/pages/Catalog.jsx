@@ -78,7 +78,7 @@ export default function Catalog() {
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
           <Link to={createPageUrl('Home')} className="flex items-center">
             <img 
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" 
@@ -126,8 +126,8 @@ export default function Catalog() {
       </header>
 
       {/* Hero */}
-      <section className="bg-white py-16 border-b border-slate-100 mt-20">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="bg-white py-8 md:py-16 border-b border-slate-100 mt-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
           <Link
             to={createPageUrl(`Home?lang=${lang}`)}
             className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-6 transition-colors"
@@ -136,15 +136,15 @@ export default function Catalog() {
             {lang === 'es' ? 'Volver al inicio' : 'Back to home'}
           </Link>
 
-          <h1 className="text-4xl md:text-5xl font-light text-slate-900 mb-4">{t.title}</h1>
-          <p className="text-xl text-slate-500 max-w-2xl">{t.subtitle}</p>
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-light text-slate-900 mb-4">{t.title}</h1>
+          <p className="text-base md:text-lg text-slate-500 max-w-2xl">{t.subtitle}</p>
         </div>
       </section>
 
       {/* Filters */}
-      <section className="py-8 bg-white border-b border-slate-100 sticky top-16 z-40">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <section className="py-4 md:py-8 bg-white border-b border-slate-100 sticky top-16 z-40">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="flex flex-col gap-4 items-start justify-between">
             <div className="relative w-full sm:w-80">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input
@@ -187,18 +187,18 @@ export default function Catalog() {
       </section>
 
       {/* Course Grid */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-6 md:py-12">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
           {isLoading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {[1, 2, 3, 4, 5, 6].map(i => (
                 <div key={i} className="bg-white rounded-2xl h-80 animate-pulse" />
               ))}
             </div>
           ) : filteredCourses.length === 0 ? (
-            <div className="text-center py-20">
+            <div className="text-center py-12 md:py-20">
               <Filter className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500 mb-4">{t.noResults}</p>
+              <p className="text-sm md:text-base text-slate-500 mb-4">{t.noResults}</p>
               <button
                 onClick={() => {
                   setSearchQuery('');
@@ -210,7 +210,7 @@ export default function Catalog() {
               </button>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {filteredCourses.map(course => (
                 <CourseCard
                   key={course.id}
