@@ -94,6 +94,11 @@ export default function Admin() {
                 {lang === 'es' ? 'Vista Estudiante' : 'Student View'}
               </Button>
             </Link>
+            <Link to={createPageUrl(`AccountSettings?lang=${lang}`)}>
+              <Button variant="ghost" size="sm">
+                {lang === 'es' ? 'Mi Cuenta' : 'Account'}
+              </Button>
+            </Link>
           </div>
         </div>
       </header>

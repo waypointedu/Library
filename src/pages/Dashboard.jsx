@@ -259,14 +259,11 @@ export default function Dashboard() {
                 </Button>
               </Link>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => base44.auth.logout()}
-              className="hidden md:flex"
-            >
-              {lang === 'es' ? 'Cerrar sesión' : 'Sign out'}
-            </Button>
+            <Link to={createPageUrl(`AccountSettings?lang=${lang}`)} className="hidden md:block">
+              <Button variant="ghost" size="sm">
+                {lang === 'es' ? 'Mi Cuenta' : 'Account'}
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
