@@ -8,6 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ClipboardCheck, MessageSquare, Eye, FileText, TrendingUp, Users } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
+import AvailabilityManager from '@/components/instructor/AvailabilityManager';
+import CourseCalendar from '@/components/calendar/CourseCalendar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function InstructorDashboard() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -153,6 +156,15 @@ export default function InstructorDashboard() {
           </p>
         </div>
 
+        <Tabs defaultValue="overview" className="mb-8">
+          <TabsList>
+            <TabsTrigger value="overview">{lang === 'es' ? 'Resumen' : 'Overview'}</TabsTrigger>
+            <TabsTrigger value="schedule">{lang === 'es' ? 'Horario' : 'Schedule'}</TabsTrigger>
+            <TabsTrigger value="availability">{lang === 'es' ? 'Disponibilidad' : 'Availability'}</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-8 mt-6">
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
           <Card>
             <CardContent className="p-6">
@@ -256,66 +268,76 @@ export default function InstructorDashboard() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ClipboardCheck className="w-5 h-5 text-amber-600" />
-                {t.submissions}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {submissions.length === 0 ? (
-                <p className="text-slate-500 text-center py-8">{t.noSubmissions}</p>
-              ) : (
-                <div className="space-y-3">
-                  {submissions.slice(0, 5).map(sub => (
-                    <div key={sub.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                      <div className="flex-1">
-                        <p className="font-medium text-slate-900">{sub.user_name}</p>
-                        <p className="text-sm text-slate-500">
-                          {new Date(sub.submitted_date).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <Link to={createPageUrl(`InstructorGradebook?course_id=${sub.course_id}&lang=${lang}`)}>
-                       <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
-                         {t.gradeNow}
-                       </Button>
-                      </Link>
+            <div className="grid lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ClipboardCheck className="w-5 h-5 text-amber-600" />
+                    {t.submissions}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {submissions.length === 0 ? (
+                    <p className="text-slate-500 text-center py-8">{t.noSubmissions}</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {submissions.slice(0, 5).map(sub => (
+                        <div key={sub.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                          <div className="flex-1">
+                            <p className="font-medium text-slate-900">{sub.user_name}</p>
+                            <p className="text-sm text-slate-500">
+                              {new Date(sub.submitted_date).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <Link to={createPageUrl(`InstructorGradebook?course_id=${sub.course_id}&lang=${lang}`)}>
+                           <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
+                             {t.gradeNow}
+                           </Button>
+                          </Link>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                  )}
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-blue-600" />
-                {t.discussions}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {recentPosts.length === 0 ? (
-                <p className="text-slate-500 text-center py-8">{t.noPosts}</p>
-              ) : (
-                <div className="space-y-3">
-                  {recentPosts.map(post => (
-                    <Link
-                      key={post.id}
-                      to={createPageUrl(`ForumPost?id=${post.id}&lang=${lang}`)}
-                      className="block p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
-                    >
-                      <p className="font-medium text-slate-900">{post.title}</p>
-                      <p className="text-sm text-slate-500">{post.user_name}</p>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5 text-blue-600" />
+                    {t.discussions}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {recentPosts.length === 0 ? (
+                    <p className="text-slate-500 text-center py-8">{t.noPosts}</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {recentPosts.map(post => (
+                        <Link
+                          key={post.id}
+                          to={createPageUrl(`ForumPost?id=${post.id}&lang=${lang}`)}
+                          className="block p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
+                        >
+                          <p className="font-medium text-slate-900">{post.title}</p>
+                          <p className="text-sm text-slate-500">{post.user_name}</p>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="schedule">
+            <CourseCalendar user={user} userType="instructor" lang={lang} />
+          </TabsContent>
+
+          <TabsContent value="availability">
+            <AvailabilityManager user={user} />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

@@ -19,6 +19,7 @@ import PathwayProgress from '@/components/dashboard/PathwayProgress';
 import WeeklyStudyPlan from '@/components/dashboard/WeeklyStudyPlan';
 import StreakCalendar from '@/components/dashboard/StreakCalendar';
 import QuickStats from '@/components/dashboard/QuickStats';
+import CourseCalendar from '@/components/calendar/CourseCalendar';
 
 export default function Dashboard() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -389,6 +390,9 @@ export default function Dashboard() {
             />
           </div>
         </div>
+
+        {/* Academic Calendar */}
+        <CourseCalendar user={user} userType="student" lang={lang} />
 
 
 
