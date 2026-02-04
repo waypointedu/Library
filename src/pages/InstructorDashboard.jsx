@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ClipboardCheck, MessageSquare, Eye, FileText, TrendingUp, Users } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
-import InstructorAvailability from '@/components/instructor/InstructorAvailability';
+import SemesterAvailability from '@/components/instructor/SemesterAvailability';
 import CourseCalendar from '@/components/calendar/CourseCalendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -335,7 +335,7 @@ export default function InstructorDashboard() {
           </TabsContent>
 
           <TabsContent value="availability">
-            <InstructorAvailability user={user} />
+            <SemesterAvailability user={user} />
           </TabsContent>
         </Tabs>
       </div>
