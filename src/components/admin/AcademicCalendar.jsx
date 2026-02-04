@@ -365,9 +365,21 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
     status: 'scheduled'
   });
 
+  const { data: approvedInstructors = [] } = useQuery({
+    queryKey: ['approvedInstructors', formData.course_id],
+    queryFn: () => base44.entities.InstructorAvailability.filter({ course_id: formData.course_id, status: 'approved' }),
+    enabled: !!formData.course_id
+  });
+
   const { data: semesterAvailability = [] } = useQuery({
     queryKey: ['semesterAvailability', formData.term_id],
     queryFn: () => base44.entities.InstructorSemesterAvailability.filter({ term_id: formData.term_id }),
+    enabled: !!formData.term_id
+  });
+
+  const { data: allInstances = [] } = useQuery({
+    queryKey: ['courseInstances', formData.term_id],
+    queryFn: () => formData.term_id ? base44.entities.CourseInstance.filter({ term_id: formData.term_id }) : [],
     enabled: !!formData.term_id
   });
 
@@ -385,12 +397,24 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
     }
   };
 
-  // Filter instructors: only show if course + term selected, and they're approved for course + available for semester
+  // Count current assignments per instructor for this term
+  const getInstructorLoadAndMax = (email) => {
+    const availability = semesterAvailability.find(a => a.instructor_email === email);
+    const currentLoad = allInstances.filter(inst => (inst.instructor_emails || []).includes(email) && inst.id !== instance?.id).length;
+    const maxCourses = availability?.max_courses || 3;
+    return { currentLoad, maxCourses };
+  };
+
+  // Filter instructors: course + term selected, approved for course, available for semester, and under load limit
   const availableInstructors = (!formData.course_id || !formData.term_id) ? [] : instructors.filter(u => {
-    if (!(u.approved_courses || []).includes(formData.course_id)) return false;
+    const isApproved = approvedInstructors.some(a => a.instructor_email === u.email);
+    if (!isApproved) return false;
     
     const availability = semesterAvailability.find(a => a.instructor_email === u.email);
-    return availability && availability.is_available;
+    if (!availability || !availability.is_available) return false;
+
+    const { currentLoad, maxCourses } = getInstructorLoadAndMax(u.email);
+    return currentLoad < maxCourses;
   });
 
   return (
@@ -442,21 +466,29 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
           </p>
         ) : availableInstructors.length === 0 ? (
           <p className="text-sm text-amber-600 p-3 border rounded-lg bg-amber-50">
-            No instructors available (must be approved for this course AND available for this semester)
+            No instructors available (must be approved for this course, available for semester, AND under max course load)
           </p>
         ) : (
-          <div className="border rounded-lg p-3 space-y-2 max-h-40 overflow-y-auto">
-            {availableInstructors.map(instructor => (
-              <label key={instructor.email} className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.instructor_emails?.includes(instructor.email)}
-                  onChange={() => toggleInstructor(instructor.email)}
-                  className="rounded"
-                />
-                <span className="text-sm">{instructor.full_name} ({instructor.email})</span>
-              </label>
-            ))}
+          <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto">
+            {availableInstructors.map(instructor => {
+              const { currentLoad, maxCourses } = getInstructorLoadAndMax(instructor.email);
+              return (
+                <label key={instructor.email} className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-2 rounded">
+                  <input
+                    type="checkbox"
+                    checked={formData.instructor_emails?.includes(instructor.email)}
+                    onChange={() => toggleInstructor(instructor.email)}
+                    className="rounded"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium">{instructor.full_name}</span>
+                    <span className="text-xs text-slate-500 ml-2">
+                      {currentLoad}/{maxCourses} courses this semester
+                    </span>
+                  </div>
+                </label>
+              );
+            })}
           </div>
         )}
       </div>
