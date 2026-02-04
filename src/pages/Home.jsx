@@ -9,54 +9,20 @@ import CourseCard from '@/components/courses/CourseCard';
 import LanguageToggle from '@/components/common/LanguageToggle';
 import MobileNav from '@/components/common/MobileNav';
 
-// Hero Slideshow Component
-function HeroSlideshow() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  
-  const slides = [
-    { url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/9140496ee_mexi.png', alt: 'Rural Mexico' },
-    { url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/32dbfb305_afr.png', alt: 'Sub-Saharan Africa' },
-    { url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/101f5693e_myan.png', alt: 'Myanmar' }
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
+// Hero Video Component
+function HeroVideo() {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
-      {slides.map((slide, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <div 
-            className="w-full h-[120%] bg-cover bg-center"
-            style={{ 
-              backgroundImage: `url(${slide.url})`,
-              animation: index === currentSlide ? 'panUp 20s ease-out forwards' : 'none',
-              backgroundPosition: 'center bottom'
-            }}
-          />
-        </div>
-      ))}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="https://drive.google.com/uc?export=download&id=1XpFnLNADMDfB0gj0v-RxkpMrJs3KTYbG" type="video/mp4" />
+      </video>
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
-      
-      <style jsx>{`
-        @keyframes panUp {
-          0% { 
-            transform: translateY(0);
-          }
-          100% { 
-            transform: translateY(-15%);
-          }
-        }
-      `}</style>
     </div>
   );
 }
@@ -199,10 +165,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Slideshow Section */}
+      {/* Hero Video Section */}
       <section className="relative h-[75vh] flex items-end overflow-hidden pt-20">
-        {/* Slideshow Background */}
-        <HeroSlideshow />
+        {/* Video Background */}
+        <HeroVideo />
 
         {/* Tagline - Bottom Left */}
         <div className="relative z-10 px-8 pb-12 md:px-12 md:pb-16">

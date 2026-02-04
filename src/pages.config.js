@@ -59,6 +59,7 @@ import CourseEditor from './pages/CourseEditor';
 import CourseForum from './pages/CourseForum';
 import Dashboard from './pages/Dashboard';
 import FAQ from './pages/FAQ';
+import Faculty from './pages/Faculty';
 import ForumPost from './pages/ForumPost';
 import Gradebook from './pages/Gradebook';
 import Home from './pages/Home';
@@ -73,7 +74,6 @@ import Profile from './pages/Profile';
 import Support from './pages/Support';
 import Transcript from './pages/Transcript';
 import Week from './pages/Week';
-import Faculty from './pages/Faculty';
 
 
 export const PAGES = {
@@ -89,6 +89,7 @@ export const PAGES = {
     "CourseForum": CourseForum,
     "Dashboard": Dashboard,
     "FAQ": FAQ,
+    "Faculty": Faculty,
     "ForumPost": ForumPost,
     "Gradebook": Gradebook,
     "Home": Home,
@@ -103,7 +104,6 @@ export const PAGES = {
     "Support": Support,
     "Transcript": Transcript,
     "Week": Week,
-    "Faculty": Faculty,
 }
 
 export const pagesConfig = {
