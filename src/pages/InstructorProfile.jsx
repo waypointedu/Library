@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2, Edit2, ArrowLeft } from "lucide-react";
+import MobileNav from '@/components/common/MobileNav';
 
 export default function InstructorProfile() {
   const [user, setUser] = useState(null);
@@ -287,6 +288,8 @@ export default function InstructorProfile() {
           </Button>
         </div>
       </div>
+
+      <MobileNav lang="en" currentPage="InstructorProfile" />
     </div>
   );
 }
