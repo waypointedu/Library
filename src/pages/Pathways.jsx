@@ -115,32 +115,37 @@ export default function Pathways() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-32">
-        <div className="mb-16">
-          <h1 className="text-4xl md:text-5xl font-light text-slate-900 mb-6">Certificate in Biblical Formation</h1>
-          <p className="text-xl text-slate-600 leading-relaxed max-w-4xl">
+        <div className="mb-20 text-center">
+          <h1 className="text-5xl md:text-6xl font-light text-slate-900 mb-8 leading-tight">
+            Certificate in <span className="italic text-[#c4933f]">Biblical Formation</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-slate-600 leading-relaxed max-w-4xl mx-auto">
             The Biblical Formation certificate is our launch-year, college-level credential. Students begin with the Waypoint Introduction Seminar, progress through seven core courses, and complete an oral capstone for each class before any future specialization. The intent of this certificate is to be an intermediary credential preceding their Associate's Degree.
           </p>
         </div>
 
         {/* Program Overview */}
-        <section className="mb-16 p-8 bg-slate-50 rounded-2xl">
-          <h2 className="text-2xl font-semibold text-slate-900 mb-4">Program overview</h2>
-          <p className="text-slate-600 leading-relaxed">
+        <section className="mb-20 p-10 md:p-12 bg-gradient-to-br from-slate-50 to-white rounded-3xl shadow-lg border border-slate-200">
+          <h2 className="text-3xl font-semibold text-slate-900 mb-6">Program overview</h2>
+          <p className="text-lg text-slate-600 leading-relaxed mb-4">
             Begin with a two-week introduction seminar covering tools, policies, and study rhythms. Courses run 8 or 16 weeks with shared checkpoints; readings and assignments are self-paced between those checkpoints.
           </p>
-          <p className="text-slate-600 leading-relaxed mt-4">
+          <p className="text-lg text-slate-600 leading-relaxed">
             After completing the Biblical Formation core, you remain connected to peers while awaiting the launch of associate-level pathways and the accompanying research seminar.
           </p>
         </section>
 
         {/* Year One */}
-        <Card className="mb-16 overflow-hidden border-slate-200">
-          <div className="bg-[#1e3a5f] text-white p-8">
-            <span className="text-sm font-medium text-white/80 mb-2 block">Year One</span>
-            <h2 className="text-3xl font-semibold mb-3">Certificate in Biblical Formation</h2>
-            <p className="text-white/90 text-lg leading-relaxed">
-              Seven 16-week courses (4 cr each), plus a two-week introduction seminar (1 cr) and an integrated apologetics seminar (1 cr). Total 30 credits with guided checkpoints and room for weekly self-paced work.
-            </p>
+        <Card className="mb-20 overflow-hidden border-slate-200 shadow-xl">
+          <div className="bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] text-white p-10 md:p-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+            <div className="relative z-10">
+              <span className="text-sm font-medium text-white/90 mb-3 block uppercase tracking-wider">Year One</span>
+              <h2 className="text-4xl font-semibold mb-4">Certificate in Biblical Formation</h2>
+              <p className="text-white/95 text-xl leading-relaxed">
+                Seven 16-week courses (4 cr each), plus a two-week introduction seminar (1 cr) and an integrated apologetics seminar (1 cr). Total 30 credits with guided checkpoints and room for weekly self-paced work.
+              </p>
+            </div>
           </div>
           <CardContent className="p-8">
             <div className="space-y-3 mb-6">
@@ -194,20 +199,23 @@ export default function Pathways() {
         </Card>
 
         {/* Year Two */}
-        <Card className="mb-16 overflow-hidden border-slate-200">
-          <div className="bg-slate-700 text-white p-8">
-            <span className="text-sm font-medium text-white/80 mb-2 block">Year Two</span>
-            <h2 className="text-3xl font-semibold mb-3">Associate Pathways (coming soon)</h2>
-            <p className="text-white/90 text-lg leading-relaxed">
-              After year one, associate-level tracks will let you deepen focus areas while staying connected to your peers. Titles, syllabi, and research seminar details are forthcoming.
-            </p>
+        <Card className="mb-20 overflow-hidden border-slate-200 shadow-xl">
+          <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white p-10 md:p-12 relative overflow-hidden">
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+            <div className="relative z-10">
+              <span className="text-sm font-medium text-white/90 mb-3 block uppercase tracking-wider">Year Two</span>
+              <h2 className="text-4xl font-semibold mb-4">Associate Pathways <span className="text-[#c4933f]">(coming soon)</span></h2>
+              <p className="text-white/95 text-xl leading-relaxed">
+                After year one, associate-level tracks will let you deepen focus areas while staying connected to your peers. Titles, syllabi, and research seminar details are forthcoming.
+              </p>
+            </div>
           </div>
         </Card>
 
         {/* Capstones & Assessment */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-light text-slate-900 mb-6">Capstones & Assessment</h2>
-          <p className="text-slate-600 leading-relaxed">
+        <section className="mb-20 p-10 md:p-12 bg-white rounded-3xl shadow-lg border border-slate-200">
+          <h2 className="text-4xl font-light text-slate-900 mb-6">Capstones & Assessment</h2>
+          <p className="text-lg text-slate-600 leading-relaxed">
             Each course culminates in a topical capstone conversation. Students record a 30-minute audio or video discussion with one or two peers. Faculty review individual contributions as an oral examination. If mastery is unclear, we assign remedial work or schedule a one-on-one follow up before granting course credit.
           </p>
         </section>
