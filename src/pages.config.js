@@ -74,6 +74,7 @@ import Profile from './pages/Profile';
 import Support from './pages/Support';
 import Transcript from './pages/Transcript';
 import Week from './pages/Week';
+import AccessibilitySettings from './pages/AccessibilitySettings';
 
 
 export const PAGES = {
@@ -104,6 +105,7 @@ export const PAGES = {
     "Support": Support,
     "Transcript": Transcript,
     "Week": Week,
+    "AccessibilitySettings": AccessibilitySettings,
 }
 
 export const pagesConfig = {
