@@ -93,7 +93,7 @@ export default function Admin() {
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between overflow-x-auto">
           <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
             <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-10" />
           </Link>
@@ -129,18 +129,18 @@ export default function Admin() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
            <TabsList className="mb-8 flex-wrap">
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="overview">{t.tabs.overview}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="applications">{lang === 'es' ? 'Solicitudes' : 'Applications'}</TabsTrigger>}
-             <TabsTrigger value="courses">{t.tabs.courses}</TabsTrigger>
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="courseCatalog">{t.tabs.courseCatalog}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="instructors">{lang === 'es' ? 'Instructores' : 'Instructors'}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="calendar">{lang === 'es' ? 'Calendario' : 'Calendar'}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="gamification">{t.tabs.gamification}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="announcements">{t.tabs.announcements}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="messages">{t.tabs.messages}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="advancedAnalytics">{t.tabs.advancedAnalytics}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="analytics">{t.tabs.analytics}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="applications" className="text-xs md:text-sm">{lang === 'es' ? 'Solicitudes' : 'Applications'}</TabsTrigger>}
+             <TabsTrigger value="courses" className="text-xs md:text-sm">{t.tabs.courses}</TabsTrigger>
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="courseCatalog" className="text-xs md:text-sm">{t.tabs.courseCatalog}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="instructors" className="text-xs md:text-sm">{lang === 'es' ? 'Instructores' : 'Instructors'}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="calendar" className="text-xs md:text-sm">{lang === 'es' ? 'Calendario' : 'Calendar'}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="pathways" className="text-xs md:text-sm">{t.tabs.pathways}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="users" className="text-xs md:text-sm">{t.tabs.users}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="gamification" className="text-xs md:text-sm">{t.tabs.gamification}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="announcements" className="text-xs md:text-sm">{t.tabs.announcements}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="messages" className="text-xs md:text-sm">{t.tabs.messages}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="advancedAnalytics" className="text-xs md:text-sm">{t.tabs.advancedAnalytics}</TabsTrigger>}
+             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="analytics" className="text-xs md:text-sm">{t.tabs.analytics}</TabsTrigger>}
            </TabsList>
 
           {(user.role === 'admin' || user.user_type === 'admin') && (
