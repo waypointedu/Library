@@ -304,7 +304,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
       {/* Header */}
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between overflow-x-auto">
           <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
             <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-10" />
           </Link>
@@ -342,8 +342,8 @@ export default function Dashboard() {
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-12">
         {/* Welcome */}
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-light text-slate-900 mb-2">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-xl md:text-3xl font-light text-slate-900 mb-2 truncate">
             {t.welcome}, <span className="font-semibold">{user.full_name || user.email}</span>
           </h1>
         </div>
@@ -357,7 +357,7 @@ export default function Dashboard() {
         />
 
         {/* Main Dashboard Grid */}
-        <div className="grid lg:grid-cols-3 gap-6 mt-8 mb-8">
+        <div className="grid lg:grid-cols-3 gap-4 md:gap-6 mt-6 md:mt-8 mb-6 md:mb-8">
           {/* Left Column - Pathway Progress */}
           <div className="lg:col-span-2 space-y-6">
             <PathwayProgress 
@@ -406,9 +406,9 @@ export default function Dashboard() {
 
 
         {/* My Courses */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-slate-900">{t.myCourses}</h2>
+        <div className="mb-6 md:mb-12">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
+            <h2 className="text-xl md:text-2xl font-semibold text-slate-900">{t.myCourses}</h2>
             <Link
               to={createPageUrl(`Catalog?lang=${lang}`)}
               className="text-[#1e3a5f] font-medium flex items-center gap-1 hover:gap-2 transition-all"
@@ -431,7 +431,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {enrolledCourses.map(course => (
                 <CourseCard
                   key={course.id}
