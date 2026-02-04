@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
@@ -94,9 +94,6 @@ export default function Faculty() {
                     Apply
                   </Button>
                 </Link>
-                <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                  Sign In
-                </Button>
               </>
             ) : (
               <Link to={createPageUrl(user.role === 'admin' || user.user_type === 'admin' ? 'Admin' : user.user_type === 'instructor' ? 'InstructorDashboard' : 'Dashboard')}>
@@ -126,11 +123,11 @@ export default function Faculty() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
             {activeFaculty.map((member, index) => (
               <Card key={index} className="overflow-hidden shadow-xl border-slate-200 hover:shadow-2xl transition-shadow">
-                <div className="relative h-80 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
+                <div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
                   <img 
                     src={member.image} 
                     alt={member.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white">

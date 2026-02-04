@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, MessageCircle } from "lucide-react";
-import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function Contact() {
   const [lang, setLang] = useState(() => {
@@ -94,7 +94,6 @@ export default function Contact() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <LanguageToggle currentLang={lang} onToggle={setLang} />
             <Link to={createPageUrl(`Apply?lang=${lang}`)}>
               <Button size="sm" variant="outline" className="border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white hidden sm:inline-flex">
                 {lang === 'es' ? 'Aplicar' : 'Apply'}
