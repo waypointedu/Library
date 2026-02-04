@@ -30,7 +30,13 @@ export default function PathwayManager({ lang }) {
   });
 
   const saveMutation = useMutation({
-    mutationFn: (data) => editing ? base44.entities.Pathway.update(editing, data) : base44.entities.Pathway.create(data),
+    mutationFn: (data) => {
+      if (editing && editing !== 'new') {
+        return base44.entities.Pathway.update(editing, data);
+      } else {
+        return base44.entities.Pathway.create(data);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pathways'] });
       setEditing(null);

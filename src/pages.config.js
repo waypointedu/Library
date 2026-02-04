@@ -63,6 +63,9 @@ import Pathway from './pages/Pathway';
 import Pathways from './pages/Pathways';
 import Transcript from './pages/Transcript';
 import Week from './pages/Week';
+import Library from './pages/Library';
+import Gradebook from './pages/Gradebook';
+import InstructorGradebook from './pages/InstructorGradebook';
 
 
 export const PAGES = {
@@ -82,6 +85,9 @@ export const PAGES = {
     "Pathways": Pathways,
     "Transcript": Transcript,
     "Week": Week,
+    "Library": Library,
+    "Gradebook": Gradebook,
+    "InstructorGradebook": InstructorGradebook,
 }
 
 export const pagesConfig = {
