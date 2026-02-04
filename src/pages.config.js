@@ -48,6 +48,7 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import About from './pages/About';
+import AccessibilitySettings from './pages/AccessibilitySettings';
 import AccountSettings from './pages/AccountSettings';
 import Achievements from './pages/Achievements';
 import Admin from './pages/Admin';
@@ -74,11 +75,11 @@ import Profile from './pages/Profile';
 import Support from './pages/Support';
 import Transcript from './pages/Transcript';
 import Week from './pages/Week';
-import AccessibilitySettings from './pages/AccessibilitySettings';
 
 
 export const PAGES = {
     "About": About,
+    "AccessibilitySettings": AccessibilitySettings,
     "AccountSettings": AccountSettings,
     "Achievements": Achievements,
     "Admin": Admin,
@@ -105,7 +106,6 @@ export const PAGES = {
     "Support": Support,
     "Transcript": Transcript,
     "Week": Week,
-    "AccessibilitySettings": AccessibilitySettings,
 }
 
 export const pagesConfig = {

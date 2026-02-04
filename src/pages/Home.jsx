@@ -49,14 +49,6 @@ export default function Home() {
   useEffect(() => {
     base44.auth.me().then((u) => {
       setUser(u);
-      // Auto-redirect logged-in users to their dashboard
-      if (u.role === 'admin' || u.user_type === 'admin') {
-        window.location.href = createPageUrl('Admin?lang=' + lang);
-      } else if (u.user_type === 'instructor') {
-        window.location.href = createPageUrl('InstructorDashboard?lang=' + lang);
-      } else {
-        window.location.href = createPageUrl('Dashboard?lang=' + lang);
-      }
     }).catch(() => setUser(null));
   }, []);
 
@@ -110,14 +102,7 @@ export default function Home() {
 
   const t = text[lang];
 
-  // Don't render the marketing site if user is logged in - redirect happens in useEffect
-  if (user) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e3a5f]" />
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -161,14 +146,24 @@ export default function Home() {
 
           <div className="flex items-center gap-4">
             <LanguageToggle currentLang={lang} onToggle={setLang} />
-            <Link to={createPageUrl(`Apply?lang=${lang}`)}>
-              <Button size="sm" variant="outline" className="border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white hidden sm:inline-flex">
-                {lang === 'es' ? 'Aplicar' : 'Apply'}
-              </Button>
-            </Link>
-            <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-              {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
-            </Button>
+            {!user ? (
+              <>
+                <Link to={createPageUrl(`Apply?lang=${lang}`)}>
+                  <Button size="sm" variant="outline" className="border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white hidden sm:inline-flex">
+                    {lang === 'es' ? 'Aplicar' : 'Apply'}
+                  </Button>
+                </Link>
+                <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                  {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
+                </Button>
+              </>
+            ) : (
+              <Link to={createPageUrl(user.role === 'admin' || user.user_type === 'admin' ? `Admin?lang=${lang}` : user.user_type === 'instructor' ? `InstructorDashboard?lang=${lang}` : `Dashboard?lang=${lang}`)}>
+                <Button size="sm" className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                  {lang === 'es' ? 'Mi Área de Aprendizaje' : 'My Learning Area'}
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </header>
