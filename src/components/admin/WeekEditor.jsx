@@ -13,6 +13,7 @@ import FileUploader from '@/components/upload/FileUploader';
 import WeekQuizEditor from '@/components/admin/WeekQuizEditor';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import WrittenAssignmentGrading from '@/components/assignments/WrittenAssignmentGrading';
+import BlockEditor from '@/components/editor/BlockEditor';
 
 export default function WeekEditor({ courseId, lang }) {
   const [expandedWeek, setExpandedWeek] = useState(null);
@@ -54,7 +55,8 @@ export default function WeekEditor({ courseId, lang }) {
       week_number: sortedWeeks.length + 1,
       title_en: `Week ${sortedWeeks.length + 1}`,
       overview_en: '',
-      lesson_content_en: '',
+      content_blocks_en: [],
+      content_blocks_es: [],
       has_quiz: false,
       has_discussion: false,
       has_written_assignment: false
@@ -107,10 +109,10 @@ export default function WeekEditor({ courseId, lang }) {
 
                 <div>
                   <Label>{t.lesson}</Label>
-                  <RichTextEditor
-                    value={editingWeek.lesson_content_en || ''}
-                    onChange={(content) => setEditingWeek({...editingWeek, lesson_content_en: content})}
-                    placeholder="Write your lesson content here..."
+                  <BlockEditor
+                    value={editingWeek.content_blocks_en || []}
+                    onChange={(blocks) => setEditingWeek({...editingWeek, content_blocks_en: blocks})}
+                    lang="en"
                   />
                 </div>
 
@@ -144,10 +146,10 @@ export default function WeekEditor({ courseId, lang }) {
 
                 <div>
                   <Label>{t.lesson}</Label>
-                  <RichTextEditor
-                    value={editingWeek.lesson_content_es || ''}
-                    onChange={(content) => setEditingWeek({...editingWeek, lesson_content_es: content})}
-                    placeholder="Escribe el contenido de la lección aquí..."
+                  <BlockEditor
+                    value={editingWeek.content_blocks_es || []}
+                    onChange={(blocks) => setEditingWeek({...editingWeek, content_blocks_es: blocks})}
+                    lang="es"
                   />
                 </div>
 
