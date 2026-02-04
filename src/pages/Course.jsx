@@ -399,10 +399,10 @@ export default function Course() {
                     {lang === 'es' ? 'No hay contenido disponible aún' : 'No content available yet'}
                   </p>
                 )}
-            </div>
+              </div>
 
-            {/* Sidebar */}
-            <div>
+              {/* Sidebar */}
+              <div>
               {prerequisites && (
                 <Card className="border-slate-100">
                   <CardContent className="p-6">
