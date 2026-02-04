@@ -24,7 +24,7 @@ import { UserPlus, Shield, User } from "lucide-react";
 export default function UserManager({ lang = 'en' }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState('user');
+  const [inviteRole, setInviteRole] = useState('student');
   const queryClient = useQueryClient();
 
   const { data: users = [], isLoading } = useQuery({
@@ -33,10 +33,13 @@ export default function UserManager({ lang = 'en' }) {
   });
 
   const inviteMutation = useMutation({
-    mutationFn: () => base44.users.inviteUser(inviteEmail, inviteRole),
+    mutationFn: async () => {
+      await base44.users.inviteUser(inviteEmail, inviteRole);
+      alert(lang === 'es' ? 'Invitación enviada' : 'Invitation sent!');
+    },
     onSuccess: () => {
       setInviteEmail('');
-      setInviteRole('user');
+      setInviteRole('student');
       queryClient.invalidateQueries({ queryKey: ['allUsers'] });
     }
   });
@@ -67,7 +70,8 @@ export default function UserManager({ lang = 'en' }) {
       invite: "Send Invite",
       changeRole: "Change Role",
       admin: "Admin",
-      user: "User",
+      instructor: "Instructor",
+      student: "Student",
       noUsers: "No users found."
     },
     es: {
@@ -83,7 +87,8 @@ export default function UserManager({ lang = 'en' }) {
       invite: "Enviar Invitación",
       changeRole: "Cambiar Rol",
       admin: "Admin",
-      user: "Usuario",
+      instructor: "Instructor",
+      student: "Estudiante",
       noUsers: "No se encontraron usuarios."
     }
   };
@@ -112,7 +117,8 @@ export default function UserManager({ lang = 'en' }) {
               <SelectValue placeholder={t.selectRole} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="user">{t.user}</SelectItem>
+              <SelectItem value="student">{t.student}</SelectItem>
+              <SelectItem value="instructor">{t.instructor}</SelectItem>
               <SelectItem value="admin">{t.admin}</SelectItem>
             </SelectContent>
           </Select>
@@ -167,13 +173,17 @@ export default function UserManager({ lang = 'en' }) {
                   <TableCell className="font-medium">{user.email}</TableCell>
                   <TableCell>{user.full_name || '—'}</TableCell>
                   <TableCell>
-                    <Badge className={user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-700'}>
+                    <Badge className={
+                      user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 
+                      user.role === 'instructor' ? 'bg-blue-100 text-blue-700' :
+                      'bg-slate-100 text-slate-700'
+                    }>
                       {user.role === 'admin' ? (
                         <Shield className="w-3 h-3 mr-1" />
                       ) : (
                         <User className="w-3 h-3 mr-1" />
                       )}
-                      {user.role}
+                      {user.role === 'admin' ? t.admin : user.role === 'instructor' ? t.instructor : t.student}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-slate-500 text-sm">
@@ -188,7 +198,8 @@ export default function UserManager({ lang = 'en' }) {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="user">{t.user}</SelectItem>
+                        <SelectItem value="student">{t.student}</SelectItem>
+                        <SelectItem value="instructor">{t.instructor}</SelectItem>
                         <SelectItem value="admin">{t.admin}</SelectItem>
                       </SelectContent>
                     </Select>
