@@ -359,14 +359,46 @@ export default function Course() {
                   <BookOpen className="w-6 h-6 text-[#1e3a5f]" />
                   {t.curriculum}
                 </h2>
-                <ModuleAccordion
-                  modules={modules}
-                  lessons={lessons}
-                  completedLessons={completedLessonIds}
-                  lang={lang}
-                  courseId={courseId}
-                />
-              </div>
+                {weeks.length > 0 ? (
+                  <div className="space-y-3">
+                    {weeks.map((week) => {
+                      const weekTitle = week[`title_${lang}`] || week.title_en;
+                      return (
+                        <Link
+                          key={week.id}
+                          to={createPageUrl(`Week?id=${week.id}&lang=${lang}`)}
+                          className="block p-6 bg-white rounded-xl border border-slate-100 hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="font-semibold text-slate-900 mb-1">{weekTitle}</h3>
+                              <p className="text-sm text-slate-500">
+                                {lang === 'es' ? 'Semana' : 'Week'} {week.week_number}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {week.has_quiz && <Badge variant="outline">Quiz</Badge>}
+                              {week.has_written_assignment && <Badge variant="outline">{lang === 'es' ? 'Tarea' : 'Assignment'}</Badge>}
+                              {week.has_discussion && <Badge variant="outline">{lang === 'es' ? 'Discusión' : 'Discussion'}</Badge>}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                ) : modules.length > 0 ? (
+                  <ModuleAccordion
+                    modules={modules}
+                    lessons={lessons}
+                    completedLessons={completedLessonIds}
+                    lang={lang}
+                    courseId={courseId}
+                  />
+                ) : (
+                  <p className="text-slate-500 text-center py-8">
+                    {lang === 'es' ? 'No hay contenido disponible aún' : 'No content available yet'}
+                  </p>
+                )}
             </div>
 
             {/* Sidebar */}

@@ -36,21 +36,25 @@ export default function WeekQuizStudent({ weekId, user, lang }) {
       const attemptNumber = attempts.length + 1;
       const answersArray = questions.map((q, idx) => ({
         question_index: idx,
-        selected_option_index: answers[idx],
-        is_correct: q.options[answers[idx]]?.is_correct || false
+        selected_option_index: answers[idx] ?? -1,
+        is_correct: answers[idx] !== undefined && q.options[answers[idx]]?.is_correct || false
       }));
 
       const correctCount = answersArray.filter(a => a.is_correct).length;
-      const rawScore = Math.round((correctCount / questions.length) * 100);
+      const rawScore = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
       const penalty = (attemptNumber - 1) * (quiz.retake_penalty || 5);
       const finalScore = Math.max(0, rawScore - penalty);
       const passed = finalScore >= (quiz.pass_threshold || 70);
+
+      // Get course_id from week
+      const weeks = await base44.entities.Week.filter({ id: weekId });
+      const week = weeks[0];
 
       return base44.entities.WeekQuizAttempt.create({
         user_email: user.email,
         quiz_id: quiz.id,
         week_id: weekId,
-        course_id: quiz.course_id,
+        course_id: week?.course_id,
         answers: answersArray,
         raw_score: rawScore,
         final_score: finalScore,
