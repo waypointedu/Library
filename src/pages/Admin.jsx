@@ -13,6 +13,7 @@ import Analytics from '@/components/admin/Analytics';
 import PathwayManager from '@/components/admin/PathwayManager';
 import DetailedAnalytics from '@/components/admin/DetailedAnalytics';
 import ApplicationsManager from '@/components/admin/ApplicationsManager';
+import AcademicCalendar from '@/components/admin/AcademicCalendar';
 
 export default function Admin() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -89,11 +90,13 @@ export default function Admin() {
                 </Button>
               </Link>
             )}
-            <Link to={createPageUrl(`Dashboard?lang=${lang}`)}>
-              <Button variant="outline" size="sm">
-                {lang === 'es' ? 'Vista Estudiante' : 'Student View'}
-              </Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.location.href = createPageUrl(`Dashboard?lang=${lang}&view=student`)}
+            >
+              {lang === 'es' ? 'Vista Estudiante' : 'Student View'}
+            </Button>
             <Link to={createPageUrl(`AccountSettings?lang=${lang}`)}>
               <Button variant="ghost" size="sm">
                 {lang === 'es' ? 'Mi Cuenta' : 'Account'}
@@ -111,6 +114,7 @@ export default function Admin() {
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="overview">{t.tabs.overview}</TabsTrigger>}
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="applications">{lang === 'es' ? 'Solicitudes' : 'Applications'}</TabsTrigger>}
             <TabsTrigger value="courses">{t.tabs.courses}</TabsTrigger>
+            {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="calendar">{lang === 'es' ? 'Calendario' : 'Calendar'}</TabsTrigger>}
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="pathways">{t.tabs.pathways}</TabsTrigger>}
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="users">{t.tabs.users}</TabsTrigger>}
             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="analytics">{t.tabs.analytics}</TabsTrigger>}
@@ -131,6 +135,12 @@ export default function Admin() {
           <TabsContent value="courses">
             <CourseManager lang={lang} user={user} />
           </TabsContent>
+
+          {(user.role === 'admin' || user.user_type === 'admin') && (
+            <TabsContent value="calendar">
+              <AcademicCalendar lang={lang} />
+            </TabsContent>
+          )}
 
           {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="pathways">
