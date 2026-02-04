@@ -348,6 +348,8 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      <MobileNav lang={lang} currentPage="Home" />
     </div>
   );
 }

@@ -75,6 +75,7 @@ import Profile from './pages/Profile';
 import Support from './pages/Support';
 import Transcript from './pages/Transcript';
 import Week from './pages/Week';
+import InstructorProfile from './pages/InstructorProfile';
 
 
 export const PAGES = {
@@ -106,6 +107,7 @@ export const PAGES = {
     "Support": Support,
     "Transcript": Transcript,
     "Week": Week,
+    "InstructorProfile": InstructorProfile,
 }
 
 export const pagesConfig = {

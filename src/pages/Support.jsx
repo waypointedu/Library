@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DollarSign, BookOpen, Users, Mail } from "lucide-react";
-import LanguageToggle from '@/components/common/LanguageToggle';
+import MobileNav from '@/components/common/MobileNav';
 
 export default function Support() {
   const [lang, setLang] = useState(() => {
@@ -148,6 +148,8 @@ export default function Support() {
           </a>
         </div>
       </div>
+
+      <MobileNav lang={lang} currentPage="Support" />
     </div>
   );
 }

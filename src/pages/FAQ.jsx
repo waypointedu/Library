@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import LanguageToggle from '@/components/common/LanguageToggle';
+import MobileNav from '@/components/common/MobileNav';
 
 export default function FAQ() {
   const [lang, setLang] = useState(() => {
@@ -161,6 +161,8 @@ export default function FAQ() {
           ))}
         </Accordion>
       </div>
+
+      <MobileNav lang={lang} currentPage="FAQ" />
     </div>
   );
 }

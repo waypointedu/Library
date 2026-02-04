@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { CheckCircle2, ArrowRight } from "lucide-react";
+import MobileNav from '@/components/common/MobileNav';
 
 export default function Apply() {
   const [lang, setLang] = useState(() => {
@@ -387,6 +388,8 @@ export default function Apply() {
           </div>
         </form>
       </div>
+
+      <MobileNav lang={lang} currentPage="Apply" />
     </div>
   );
 }

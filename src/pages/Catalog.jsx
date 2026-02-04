@@ -221,6 +221,8 @@ export default function Catalog() {
           )}
         </div>
       </section>
+
+      <MobileNav lang={lang} currentPage="Catalog" />
     </div>
   );
 }

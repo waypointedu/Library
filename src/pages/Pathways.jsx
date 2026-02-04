@@ -301,7 +301,7 @@ export default function Pathways() {
         </section>
       </div>
 
-      <MobileNav lang={lang} currentPage="Courses" />
+      <MobileNav lang={lang} currentPage="Pathways" />
     </div>
   );
 }
