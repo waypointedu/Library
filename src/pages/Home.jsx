@@ -8,6 +8,7 @@ import { ArrowRight, BookOpen, GraduationCap, Users, Globe, Star, ChevronRight }
 import CourseCard from '@/components/courses/CourseCard';
 import LanguageToggle from '@/components/common/LanguageToggle';
 import MobileNav from '@/components/common/MobileNav';
+import HeroSlideshow from '@/components/hero/HeroSlideshow';
 
 export default function Home() {
   const [lang, setLang] = useState(() => {
@@ -116,6 +117,9 @@ export default function Home() {
             <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
               {lang === 'es' ? 'Cursos' : 'Courses'}
             </Link>
+            <Link to={createPageUrl(`Faculty?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
+              {lang === 'es' ? 'Facultad' : 'Faculty'}
+            </Link>
             <Link to={createPageUrl(`HowItWorks?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
               {lang === 'es' ? 'Cómo Funciona' : 'How it works'}
             </Link>
@@ -144,30 +148,28 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section with Background */}
-      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden pt-20">
-        {/* Background Video/Image */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop" 
-            alt="Mountain landscape" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
-        </div>
+      {/* Hero Section with Slideshow */}
+      <section className="relative h-[85vh] flex flex-col overflow-hidden pt-20">
+        {/* Slideshow Background */}
+        <HeroSlideshow />
 
-        {/* Simple Centered Text */}
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-12">
-            <Globe className="w-4 h-4 text-white" />
-            <span className="text-sm font-medium text-white italic">
+        {/* Tagline - Bottom Left */}
+        <div className="absolute bottom-8 left-8 z-20">
+          <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-md border border-white/20 rounded-full px-5 py-2.5">
+            <Globe className="w-4 h-4 text-white/90" />
+            <span className="text-sm font-medium text-white/90 italic">
               to all the nations
             </span>
           </div>
+        </div>
+      </section>
 
-          <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[1.15]">
+      {/* Main Tagline - Below Hero */}
+      <section className="bg-white py-16 border-b border-slate-100">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-slate-900 leading-tight">
             Toward that which truly{' '}
-            <em className="text-[#c4933f] font-serif">is.</em>
+            <em className="text-[#c4933f] font-serif text-5xl md:text-6xl lg:text-7xl">is.</em>
           </h1>
         </div>
       </section>
