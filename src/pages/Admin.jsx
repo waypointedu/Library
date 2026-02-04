@@ -12,6 +12,7 @@ import UserManager from '@/components/admin/UserManager';
 import Analytics from '@/components/admin/Analytics';
 import PathwayManager from '@/components/admin/PathwayManager';
 import DetailedAnalytics from '@/components/admin/DetailedAnalytics';
+import ApplicationsManager from '@/components/admin/ApplicationsManager';
 
 export default function Admin() {
   const urlParams = new URLSearchParams(window.location.search);

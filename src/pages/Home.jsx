@@ -90,6 +90,12 @@ export default function Home() {
             <Link to={createPageUrl(`About?lang=${lang}`)} className="text-slate-600 hover:text-slate-900 transition-colors">
               {lang === 'es' ? 'Acerca de' : 'About'}
             </Link>
+            <Link to={createPageUrl(`HowItWorks?lang=${lang}`)} className="text-slate-600 hover:text-slate-900 transition-colors">
+              {lang === 'es' ? 'Cómo Funciona' : 'How It Works'}
+            </Link>
+            <Link to={createPageUrl(`Support?lang=${lang}`)} className="text-slate-600 hover:text-slate-900 transition-colors">
+              {lang === 'es' ? 'Apoyar' : 'Support'}
+            </Link>
             {user && (
               <Link to={createPageUrl(`Dashboard?lang=${lang}`)} className="text-slate-600 hover:text-slate-900 transition-colors">
                 {lang === 'es' ? 'Mi Panel' : 'Dashboard'}
@@ -106,9 +112,16 @@ export default function Home() {
                 </Button>
               </Link>
             ) : (
-              <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
-              </Button>
+              <>
+                <Link to={createPageUrl(`Apply?lang=${lang}`)}>
+                  <Button size="sm" variant="outline" className="border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white">
+                    {lang === 'es' ? 'Aplicar' : 'Apply'}
+                  </Button>
+                </Link>
+                <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                  {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -229,7 +242,15 @@ export default function Home() {
                 <ul className="space-y-2 text-slate-400 text-sm">
                   <li><Link to={createPageUrl(`Catalog?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Cursos' : 'Courses'}</Link></li>
                   <li><Link to={createPageUrl(`Pathways?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Rutas Académicas' : 'Pathways'}</Link></li>
-                  <li><Link to={createPageUrl(`About?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Cómo funciona' : 'How it works'}</Link></li>
+                  <li><Link to={createPageUrl(`HowItWorks?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Cómo funciona' : 'How it works'}</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-4">{lang === 'es' ? 'Participar' : 'Get Involved'}</h4>
+                <ul className="space-y-2 text-slate-400 text-sm">
+                  <li><Link to={createPageUrl(`Apply?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Aplicar' : 'Apply'}</Link></li>
+                  <li><Link to={createPageUrl(`Support?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Apoyar' : 'Support'}</Link></li>
+                  <li><Link to={createPageUrl(`Contact?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Contacto' : 'Contact'}</Link></li>
                 </ul>
               </div>
             </div>
