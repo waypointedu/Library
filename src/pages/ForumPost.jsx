@@ -17,6 +17,7 @@ export default function ForumPost() {
   const [lang, setLang] = useState(urlParams.get('lang') || 'en');
   const [user, setUser] = useState(null);
   const [newReply, setNewReply] = useState('');
+  const [replyingTo, setReplyingTo] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -30,10 +31,16 @@ export default function ForumPost() {
     enabled: !!postId
   });
 
-  const { data: replies = [] } = useQuery({
+  const { data: allReplies = [] } = useQuery({
     queryKey: ['forumReplies', postId],
     queryFn: () => base44.entities.ForumReply.filter({ post_id: postId }),
     select: (data) => data.sort((a, b) => new Date(a.created_date) - new Date(b.created_date)),
+    enabled: !!postId
+  });
+
+  const { data: nestedReplies = [] } = useQuery({
+    queryKey: ['replyToReplies', postId],
+    queryFn: () => base44.entities.ReplyToReply.filter({ post_id: postId }),
     enabled: !!postId
   });
 
@@ -54,15 +61,36 @@ export default function ForumPost() {
     }
   });
 
+  const createNestedReplyMutation = useMutation({
+    mutationFn: async (data) => {
+      return base44.entities.ReplyToReply.create(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['replyToReplies', postId] });
+      setNewReply('');
+      setReplyingTo(null);
+    }
+  });
+
   const handleReply = () => {
     if (!newReply.trim() || post?.is_locked) return;
 
-    createReplyMutation.mutate({
-      post_id: postId,
-      user_email: user.email,
-      user_name: user.full_name || user.email,
-      content: newReply
-    });
+    if (replyingTo) {
+      createNestedReplyMutation.mutate({
+        parent_reply_id: replyingTo,
+        post_id: postId,
+        user_email: user.email,
+        user_name: user.full_name || user.email,
+        content: newReply
+      });
+    } else {
+      createReplyMutation.mutate({
+        post_id: postId,
+        user_email: user.email,
+        user_name: user.full_name || user.email,
+        content: newReply
+      });
+    }
   };
 
   const text = {
@@ -96,10 +124,7 @@ export default function ForumPost() {
       <header className="bg-white border-b border-slate-100 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
           <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center">
-              <Star className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-semibold text-slate-900 hidden sm:block">Waypoint Institute</span>
+            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-10" />
           </Link>
           <LanguageToggle currentLang={lang} onToggle={setLang} />
         </div>
@@ -136,27 +161,64 @@ export default function ForumPost() {
         {/* Replies */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-slate-900 mb-4">
-            {t.replies} ({replies.length})
+            {t.replies} ({allReplies.length})
           </h2>
           <div className="space-y-4">
-            {replies.map(reply => (
-              <Card key={reply.id} className="bg-slate-50">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-[#1e3a5f]/10 flex items-center justify-center shrink-0">
-                      <User className="w-4 h-4 text-[#1e3a5f]" />
+            {allReplies.map(reply => {
+              const childReplies = nestedReplies.filter(nr => nr.parent_reply_id === reply.id);
+              
+              return (
+                <div key={reply.id}>
+                  <Card className="bg-slate-50">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-8 h-8 rounded-full bg-[#1e3a5f]/10 flex items-center justify-center shrink-0">
+                          <User className="w-4 h-4 text-[#1e3a5f]" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-slate-900">{reply.user_name}</p>
+                          <p className="text-xs text-slate-500">
+                            {format(new Date(reply.created_date), 'MMM d, yyyy h:mm a')}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-slate-700 whitespace-pre-wrap ml-11 mb-3">{reply.content}</p>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setReplyingTo(reply.id)}
+                        className="ml-11 text-[#1e3a5f]"
+                      >
+                        {t.reply}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  
+                  {childReplies.length > 0 && (
+                    <div className="ml-12 mt-3 space-y-3">
+                      {childReplies.map(childReply => (
+                        <Card key={childReply.id} className="bg-white border-l-4 border-[#1e3a5f]">
+                          <CardContent className="p-4">
+                            <div className="flex items-start gap-3 mb-2">
+                              <div className="w-6 h-6 rounded-full bg-[#1e3a5f]/10 flex items-center justify-center shrink-0">
+                                <User className="w-3 h-3 text-[#1e3a5f]" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-sm text-slate-900">{childReply.user_name}</p>
+                                <p className="text-xs text-slate-500">
+                                  {format(new Date(childReply.created_date), 'MMM d, yyyy h:mm a')}
+                                </p>
+                              </div>
+                            </div>
+                            <p className="text-slate-700 text-sm whitespace-pre-wrap ml-9">{childReply.content}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
                     </div>
-                    <div>
-                      <p className="font-medium text-slate-900">{reply.user_name}</p>
-                      <p className="text-xs text-slate-500">
-                        {format(new Date(reply.created_date), 'MMM d, yyyy h:mm a')}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-slate-700 whitespace-pre-wrap ml-11">{reply.content}</p>
-                </CardContent>
-              </Card>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -164,7 +226,16 @@ export default function ForumPost() {
         {!post.is_locked ? (
           <Card>
             <CardContent className="p-6 space-y-4">
-              <h3 className="font-semibold text-slate-900">{t.reply}</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-slate-900">
+                  {replyingTo ? lang === 'es' ? 'Responder a comentario' : 'Reply to comment' : t.reply}
+                </h3>
+                {replyingTo && (
+                  <Button size="sm" variant="ghost" onClick={() => { setReplyingTo(null); setNewReply(''); }}>
+                    {lang === 'es' ? 'Cancelar' : 'Cancel'}
+                  </Button>
+                )}
+              </div>
               <Textarea
                 placeholder={t.yourReply}
                 value={newReply}
@@ -175,7 +246,7 @@ export default function ForumPost() {
               <div className="flex justify-end">
                 <Button
                   onClick={handleReply}
-                  disabled={!newReply.trim() || createReplyMutation.isPending}
+                  disabled={!newReply.trim() || createReplyMutation.isPending || createNestedReplyMutation.isPending}
                   size="lg"
                   className="bg-[#1e3a5f]"
                 >

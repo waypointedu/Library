@@ -80,11 +80,8 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to={createPageUrl('Home')} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center">
-              <Star className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-semibold text-slate-900 hidden sm:block">Waypoint Institute</span>
-          </Link>
+                  <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-10" />
+                </Link>
 
           <nav className="hidden md:flex items-center gap-8">
             <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="text-slate-600 hover:text-slate-900 transition-colors">
@@ -216,12 +213,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-start gap-8">
             <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                  <Star className="w-5 h-5 text-white" />
+                <div className="flex items-center gap-3 mb-4">
+                  <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-12 brightness-0 invert" />
                 </div>
-                <span className="font-semibold">Waypoint Institute</span>
-              </div>
               <p className="text-slate-400 max-w-md text-sm">
                 {lang === 'es' 
                   ? 'Guiados por la Gran Comisión, vamos y hacemos discípulos de todas las naciones.'

@@ -57,6 +57,17 @@ export default function Transcript() {
     enabled: !!targetEmail
   });
 
+  const { data: pathwayEnrollments = [] } = useQuery({
+    queryKey: ['pathwayEnrollments', targetEmail],
+    queryFn: () => base44.entities.PathwayEnrollment.filter({ user_email: targetEmail }),
+    enabled: !!targetEmail
+  });
+
+  const { data: allPathways = [] } = useQuery({
+    queryKey: ['pathways'],
+    queryFn: () => base44.entities.Pathway.list()
+  });
+
   const enrolledCourses = enrollments.map(e => {
     const course = allCourses.find(c => c.id === e.course_id);
     const courseProgress = allProgress.filter(p => p.course_id === e.course_id);
@@ -130,7 +141,11 @@ export default function Transcript() {
       lessons: "Lessons",
       quizzes: "Quizzes",
       officialRecord: "This is an official academic record from Waypoint Institute.",
-      generatedOn: "Generated on"
+      generatedOn: "Generated on",
+      programProgress: "Program Progress",
+      program: "Program",
+      coursesRemaining: "Courses Remaining",
+      pathwayCompleted: "Pathway Completed"
     },
     es: {
       title: "Expediente Académico",
@@ -154,7 +169,11 @@ export default function Transcript() {
       lessons: "Lecciones",
       quizzes: "Quizzes",
       officialRecord: "Este es un registro académico oficial del Instituto Waypoint.",
-      generatedOn: "Generado el"
+      generatedOn: "Generado el",
+      programProgress: "Progreso del Programa",
+      program: "Programa",
+      coursesRemaining: "Cursos Restantes",
+      pathwayCompleted: "Programa Completado"
     }
   };
 
@@ -186,9 +205,7 @@ export default function Transcript() {
           {/* Header */}
           <div className="text-center border-b-2 border-[#c4933f] pb-6 mb-8">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-[#1e3a5f] flex items-center justify-center">
-                <Star className="w-8 h-8 text-white" />
-              </div>
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-24" />
             </div>
             <h1 className="text-4xl font-light text-slate-900 mb-2">Waypoint Institute</h1>
             <h2 className="text-2xl text-[#c4933f] font-serif italic">Academic Transcript</h2>
@@ -247,6 +264,51 @@ export default function Transcript() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Program Progress */}
+          {pathwayEnrollments.length > 0 && (
+            <Card className="mb-8">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">{t.programProgress}</h3>
+                {pathwayEnrollments.map(pe => {
+                  const pathway = allPathways.find(p => p.id === pe.pathway_id);
+                  if (!pathway) return null;
+                  
+                  const requiredCourseIds = pathway.course_ids || [];
+                  const completedCourseIds = completedCourses.map(c => c.id);
+                  const completedRequired = requiredCourseIds.filter(id => completedCourseIds.includes(id));
+                  const remaining = requiredCourseIds.length - completedRequired.length;
+                  const isComplete = remaining === 0;
+                  
+                  return (
+                    <div key={pe.id} className="mb-4 last:mb-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <h4 className="font-semibold text-slate-900">{pathway[`title_${lang}`] || pathway.title_en}</h4>
+                          <p className="text-sm text-slate-600">{pathway.type}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-[#1e3a5f]">
+                            {completedRequired.length}/{requiredCourseIds.length}
+                          </div>
+                          <div className="text-xs text-slate-500">{t.coursesCompleted}</div>
+                        </div>
+                      </div>
+                      {isComplete ? (
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-emerald-900 text-sm font-medium">
+                          ✓ {t.pathwayCompleted}
+                        </div>
+                      ) : (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-blue-900 text-sm">
+                          {remaining} {t.coursesRemaining}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Course History */}
           <div className="mb-8">
