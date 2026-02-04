@@ -160,6 +160,7 @@ export default function Faculty() {
                 </CardContent>
               </Card>
             ))}
+          </div>
         </div>
 
         {/* Contributing Faculty */}
