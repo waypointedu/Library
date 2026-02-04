@@ -72,6 +72,7 @@ import Support from './pages/Support';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
 import Profile from './pages/Profile';
+import AccountSettings from './pages/AccountSettings';
 
 
 export const PAGES = {
@@ -100,6 +101,7 @@ export const PAGES = {
     "FAQ": FAQ,
     "Contact": Contact,
     "Profile": Profile,
+    "AccountSettings": AccountSettings,
 }
 
 export const pagesConfig = {
