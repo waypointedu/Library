@@ -66,6 +66,9 @@ import Pathway from './pages/Pathway';
 import Pathways from './pages/Pathways';
 import Transcript from './pages/Transcript';
 import Week from './pages/Week';
+import Apply from './pages/Apply';
+import HowItWorks from './pages/HowItWorks';
+import Support from './pages/Support';
 
 
 export const PAGES = {
@@ -88,6 +91,9 @@ export const PAGES = {
     "Pathways": Pathways,
     "Transcript": Transcript,
     "Week": Week,
+    "Apply": Apply,
+    "HowItWorks": HowItWorks,
+    "Support": Support,
 }
 
 export const pagesConfig = {
