@@ -34,13 +34,27 @@ export default function UserManager({ lang = 'en' }) {
 
   const inviteMutation = useMutation({
     mutationFn: async () => {
-      return await base44.users.inviteUser(inviteEmail, inviteRole);
+      // Invite with built-in role (admin or user)
+      const builtInRole = inviteRole === 'admin' ? 'admin' : 'user';
+      const result = await base44.users.inviteUser(inviteEmail, builtInRole);
+      
+      // Wait a moment then update with extended user_type
+      setTimeout(async () => {
+        const users = await base44.entities.User.filter({ email: inviteEmail });
+        if (users[0]) {
+          await base44.entities.User.update(users[0].id, { user_type: inviteRole });
+        }
+      }, 2000);
+      
+      return result;
     },
     onSuccess: () => {
       alert(lang === 'es' ? 'Invitación enviada exitosamente' : 'Invitation sent successfully!');
       setInviteEmail('');
       setInviteRole('student');
-      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+      }, 2500);
     },
     onError: (error) => {
       alert(lang === 'es' ? `Error al enviar invitación: ${error.message}` : `Failed to send invitation: ${error.message}`);
@@ -49,9 +63,19 @@ export default function UserManager({ lang = 'en' }) {
   });
 
   const updateRoleMutation = useMutation({
-    mutationFn: ({ id, role }) => base44.entities.User.update(id, { role }),
+    mutationFn: async ({ id, userType }) => {
+      // Set both user_type and built-in role (admin or user)
+      const builtInRole = userType === 'admin' ? 'admin' : 'user';
+      return await base44.entities.User.update(id, { 
+        user_type: userType,
+        role: builtInRole 
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+    },
+    onError: (error) => {
+      alert(lang === 'es' ? `Error: ${error.message}` : `Error: ${error.message}`);
     }
   });
 
@@ -178,16 +202,16 @@ export default function UserManager({ lang = 'en' }) {
                   <TableCell>{user.full_name || '—'}</TableCell>
                   <TableCell>
                     <Badge className={
-                      user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 
-                      user.role === 'instructor' ? 'bg-blue-100 text-blue-700' :
+                      (user.user_type || user.role) === 'admin' ? 'bg-purple-100 text-purple-700' : 
+                      user.user_type === 'instructor' ? 'bg-blue-100 text-blue-700' :
                       'bg-slate-100 text-slate-700'
                     }>
-                      {user.role === 'admin' ? (
+                      {(user.user_type || user.role) === 'admin' ? (
                         <Shield className="w-3 h-3 mr-1" />
                       ) : (
                         <User className="w-3 h-3 mr-1" />
                       )}
-                      {user.role === 'admin' ? t.admin : user.role === 'instructor' ? t.instructor : t.student}
+                      {(user.user_type || user.role) === 'admin' ? t.admin : user.user_type === 'instructor' ? t.instructor : t.student}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-slate-500 text-sm">
@@ -195,10 +219,10 @@ export default function UserManager({ lang = 'en' }) {
                   </TableCell>
                   <TableCell>
                     <Select
-                      value={user.role}
-                      onValueChange={(role) => updateRoleMutation.mutate({ id: user.id, role })}
+                      value={user.user_type || user.role}
+                      onValueChange={(userType) => updateRoleMutation.mutate({ id: user.id, userType })}
                     >
-                      <SelectTrigger className="w-28">
+                      <SelectTrigger className="w-32">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

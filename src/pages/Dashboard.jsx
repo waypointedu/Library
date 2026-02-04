@@ -245,10 +245,10 @@ export default function Dashboard() {
                 {lang === 'es' ? 'Expediente' : 'Transcript'}
               </Button>
             </Link>
-            {(user.role === 'admin' || user.role === 'instructor') && (
+            {(user.role === 'admin' || user.user_type === 'admin' || user.user_type === 'instructor') && (
               <Link to={createPageUrl(`Admin?lang=${lang}`)}>
                 <Button variant="outline" size="sm">
-                  {user.role === 'admin' ? 'Admin' : (lang === 'es' ? 'Instructor' : 'Instructor')}
+                  {(user.user_type === 'admin' || user.role === 'admin') ? 'Admin' : (lang === 'es' ? 'Instructor' : 'Instructor')}
                 </Button>
               </Link>
             )}

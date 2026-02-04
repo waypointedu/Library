@@ -56,16 +56,16 @@ import CourseEditor from './pages/CourseEditor';
 import CourseForum from './pages/CourseForum';
 import Dashboard from './pages/Dashboard';
 import ForumPost from './pages/ForumPost';
+import Gradebook from './pages/Gradebook';
 import Home from './pages/Home';
 import InstructorDashboard from './pages/InstructorDashboard';
+import InstructorGradebook from './pages/InstructorGradebook';
 import Lesson from './pages/Lesson';
+import Library from './pages/Library';
 import Pathway from './pages/Pathway';
 import Pathways from './pages/Pathways';
 import Transcript from './pages/Transcript';
 import Week from './pages/Week';
-import Library from './pages/Library';
-import Gradebook from './pages/Gradebook';
-import InstructorGradebook from './pages/InstructorGradebook';
 
 
 export const PAGES = {
@@ -78,16 +78,16 @@ export const PAGES = {
     "CourseForum": CourseForum,
     "Dashboard": Dashboard,
     "ForumPost": ForumPost,
+    "Gradebook": Gradebook,
     "Home": Home,
     "InstructorDashboard": InstructorDashboard,
+    "InstructorGradebook": InstructorGradebook,
     "Lesson": Lesson,
+    "Library": Library,
     "Pathway": Pathway,
     "Pathways": Pathways,
     "Transcript": Transcript,
     "Week": Week,
-    "Library": Library,
-    "Gradebook": Gradebook,
-    "InstructorGradebook": InstructorGradebook,
 }
 
 export const pagesConfig = {
