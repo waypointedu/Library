@@ -33,6 +33,12 @@ export default function InstructorDashboard() {
     });
   }, []);
 
+  const { data: courseInstances = [] } = useQuery({
+    queryKey: ['courseInstances', user?.email],
+    queryFn: () => base44.entities.CourseInstance.filter({}),
+    enabled: !!user?.email
+  });
+
   const { data: courses = [] } = useQuery({
     queryKey: ['courses'],
     queryFn: () => base44.entities.Course.list()
@@ -241,31 +247,44 @@ export default function InstructorDashboard() {
 
         <div className="mb-8">
           <h2 className="text-2xl font-semibold text-slate-900 mb-6">{t.courses}</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map(course => (
-              <Card key={course.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-lg">{course[`title_${lang}`] || course.title_en}</CardTitle>
-                  <Badge variant="outline" className="w-fit">
-                    {course.status}
-                  </Badge>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Link to={createPageUrl(`Course?id=${course.id}&lang=${lang}`)}>
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Eye className="w-4 h-4 mr-2" />
-                      {t.viewCourse}
-                    </Button>
-                  </Link>
-                  <Link to={createPageUrl(`CourseEditor?id=${course.id}&lang=${lang}`)}>
-                    <Button size="sm" className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                      {t.editCourse}
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {(() => {
+            const assignedCourseIds = courseInstances
+              .filter(ci => ci.instructor_emails?.includes(user.email))
+              .map(ci => ci.course_id);
+            const assignedCourses = courses.filter(c => assignedCourseIds.includes(c.id));
+            
+            return (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {assignedCourses.length === 0 ? (
+                  <p className="text-slate-500 col-span-full text-center py-8">No courses assigned yet</p>
+                ) : (
+                  assignedCourses.map(course => (
+                    <Card key={course.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <CardTitle className="text-lg">{course[`title_${lang}`] || course.title_en}</CardTitle>
+                        <Badge variant="outline" className="w-fit">
+                          {course.status}
+                        </Badge>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <Link to={createPageUrl(`Course?id=${course.id}&lang=${lang}`)}>
+                          <Button variant="outline" size="sm" className="w-full">
+                            <Eye className="w-4 h-4 mr-2" />
+                            {t.viewCourse}
+                          </Button>
+                        </Link>
+                        <Link to={createPageUrl(`CourseEditor?id=${course.id}&lang=${lang}`)}>
+                          <Button size="sm" className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                            {t.editCourse}
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+            );
+          })()}
         </div>
 
             <div className="grid lg:grid-cols-2 gap-6">
