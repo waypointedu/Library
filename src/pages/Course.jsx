@@ -170,11 +170,27 @@ export default function Course() {
   const completedCount = completedLessonIds.length;
   const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
-  const handleEnroll = () => {
+  const handleEnroll = async () => {
     if (!user) {
       base44.auth.redirectToLogin(window.location.href);
       return;
     }
+
+    // Check prerequisites
+    if (course.prerequisite_course_ids && course.prerequisite_course_ids.length > 0) {
+      const userEnrollments = await base44.entities.Enrollment.filter({ user_email: user.email, status: 'completed' });
+      const completedCourseIds = userEnrollments.map(e => e.course_id);
+      
+      const missingPrereqs = course.prerequisite_course_ids.filter(pid => !completedCourseIds.includes(pid));
+      
+      if (missingPrereqs.length > 0) {
+        alert(lang === 'es' 
+          ? 'Debes completar los cursos prerequisitos antes de inscribirte en este curso.' 
+          : 'You must complete the prerequisite courses before enrolling in this course.');
+        return;
+      }
+    }
+
     enrollMutation.mutate();
   };
 

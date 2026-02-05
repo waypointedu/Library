@@ -129,13 +129,11 @@ export default function Admin() {
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="overview" className="text-xs md:text-sm">{t.tabs.overview}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="applications" className="text-xs md:text-sm">{lang === 'es' ? 'Solicitudes' : 'Applications'}</TabsTrigger>}
              <TabsTrigger value="courses" className="text-xs md:text-sm">{t.tabs.courses}</TabsTrigger>
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="courseCatalog" className="text-xs md:text-sm">{t.tabs.courseCatalog}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="instructors" className="text-xs md:text-sm">{lang === 'es' ? 'Instructores' : 'Instructors'}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="calendar" className="text-xs md:text-sm">{lang === 'es' ? 'Calendario' : 'Calendar'}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="pathways" className="text-xs md:text-sm">{t.tabs.pathways}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="gamification" className="text-xs md:text-sm">{t.tabs.gamification}</TabsTrigger>}
              {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="announcements" className="text-xs md:text-sm">{t.tabs.announcements}</TabsTrigger>}
-             {(user.role === 'admin' || user.user_type === 'admin') && <TabsTrigger value="analytics" className="text-xs md:text-sm">{t.tabs.analytics}</TabsTrigger>}
            </TabsList>
 
           {(user.role === 'admin' || user.user_type === 'admin') && (
@@ -176,18 +174,6 @@ export default function Admin() {
           )}
 
           {(user.role === 'admin' || user.user_type === 'admin') && (
-            <TabsContent value="users">
-              <UserManager lang={lang} />
-            </TabsContent>
-          )}
-
-          {(user.role === 'admin' || user.user_type === 'admin') && (
-            <TabsContent value="courseCatalog">
-              <AdvancedCourseManager />
-            </TabsContent>
-          )}
-
-          {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="gamification">
               <GamificationManager />
             </TabsContent>
@@ -196,14 +182,6 @@ export default function Admin() {
           {(user.role === 'admin' || user.user_type === 'admin') && (
             <TabsContent value="announcements">
               <AnnouncementManager />
-            </TabsContent>
-          )}
-
-
-
-          {(user.role === 'admin' || user.user_type === 'admin') && (
-            <TabsContent value="analytics">
-              <Analytics lang={lang} />
             </TabsContent>
           )}
           </Tabs>

@@ -16,7 +16,7 @@ export default function PathwayManager({ lang, user }) {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({
     title_en: '', title_es: '', description_en: '', description_es: '',
-    type: 'certificate', course_ids: [], estimated_months: 0, total_credits: 0,
+    type: 'certificate', is_linear: false, course_ids: [], estimated_months: 0, total_credits: 0,
     status: 'draft', certificate_template: ''
   });
   const [manageStudents, setManageStudents] = useState(null);
@@ -55,7 +55,7 @@ export default function PathwayManager({ lang, user }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pathways'] });
       setEditing(null);
-      setForm({ title_en: '', title_es: '', description_en: '', description_es: '', type: 'certificate', course_ids: [], estimated_months: 0, total_credits: 0, status: 'draft', certificate_template: '' });
+      setForm({ title_en: '', title_es: '', description_en: '', description_es: '', type: 'certificate', is_linear: false, course_ids: [], estimated_months: 0, total_credits: 0, status: 'draft', certificate_template: '' });
     }
   });
 
@@ -160,15 +160,24 @@ export default function PathwayManager({ lang, user }) {
               <Textarea placeholder="Description (ES)" value={form.description_es} onChange={(e) => setForm({ ...form, description_es: e.target.value })} />
             </div>
 
-            <div className="grid md:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-5 gap-4">
               <div>
                 <label className="text-sm font-medium">{t.type}</label>
                 <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="certificate">Certificate</SelectItem>
-                    <SelectItem value="degree">Degree</SelectItem>
-                    <SelectItem value="specialization">Specialization</SelectItem>
+                    <SelectItem value="post_certificate">Post-Certificate</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Linear</label>
+                <Select value={form.is_linear ? 'yes' : 'no'} onValueChange={(v) => setForm({ ...form, is_linear: v === 'yes' })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="no">No (Modular)</SelectItem>
+                    <SelectItem value="yes">Yes (Locked)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

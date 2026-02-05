@@ -67,6 +67,7 @@ import Home from './pages/Home';
 import HowItWorks from './pages/HowItWorks';
 import InstructorDashboard from './pages/InstructorDashboard';
 import InstructorGradebook from './pages/InstructorGradebook';
+import InstructorProfile from './pages/InstructorProfile';
 import Lesson from './pages/Lesson';
 import Library from './pages/Library';
 import Pathway from './pages/Pathway';
@@ -75,7 +76,6 @@ import Profile from './pages/Profile';
 import Support from './pages/Support';
 import Transcript from './pages/Transcript';
 import Week from './pages/Week';
-import InstructorProfile from './pages/InstructorProfile';
 
 
 export const PAGES = {
@@ -99,6 +99,7 @@ export const PAGES = {
     "HowItWorks": HowItWorks,
     "InstructorDashboard": InstructorDashboard,
     "InstructorGradebook": InstructorGradebook,
+    "InstructorProfile": InstructorProfile,
     "Lesson": Lesson,
     "Library": Library,
     "Pathway": Pathway,
@@ -107,7 +108,6 @@ export const PAGES = {
     "Support": Support,
     "Transcript": Transcript,
     "Week": Week,
-    "InstructorProfile": InstructorProfile,
 }
 
 export const pagesConfig = {

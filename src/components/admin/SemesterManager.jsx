@@ -15,7 +15,8 @@ export default function SemesterManager() {
   const [showNewDialog, setShowNewDialog] = useState(false);
   const [editingTerm, setEditingTerm] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
+    season: 'Spring',
+    year: new Date().getFullYear(),
     start_date: '',
     end_date: '',
     enrollment_open_date: '',
@@ -29,7 +30,13 @@ export default function SemesterManager() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.AcademicTerm.create(data),
+    mutationFn: (data) => {
+      const termData = {
+        ...data,
+        name: `${data.season} ${data.year}`
+      };
+      return base44.entities.AcademicTerm.create(termData);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['academicTerms'] });
       resetForm();
@@ -37,7 +44,13 @@ export default function SemesterManager() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.AcademicTerm.update(id, data),
+    mutationFn: ({ id, data }) => {
+      const termData = {
+        ...data,
+        name: `${data.season} ${data.year}`
+      };
+      return base44.entities.AcademicTerm.update(id, termData);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['academicTerms'] });
       resetForm();
@@ -53,7 +66,8 @@ export default function SemesterManager() {
 
   const resetForm = () => {
     setFormData({
-      name: '',
+      season: 'Spring',
+      year: new Date().getFullYear(),
       start_date: '',
       end_date: '',
       enrollment_open_date: '',
@@ -75,7 +89,8 @@ export default function SemesterManager() {
   const handleEdit = (term) => {
     setEditingTerm(term);
     setFormData({
-      name: term.name,
+      season: term.season || 'Spring',
+      year: term.year || new Date().getFullYear(),
       start_date: term.start_date,
       end_date: term.end_date,
       enrollment_open_date: term.enrollment_open_date || '',
@@ -101,13 +116,33 @@ export default function SemesterManager() {
               <DialogTitle>{editingTerm ? 'Edit Term' : 'Create New Term'}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <div>
-                <Label>Term Name (e.g., Spring 2025)</Label>
-                <Input
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Spring 2025"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Season</Label>
+                  <Select value={formData.season} onValueChange={(val) => setFormData({ ...formData, season: val })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Spring">Spring</SelectItem>
+                      <SelectItem value="Summer">Summer</SelectItem>
+                      <SelectItem value="Fall">Fall</SelectItem>
+                      <SelectItem value="Winter">Winter</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Year</Label>
+                  <Input
+                    type="number"
+                    value={formData.year}
+                    onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
+                    placeholder="2025"
+                  />
+                </div>
+              </div>
+              <div className="text-sm text-slate-500">
+                Term name: <span className="font-medium">{formData.season} {formData.year}</span>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
