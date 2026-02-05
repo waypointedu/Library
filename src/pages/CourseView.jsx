@@ -93,9 +93,9 @@ export default function CourseView() {
   });
 
   const { data: weekQuizzes = [] } = useQuery({
-    queryKey: ['weekQuizzes', courseId],
-    queryFn: () => base44.entities.WeekQuiz.filter({ course_id: courseId }),
-    enabled: !!courseId
+    queryKey: ['weekQuizzes'],
+    queryFn: () => base44.entities.WeekQuiz.list(),
+    enabled: true
   });
 
   const createAnnouncementMutation = useMutation({
