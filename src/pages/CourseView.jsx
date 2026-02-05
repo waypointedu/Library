@@ -26,6 +26,7 @@ import {
   AlertCircle,
   Eye
 } from "lucide-react";
+import WeekQuizStudent from '@/components/quiz/WeekQuizStudent';
 
 export default function CourseView() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -786,47 +787,56 @@ export default function CourseView() {
               {(() => {
                 const weekQuiz = weekQuizzes.find(q => q.week_id === selectedContent.data.id);
 
-                return (
-                  <Card className="border-slate-200">
-                    <CardHeader>
-                      <CardTitle className="text-2xl">
-                        {weekQuiz?.[`title_${lang}`] || weekQuiz?.title_en || (lang === 'es' ? 'Cuestionario' : 'Quiz')}
-                      </CardTitle>
-                      <p className="text-slate-600">
-                        {lang === 'es' ? 'Semana' : 'Week'} {selectedContent.data.week_number}
-                      </p>
-                    </CardHeader>
-                    <CardContent>
-                      {weekQuiz && (
-                        <div className="mb-6 space-y-3">
-                          {weekQuiz[`instructions_${lang}`] && (
-                            <p className="text-slate-600">{weekQuiz[`instructions_${lang}`] || weekQuiz.instructions_en}</p>
-                          )}
-                          <div className="flex gap-4 text-sm text-slate-600">
-                            <span>{lang === 'es' ? 'Umbral de Aprobación:' : 'Pass Threshold:'} {weekQuiz.pass_threshold}%</span>
-                            <span>{lang === 'es' ? 'Intentos Máximos:' : 'Max Attempts:'} {weekQuiz.max_attempts}</span>
+                if (isInstructor && !viewAsStudent) {
+                  return (
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle className="text-2xl">
+                          {weekQuiz?.[`title_${lang}`] || weekQuiz?.title_en || (lang === 'es' ? 'Cuestionario' : 'Quiz')}
+                        </CardTitle>
+                        <p className="text-slate-600">
+                          {lang === 'es' ? 'Semana' : 'Week'} {selectedContent.data.week_number}
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        {weekQuiz && (
+                          <div className="mb-6 space-y-3">
+                            {weekQuiz[`instructions_${lang}`] && (
+                              <p className="text-slate-600">{weekQuiz[`instructions_${lang}`] || weekQuiz.instructions_en}</p>
+                            )}
+                            <div className="flex gap-4 text-sm text-slate-600">
+                              <span>{lang === 'es' ? 'Umbral de Aprobación:' : 'Pass Threshold:'} {weekQuiz.pass_threshold}%</span>
+                              <span>{lang === 'es' ? 'Intentos Máximos:' : 'Max Attempts:'} {weekQuiz.max_attempts}</span>
+                            </div>
                           </div>
-                        </div>
-                      )}
-
-                      {isInstructor && !viewAsStudent ? (
-                        <div className="space-y-4">
-                          <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&weekId=${selectedContent.data.id}&lang=${lang}`)}>
-                            <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
-                              <BarChart3 className="w-4 h-4" />
-                              {lang === 'es' ? 'Ver Intentos y Calificaciones' : 'View Attempts & Grades'}
-                            </Button>
-                          </Link>
-                        </div>
-                      ) : weekQuiz ? (
-                        <Link to={createPageUrl(`Week?id=${selectedContent.data.id}&lang=${lang}`)}>
-                          <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                            {lang === 'es' ? 'Comenzar Cuestionario' : 'Start Quiz'}
+                        )}
+                        <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&weekId=${selectedContent.data.id}&lang=${lang}`)}>
+                          <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
+                            <BarChart3 className="w-4 h-4" />
+                            {lang === 'es' ? 'Ver Intentos y Calificaciones' : 'View Attempts & Grades'}
                           </Button>
                         </Link>
-                      ) : (
-                        <p className="text-slate-500">{lang === 'es' ? 'Cuestionario no disponible' : 'Quiz not available'}</p>
-                      )}
+                      </CardContent>
+                    </Card>
+                  );
+                }
+
+                if (!weekQuiz) {
+                  return (
+                    <Card className="border-slate-200">
+                      <CardContent className="p-8 text-center text-slate-500">
+                        {lang === 'es' ? 'Cuestionario no disponible' : 'Quiz not available'}
+                      </CardContent>
+                    </Card>
+                  );
+                }
+
+                return user ? (
+                  <WeekQuizStudent weekId={selectedContent.data.id} user={user} lang={lang} />
+                ) : (
+                  <Card className="border-slate-200">
+                    <CardContent className="p-8 text-center text-slate-500">
+                      {lang === 'es' ? 'Inicia sesión para tomar el cuestionario' : 'Log in to take the quiz'}
                     </CardContent>
                   </Card>
                 );
