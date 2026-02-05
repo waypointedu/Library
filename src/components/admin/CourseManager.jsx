@@ -256,15 +256,9 @@ export default function CourseManager({ lang = 'en', user }) {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                          <Link to={createPageUrl(`Course?id=${course.id}&lang=${lang}`)} className="flex items-center gap-2">
+                          <Link to={createPageUrl(`CourseEditor?id=${course.id}&lang=${lang}`)} className="flex items-center gap-2">
                             <Eye className="w-4 h-4" />
                             {t.view}
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link to={createPageUrl(`CourseEditor?id=${course.id}&lang=${lang}`)} className="flex items-center gap-2">
-                            <Edit className="w-4 h-4" />
-                            {t.edit}
                           </Link>
                         </DropdownMenuItem>
                         {course.status !== 'published' && (
