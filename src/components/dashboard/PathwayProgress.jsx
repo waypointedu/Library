@@ -96,7 +96,7 @@ export default function PathwayProgress({ enrollments, courses, progress }) {
                     </div>
                   )}
                   {status === 'available' && course && (
-                    <Link to={createPageUrl(`Course?id=${course.id}`)} className="text-xs text-[#1e3a5f] hover:underline mt-1 inline-block">
+                    <Link to={createPageUrl(`CourseInstanceCatalog?lang=en`)} className="text-xs text-[#1e3a5f] hover:underline mt-1 inline-block">
                       Enroll now →
                     </Link>
                   )}
