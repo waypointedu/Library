@@ -98,6 +98,18 @@ export default function CourseView() {
     enabled: true
   });
 
+  const { data: forumPosts = [] } = useQuery({
+    queryKey: ['forumPosts', selectedContent?.data?.id],
+    queryFn: () => base44.entities.ForumPost.filter({ week_id: selectedContent.data.id }),
+    enabled: !!selectedContent?.data?.id && selectedContent?.type === 'discussion'
+  });
+
+  const { data: forumReplies = [] } = useQuery({
+    queryKey: ['forumReplies', selectedContent?.data?.id],
+    queryFn: () => base44.entities.ForumReply.list(),
+    enabled: !!selectedContent?.data?.id && selectedContent?.type === 'discussion'
+  });
+
   const createAnnouncementMutation = useMutation({
     mutationFn: (data) => base44.entities.Announcement.create({
       ...data,
@@ -110,6 +122,27 @@ export default function CourseView() {
       queryClient.invalidateQueries({ queryKey: ['announcements'] });
       setShowAnnouncementDialog(false);
       setNewAnnouncement({ title: '', content: '' });
+    }
+  });
+
+  const [newPost, setNewPost] = useState('');
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyText, setReplyText] = useState('');
+
+  const createPostMutation = useMutation({
+    mutationFn: (postData) => base44.entities.ForumPost.create(postData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forumPosts'] });
+      setNewPost('');
+    }
+  });
+
+  const createReplyMutation = useMutation({
+    mutationFn: (replyData) => base44.entities.ForumReply.create(replyData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forumReplies'] });
+      setReplyingTo(null);
+      setReplyText('');
     }
   });
 
@@ -431,7 +464,12 @@ export default function CourseView() {
                   <CardContent className="p-6">
                     <div className="aspect-video">
                       <iframe
-                        src={selectedContent.data.video_url}
+                        src={selectedContent.data.video_url.includes('youtube.com/watch?v=') 
+                          ? selectedContent.data.video_url.replace('watch?v=', 'embed/').split('&')[0]
+                          : selectedContent.data.video_url.includes('youtu.be/') 
+                          ? selectedContent.data.video_url.replace('youtu.be/', 'youtube.com/embed/')
+                          : selectedContent.data.video_url
+                        }
                         className="w-full h-full rounded-lg"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
@@ -459,7 +497,12 @@ export default function CourseView() {
                           <div>
                             <div className="aspect-video">
                               <iframe
-                                src={block.url}
+                                src={block.url.includes('youtube.com/watch?v=') 
+                                  ? block.url.replace('watch?v=', 'embed/').split('&')[0]
+                                  : block.url.includes('youtu.be/') 
+                                  ? block.url.replace('youtu.be/', 'youtube.com/embed/')
+                                  : block.url
+                                }
                                 className="w-full h-full rounded-lg"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
@@ -592,7 +635,7 @@ export default function CourseView() {
               </Card>
             </div>
           ) : selectedContent.type === 'discussion' ? (
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto space-y-6">
               <Card className="border-slate-200">
                 <CardHeader>
                   <CardTitle className="text-2xl">
@@ -603,18 +646,140 @@ export default function CourseView() {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="mb-6">
+                  <div className="mb-6 p-4 bg-slate-50 rounded-lg">
+                    <p className="font-medium text-slate-900 mb-2">
+                      {lang === 'es' ? 'Pregunta de Discusión:' : 'Discussion Prompt:'}
+                    </p>
                     <p className="text-slate-700">
                       {selectedContent.data[`discussion_prompt_${lang}`] || selectedContent.data.discussion_prompt_en}
                     </p>
                   </div>
-                  <Link to={createPageUrl(`CourseForum?courseId=${courseId}&lang=${lang}`)}>
-                    <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                      {lang === 'es' ? 'Ir al Foro' : 'Go to Forum'}
-                    </Button>
-                  </Link>
+
+                  {!viewAsStudent && user && (
+                    <div className="mb-6">
+                      <Textarea
+                        value={newPost}
+                        onChange={(e) => setNewPost(e.target.value)}
+                        placeholder={lang === 'es' ? 'Escribe tu respuesta...' : 'Write your response...'}
+                        rows={4}
+                        className="mb-2"
+                      />
+                      <Button
+                        onClick={() => createPostMutation.mutate({
+                          week_id: selectedContent.data.id,
+                          course_id: courseId,
+                          user_email: user.email,
+                          content: newPost
+                        })}
+                        disabled={!newPost.trim()}
+                        className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
+                      >
+                        {lang === 'es' ? 'Publicar Respuesta' : 'Post Response'}
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
+
+              {forumPosts.length === 0 ? (
+                <Card className="border-slate-200">
+                  <CardContent className="p-8 text-center text-slate-500">
+                    {lang === 'es' ? 'Aún no hay respuestas. ¡Sé el primero en participar!' : 'No responses yet. Be the first to participate!'}
+                  </CardContent>
+                </Card>
+              ) : (
+                forumPosts.map(post => {
+                  const postReplies = forumReplies.filter(r => r.post_id === post.id);
+                  
+                  return (
+                    <Card key={post.id} className="border-slate-200">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white font-semibold">
+                            {post.user_email?.[0]?.toUpperCase() || 'U'}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <p className="font-medium text-slate-900">{post.user_email}</p>
+                              <span className="text-xs text-slate-400">
+                                {new Date(post.created_date).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="text-slate-700 mb-3">{post.content}</p>
+                            
+                            {!viewAsStudent && user && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setReplyingTo(replyingTo === post.id ? null : post.id)}
+                                className="text-slate-600"
+                              >
+                                {lang === 'es' ? 'Responder' : 'Reply'}
+                              </Button>
+                            )}
+
+                            {replyingTo === post.id && (
+                              <div className="mt-3 space-y-2">
+                                <Textarea
+                                  value={replyText}
+                                  onChange={(e) => setReplyText(e.target.value)}
+                                  placeholder={lang === 'es' ? 'Escribe tu respuesta...' : 'Write your reply...'}
+                                  rows={3}
+                                />
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => createReplyMutation.mutate({
+                                      post_id: post.id,
+                                      user_email: user.email,
+                                      content: replyText
+                                    })}
+                                    disabled={!replyText.trim()}
+                                    className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
+                                  >
+                                    {lang === 'es' ? 'Enviar' : 'Send'}
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setReplyingTo(null);
+                                      setReplyText('');
+                                    }}
+                                  >
+                                    {lang === 'es' ? 'Cancelar' : 'Cancel'}
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+
+                            {postReplies.length > 0 && (
+                              <div className="mt-4 space-y-3 pl-4 border-l-2 border-slate-200">
+                                {postReplies.map(reply => (
+                                  <div key={reply.id} className="flex items-start gap-2">
+                                    <div className="w-8 h-8 rounded-full bg-slate-300 flex items-center justify-center text-slate-700 text-sm font-semibold">
+                                      {reply.user_email?.[0]?.toUpperCase() || 'U'}
+                                    </div>
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <p className="text-sm font-medium text-slate-900">{reply.user_email}</p>
+                                        <span className="text-xs text-slate-400">
+                                          {new Date(reply.created_date).toLocaleDateString()}
+                                        </span>
+                                      </div>
+                                      <p className="text-sm text-slate-600">{reply.content}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })
+              )}
             </div>
           ) : selectedContent.type === 'quiz' ? (
             <div className="max-w-4xl mx-auto">
