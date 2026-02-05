@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { 
   ChevronDown, 
   ChevronRight, 
@@ -16,7 +19,12 @@ import {
   CheckCircle2,
   Clock,
   Menu,
-  X
+  X,
+  Edit,
+  Users,
+  BarChart3,
+  AlertCircle,
+  Eye
 } from "lucide-react";
 
 export default function CourseView() {
@@ -27,10 +35,16 @@ export default function CourseView() {
   const [expandedWeeks, setExpandedWeeks] = useState({});
   const [selectedContent, setSelectedContent] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [viewAsStudent, setViewAsStudent] = useState(false);
+  const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
+  const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '' });
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => setUser(null));
   }, []);
+
+  const isInstructor = user?.role === 'admin' || user?.user_type === 'admin' || user?.user_type === 'instructor';
 
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
@@ -60,6 +74,39 @@ export default function CourseView() {
     select: (data) => data.sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 5)
   });
 
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ['courseEnrollments', courseId],
+    queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId }),
+    enabled: !!courseId && isInstructor && !viewAsStudent
+  });
+
+  const { data: submissions = [] } = useQuery({
+    queryKey: ['submissions', courseId],
+    queryFn: () => base44.entities.WrittenAssignmentSubmission.filter({ course_id: courseId }),
+    enabled: !!courseId && isInstructor && !viewAsStudent
+  });
+
+  const { data: quizAttempts = [] } = useQuery({
+    queryKey: ['quizAttempts', courseId],
+    queryFn: () => base44.entities.WeekQuizAttempt.list(),
+    enabled: !!courseId && isInstructor && !viewAsStudent
+  });
+
+  const createAnnouncementMutation = useMutation({
+    mutationFn: (data) => base44.entities.Announcement.create({
+      ...data,
+      published: true,
+      target_audience: 'students',
+      priority: 'normal',
+      created_by: user.email
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      setShowAnnouncementDialog(false);
+      setNewAnnouncement({ title: '', content: '' });
+    }
+  });
+
   const toggleWeek = (weekId) => {
     setExpandedWeeks(prev => ({ ...prev, [weekId]: !prev[weekId] }));
   };
@@ -79,6 +126,17 @@ export default function CourseView() {
   const title = course[`title_${lang}`] || course.title_en;
   const completedWeeks = progress.filter(p => p.completed).length;
 
+  const ungradedSubmissions = submissions.filter(s => !s.grade && !s.graded_date).length;
+  const ungradedQuizzes = quizAttempts.filter(q => !q.graded).length;
+  const totalUngraded = ungradedSubmissions + ungradedQuizzes;
+
+  const activeStudents = enrollments.filter(e => e.status === 'active').length;
+  const completedStudents = enrollments.filter(e => e.status === 'completed').length;
+
+  const getWeekSubmissions = (weekId) => {
+    return submissions.filter(s => s.week_id === weekId && !s.grade).length;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Header */}
@@ -96,15 +154,36 @@ export default function CourseView() {
             <div>
               <h1 className="text-lg font-semibold text-slate-900">{title}</h1>
               <p className="text-sm text-slate-500">
-                {completedWeeks} / {weeks.length} {lang === 'es' ? 'semanas completadas' : 'weeks completed'}
+                {isInstructor && !viewAsStudent
+                  ? `${activeStudents} ${lang === 'es' ? 'estudiantes activos' : 'active students'}`
+                  : `${completedWeeks} / ${weeks.length} ${lang === 'es' ? 'semanas completadas' : 'weeks completed'}`
+                }
               </p>
             </div>
           </div>
-          <Link to={createPageUrl(`Dashboard?lang=${lang}`)}>
-            <Button variant="outline" size="sm">
-              {lang === 'es' ? 'Volver al Panel' : 'Back to Dashboard'}
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            {isInstructor && !viewAsStudent && totalUngraded > 0 && (
+              <Badge variant="destructive" className="mr-2">
+                {totalUngraded} {lang === 'es' ? 'por calificar' : 'to grade'}
+              </Badge>
+            )}
+            {isInstructor && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setViewAsStudent(!viewAsStudent)}
+                className="gap-2"
+              >
+                <Eye className="w-4 h-4" />
+                {viewAsStudent ? (lang === 'es' ? 'Vista Instructor' : 'Instructor View') : (lang === 'es' ? 'Vista Estudiante' : 'Student View')}
+              </Button>
+            )}
+            <Link to={createPageUrl(isInstructor ? `InstructorDashboard?lang=${lang}` : `Dashboard?lang=${lang}`)}>
+              <Button variant="outline" size="sm">
+                {lang === 'es' ? 'Volver al Panel' : 'Back to Dashboard'}
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -117,11 +196,16 @@ export default function CourseView() {
         >
           <div className="flex-1 overflow-y-auto p-4">
             <Tabs defaultValue="content" className="w-full">
-              <TabsList className="w-full">
-                <TabsTrigger value="content" className="flex-1">
+              <TabsList className="w-full grid grid-cols-3">
+                <TabsTrigger value="content">
                   {lang === 'es' ? 'Contenido' : 'Content'}
                 </TabsTrigger>
-                <TabsTrigger value="announcements" className="flex-1">
+                {isInstructor && !viewAsStudent && (
+                  <TabsTrigger value="students">
+                    {lang === 'es' ? 'Estudiantes' : 'Students'}
+                  </TabsTrigger>
+                )}
+                <TabsTrigger value="announcements">
                   {lang === 'es' ? 'Anuncios' : 'Announcements'}
                 </TabsTrigger>
               </TabsList>
@@ -169,10 +253,17 @@ export default function CourseView() {
                           {week.has_written_assignment && (
                             <button
                               onClick={() => setSelectedContent({ type: 'assignment', data: week })}
-                              className="w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 rounded flex items-center gap-2"
+                              className="w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 rounded flex items-center justify-between group"
                             >
-                              <FileText className="w-4 h-4 text-slate-400" />
-                              {lang === 'es' ? 'Tarea Escrita' : 'Written Assignment'}
+                              <span className="flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-slate-400" />
+                                {lang === 'es' ? 'Tarea Escrita' : 'Written Assignment'}
+                              </span>
+                              {isInstructor && !viewAsStudent && getWeekSubmissions(week.id) > 0 && (
+                                <Badge variant="destructive" className="text-xs">
+                                  {getWeekSubmissions(week.id)}
+                                </Badge>
+                              )}
                             </button>
                           )}
 
@@ -202,7 +293,65 @@ export default function CourseView() {
                 })}
               </TabsContent>
 
+              {isInstructor && !viewAsStudent && (
+                <TabsContent value="students" className="mt-4 space-y-3">
+                  <Card className="border-slate-200">
+                    <CardContent className="p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-slate-400" />
+                          <span className="text-sm font-medium">{lang === 'es' ? 'Total Estudiantes' : 'Total Students'}</span>
+                        </div>
+                        <Badge>{enrollments.length}</Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-slate-600">{lang === 'es' ? 'Activos' : 'Active'}</span>
+                        <Badge variant="outline">{activeStudents}</Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-slate-600">{lang === 'es' ? 'Completados' : 'Completed'}</span>
+                        <Badge variant="outline">{completedStudents}</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&lang=${lang}`)}>
+                    <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
+                      <BarChart3 className="w-4 h-4" />
+                      {lang === 'es' ? 'Ver Libro de Calificaciones' : 'View Gradebook'}
+                    </Button>
+                  </Link>
+
+                  {enrollments.slice(0, 5).map(enrollment => {
+                    const studentProgress = progress.filter(p => p.user_email === enrollment.user_email && p.completed).length;
+                    const progressPercent = weeks.length > 0 ? Math.round((studentProgress / weeks.length) * 100) : 0;
+                    
+                    return (
+                      <Card key={enrollment.id} className="border-slate-200">
+                        <CardContent className="p-3">
+                          <p className="text-sm font-medium text-slate-900">{enrollment.user_email}</p>
+                          <div className="flex items-center justify-between mt-2">
+                            <span className="text-xs text-slate-500">{progressPercent}% {lang === 'es' ? 'completado' : 'complete'}</span>
+                            <Badge variant="outline" className="text-xs">{enrollment.status}</Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </TabsContent>
+              )}
+
               <TabsContent value="announcements" className="mt-4 space-y-3">
+                {isInstructor && !viewAsStudent && (
+                  <Button
+                    onClick={() => setShowAnnouncementDialog(true)}
+                    className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2 mb-4"
+                    size="sm"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    {lang === 'es' ? 'Nuevo Anuncio' : 'New Announcement'}
+                  </Button>
+                )}
                 {announcements.length === 0 ? (
                   <p className="text-sm text-slate-500 text-center py-8">
                     {lang === 'es' ? 'No hay anuncios' : 'No announcements'}
@@ -296,6 +445,31 @@ export default function CourseView() {
                   </CardContent>
                 </Card>
               )}
+
+              {isInstructor && !viewAsStudent && (
+                <Card className="border-slate-200 mt-6 bg-amber-50">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Edit className="w-5 h-5 text-amber-600" />
+                      {lang === 'es' ? 'Acciones del Instructor' : 'Instructor Actions'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <Link to={createPageUrl(`CourseEditor?id=${courseId}&lang=${lang}`)}>
+                      <Button variant="outline" className="w-full justify-start gap-2">
+                        <Edit className="w-4 h-4" />
+                        {lang === 'es' ? 'Editar Esta Semana' : 'Edit This Week'}
+                      </Button>
+                    </Link>
+                    <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&weekId=${selectedContent.data.id}&lang=${lang}`)}>
+                      <Button variant="outline" className="w-full justify-start gap-2">
+                        <BarChart3 className="w-4 h-4" />
+                        {lang === 'es' ? 'Ver Progreso de Estudiantes' : 'View Student Progress'}
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           ) : selectedContent.type === 'assignment' ? (
             <div className="max-w-4xl mx-auto">
@@ -314,9 +488,18 @@ export default function CourseView() {
                       {selectedContent.data[`written_assignment_${lang}`] || selectedContent.data.written_assignment_en}
                     </p>
                   </div>
-                  <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                    {lang === 'es' ? 'Ver Detalles de la Tarea' : 'View Assignment Details'}
-                  </Button>
+                  {isInstructor && !viewAsStudent ? (
+                    <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&weekId=${selectedContent.data.id}&lang=${lang}`)}>
+                      <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
+                        <BarChart3 className="w-4 h-4" />
+                        {lang === 'es' ? 'Ver Entregas y Calificar' : 'View Submissions & Grade'}
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                      {lang === 'es' ? 'Ver Detalles de la Tarea' : 'View Assignment Details'}
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -357,15 +540,72 @@ export default function CourseView() {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                    {lang === 'es' ? 'Comenzar Cuestionario' : 'Start Quiz'}
-                  </Button>
+                  {isInstructor && !viewAsStudent ? (
+                    <div className="space-y-4">
+                      <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&weekId=${selectedContent.data.id}&lang=${lang}`)}>
+                        <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
+                          <BarChart3 className="w-4 h-4" />
+                          {lang === 'es' ? 'Ver Intentos y Calificaciones' : 'View Attempts & Grades'}
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                      {lang === 'es' ? 'Comenzar Cuestionario' : 'Start Quiz'}
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </div>
           ) : null}
         </main>
       </div>
+
+      {/* Announcement Dialog */}
+      {showAnnouncementDialog && (
+        <Dialog open={showAnnouncementDialog} onOpenChange={setShowAnnouncementDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{lang === 'es' ? 'Crear Anuncio' : 'Create Announcement'}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  {lang === 'es' ? 'Título' : 'Title'}
+                </label>
+                <Input
+                  value={newAnnouncement.title}
+                  onChange={(e) => setNewAnnouncement({ ...newAnnouncement, title: e.target.value })}
+                  placeholder={lang === 'es' ? 'Título del anuncio' : 'Announcement title'}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  {lang === 'es' ? 'Contenido' : 'Content'}
+                </label>
+                <Textarea
+                  value={newAnnouncement.content}
+                  onChange={(e) => setNewAnnouncement({ ...newAnnouncement, content: e.target.value })}
+                  placeholder={lang === 'es' ? 'Contenido del anuncio' : 'Announcement content'}
+                  rows={5}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowAnnouncementDialog(false)}>
+                {lang === 'es' ? 'Cancelar' : 'Cancel'}
+              </Button>
+              <Button
+                onClick={() => createAnnouncementMutation.mutate(newAnnouncement)}
+                disabled={!newAnnouncement.title || !newAnnouncement.content}
+                className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
+              >
+                {lang === 'es' ? 'Publicar' : 'Publish'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
