@@ -39,13 +39,8 @@ export default function Course() {
   const { data: course, isLoading, error } = useQuery({
     queryKey: ['course', courseId],
     queryFn: async () => {
-      const results = await base44.entities.Course.filter({ id: courseId });
-      if (results.length === 0) {
-        // Try listing all and finding by ID as fallback
-        const allCourses = await base44.entities.Course.list();
-        return allCourses.find(c => c.id === courseId);
-      }
-      return results[0];
+      const allCourses = await base44.entities.Course.list();
+      return allCourses.find(c => c.id === courseId);
     },
     enabled: !!courseId
   });
