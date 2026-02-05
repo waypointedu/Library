@@ -202,16 +202,16 @@ export default function CourseView() {
         >
           <div className="flex-1 overflow-y-auto p-4">
             <Tabs defaultValue="content" className="w-full">
-              <TabsList className="w-full grid grid-cols-3">
-                <TabsTrigger value="content">
+              <TabsList className={`w-full ${isInstructor && !viewAsStudent ? 'grid grid-cols-3' : 'grid grid-cols-2'}`}>
+                <TabsTrigger value="content" className="text-xs sm:text-sm">
                   {lang === 'es' ? 'Contenido' : 'Content'}
                 </TabsTrigger>
                 {isInstructor && !viewAsStudent && (
-                  <TabsTrigger value="students">
+                  <TabsTrigger value="students" className="text-xs sm:text-sm">
                     {lang === 'es' ? 'Estudiantes' : 'Students'}
                   </TabsTrigger>
                 )}
-                <TabsTrigger value="announcements">
+                <TabsTrigger value="announcements" className="text-xs sm:text-sm">
                   {lang === 'es' ? 'Anuncios' : 'Announcements'}
                 </TabsTrigger>
               </TabsList>
