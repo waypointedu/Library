@@ -77,6 +77,20 @@ export default function Course() {
     enabled: !!user?.email && !!courseId
   });
 
+  const { data: courseInstances = [] } = useQuery({
+    queryKey: ['courseInstances', courseId],
+    queryFn: async () => {
+      const instances = await base44.entities.CourseInstance.filter({ course_id: courseId, status: 'scheduled' });
+      return instances.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+    },
+    enabled: !!courseId
+  });
+
+  const { data: terms = [] } = useQuery({
+    queryKey: ['academicTerms'],
+    queryFn: () => base44.entities.AcademicTerm.list()
+  });
+
   const { data: userPrefs } = useQuery({
     queryKey: ['userPrefs', user?.email],
     queryFn: async () => {
@@ -93,14 +107,66 @@ export default function Course() {
   });
 
   const enrollMutation = useMutation({
-    mutationFn: () => base44.entities.Enrollment.create({
-      course_id: courseId,
-      user_email: user.email,
-      status: 'active',
-      enrolled_date: new Date().toISOString()
-    }),
+    mutationFn: async (instanceId) => {
+      if (!instanceId) {
+        // Legacy enrollment (no instance)
+        return base44.entities.Enrollment.create({
+          course_id: courseId,
+          user_email: user.email,
+          status: 'active',
+          enrolled_date: new Date().toISOString()
+        });
+      }
+
+      // Check prerequisites
+      const instance = courseInstances.find(i => i.id === instanceId);
+      if (course.prerequisite_course_ids && course.prerequisite_course_ids.length > 0) {
+        const completedEnrollments = await base44.entities.Enrollment.filter({ 
+          user_email: user.email, 
+          status: 'completed' 
+        });
+        const completedCourseIds = completedEnrollments.map(e => e.course_id);
+        
+        const missingPrereqs = course.prerequisite_course_ids.filter(pid => !completedCourseIds.includes(pid));
+        
+        if (missingPrereqs.length > 0) {
+          throw new Error('Prerequisites not met');
+        }
+      }
+      
+      // Check if full
+      if (instance && instance.max_students && instance.current_enrollment >= instance.max_students) {
+        throw new Error('Course is full');
+      }
+      
+      // Create enrollment
+      await base44.entities.Enrollment.create({
+        course_id: courseId,
+        course_instance_id: instanceId,
+        user_email: user.email,
+        status: 'active',
+        enrolled_date: new Date().toISOString()
+      });
+      
+      // Increment enrollment count
+      if (instance) {
+        await base44.entities.CourseInstance.update(instanceId, {
+          current_enrollment: (instance.current_enrollment || 0) + 1
+        });
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enrollment', courseId, user?.email] });
+      queryClient.invalidateQueries({ queryKey: ['courseInstances'] });
+    },
+    onError: (error) => {
+      if (error.message === 'Prerequisites not met') {
+        alert(lang === 'es' 
+          ? 'Debes completar los cursos prerequisitos antes de inscribirte.' 
+          : 'You must complete prerequisite courses before enrolling.');
+      } else if (error.message === 'Course is full') {
+        alert(lang === 'es' ? 'Este curso está lleno.' : 'This course is full.');
+      }
     }
   });
 
@@ -170,28 +236,13 @@ export default function Course() {
   const completedCount = completedLessonIds.length;
   const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
-  const handleEnroll = async () => {
+  const handleEnroll = async (instanceId) => {
     if (!user) {
       base44.auth.redirectToLogin(window.location.href);
       return;
     }
 
-    // Check prerequisites
-    if (course.prerequisite_course_ids && course.prerequisite_course_ids.length > 0) {
-      const userEnrollments = await base44.entities.Enrollment.filter({ user_email: user.email, status: 'completed' });
-      const completedCourseIds = userEnrollments.map(e => e.course_id);
-      
-      const missingPrereqs = course.prerequisite_course_ids.filter(pid => !completedCourseIds.includes(pid));
-      
-      if (missingPrereqs.length > 0) {
-        alert(lang === 'es' 
-          ? 'Debes completar los cursos prerequisitos antes de inscribirte en este curso.' 
-          : 'You must complete the prerequisite courses before enrolling in this course.');
-        return;
-      }
-    }
-
-    enrollMutation.mutate();
+    enrollMutation.mutate(instanceId);
   };
 
   const firstWeek = weeks[0];
@@ -360,13 +411,55 @@ export default function Course() {
                       </Link>
                       </>
                       ) : (
-                      <Button
-                      onClick={handleEnroll}
-                      disabled={enrollMutation.isPending}
-                      className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]"
-                      >
-                      {enrollMutation.isPending ? '...' : t.enroll}
-                      </Button>
+                      <>
+                        {courseInstances.length > 0 ? (
+                          <div className="space-y-3">
+                            <p className="text-sm text-slate-600 mb-3">
+                              {lang === 'es' ? 'Selecciona una sesión para inscribirte:' : 'Select a session to enroll:'}
+                            </p>
+                            {courseInstances.map(instance => {
+                              const term = terms.find(t => t.id === instance.term_id);
+                              const isFull = instance.max_students && instance.current_enrollment >= instance.max_students;
+                              const spotsLeft = instance.max_students ? instance.max_students - (instance.current_enrollment || 0) : null;
+                              
+                              return (
+                                <div key={instance.id} className="border rounded-lg p-3 space-y-2">
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                      <p className="font-medium text-sm">{term?.name || instance.cohort_name}</p>
+                                      <p className="text-xs text-slate-500">
+                                        {new Date(instance.start_date).toLocaleDateString()} - {new Date(instance.end_date).toLocaleDateString()}
+                                      </p>
+                                      {instance.meeting_schedule && (
+                                        <p className="text-xs text-slate-600 mt-1">{instance.meeting_schedule}</p>
+                                      )}
+                                      {spotsLeft !== null && (
+                                        <p className="text-xs text-amber-600 mt-1 font-medium">
+                                          {spotsLeft} {lang === 'es' ? 'lugares disponibles' : 'spots left'}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <Button
+                                    onClick={() => handleEnroll(instance.id)}
+                                    disabled={enrollMutation.isPending || isFull}
+                                    size="sm"
+                                    className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]"
+                                  >
+                                    {isFull ? (lang === 'es' ? 'Lleno' : 'Full') : (enrollMutation.isPending ? '...' : t.enroll)}
+                                  </Button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="text-center py-4">
+                            <p className="text-sm text-slate-500 mb-3">
+                              {lang === 'es' ? 'No hay sesiones disponibles actualmente' : 'No sessions currently available'}
+                            </p>
+                          </div>
+                        )}
+                      </>
                       )}
                       </CardContent>
               </Card>

@@ -412,7 +412,9 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
     if (!availability || availability.max_courses <= 0) return false;
 
     const { currentLoad, maxCourses } = getInstructorLoadAndMax(u.email);
-    return currentLoad < maxCourses;
+    // Count how many are currently selected in the form
+    const selectedInForm = (formData.instructor_emails || []).includes(u.email) ? 1 : 0;
+    return currentLoad + selectedInForm < maxCourses;
   });
 
   return (
@@ -470,18 +472,20 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
           <div className="border rounded-lg p-3 space-y-2 max-h-48 overflow-y-auto">
             {availableInstructors.map(instructor => {
               const { currentLoad, maxCourses } = getInstructorLoadAndMax(instructor.email);
+              const isSelected = formData.instructor_emails?.includes(instructor.email);
+              const displayCount = isSelected ? currentLoad + 1 : currentLoad;
               return (
                 <label key={instructor.email} className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-2 rounded">
                   <input
                     type="checkbox"
-                    checked={formData.instructor_emails?.includes(instructor.email)}
+                    checked={isSelected}
                     onChange={() => toggleInstructor(instructor.email)}
                     className="rounded"
                   />
                   <div className="flex-1 min-w-0">
                     <span className="text-sm font-medium">{instructor.full_name}</span>
                     <span className="text-xs text-slate-500 ml-2">
-                      {currentLoad}/{maxCourses} courses this semester
+                      {displayCount}/{maxCourses} courses this semester
                     </span>
                   </div>
                 </label>
