@@ -36,10 +36,17 @@ export default function Course() {
     base44.auth.me().then(setUser).catch(() => setUser(null));
   }, []);
 
-  const { data: course, isLoading } = useQuery({
+  const { data: course, isLoading, error } = useQuery({
     queryKey: ['course', courseId],
-    queryFn: () => base44.entities.Course.filter({ id: courseId }),
-    select: (data) => data[0],
+    queryFn: async () => {
+      const results = await base44.entities.Course.filter({ id: courseId });
+      if (results.length === 0) {
+        // Try listing all and finding by ID as fallback
+        const allCourses = await base44.entities.Course.list();
+        return allCourses.find(c => c.id === courseId);
+      }
+      return results[0];
+    },
     enabled: !!courseId
   });
 

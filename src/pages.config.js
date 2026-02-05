@@ -58,6 +58,7 @@ import Contact from './pages/Contact';
 import Course from './pages/Course';
 import CourseEditor from './pages/CourseEditor';
 import CourseForum from './pages/CourseForum';
+import CourseInstanceCatalog from './pages/CourseInstanceCatalog';
 import Dashboard from './pages/Dashboard';
 import FAQ from './pages/FAQ';
 import Faculty from './pages/Faculty';
@@ -76,7 +77,6 @@ import Profile from './pages/Profile';
 import Support from './pages/Support';
 import Transcript from './pages/Transcript';
 import Week from './pages/Week';
-import CourseInstanceCatalog from './pages/CourseInstanceCatalog';
 
 
 export const PAGES = {
@@ -91,6 +91,7 @@ export const PAGES = {
     "Course": Course,
     "CourseEditor": CourseEditor,
     "CourseForum": CourseForum,
+    "CourseInstanceCatalog": CourseInstanceCatalog,
     "Dashboard": Dashboard,
     "FAQ": FAQ,
     "Faculty": Faculty,
@@ -109,7 +110,6 @@ export const PAGES = {
     "Support": Support,
     "Transcript": Transcript,
     "Week": Week,
-    "CourseInstanceCatalog": CourseInstanceCatalog,
 }
 
 export const pagesConfig = {
