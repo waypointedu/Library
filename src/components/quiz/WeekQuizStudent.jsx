@@ -10,6 +10,7 @@ import { CheckCircle2, XCircle, Trophy, RotateCcw } from 'lucide-react';
 export default function WeekQuizStudent({ weekId, user, lang }) {
   const [currentAnswers, setCurrentAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
+  const [isRetaking, setIsRetaking] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: quiz } = useQuery({
@@ -78,12 +79,14 @@ export default function WeekQuizStudent({ weekId, user, lang }) {
       alert(lang === 'es' ? 'Por favor responde todas las preguntas' : 'Please answer all questions');
       return;
     }
+    setIsRetaking(false);
     submitMutation.mutate(currentAnswers);
   };
 
   const handleRetake = () => {
     setCurrentAnswers({});
     setShowResults(false);
+    setIsRetaking(true);
   };
 
   if (!quiz) return null;
@@ -146,7 +149,7 @@ export default function WeekQuizStudent({ weekId, user, lang }) {
           </div>
         )}
 
-        {lastAttempt && !showResults && (
+        {lastAttempt && !showResults && !isRetaking && (
           <div className={`rounded-lg p-4 ${lastAttempt.passed ? 'bg-emerald-50 border border-emerald-200' : 'bg-amber-50 border border-amber-200'}`}>
             <div className="flex items-center justify-between">
               <div>
@@ -165,7 +168,7 @@ export default function WeekQuizStudent({ weekId, user, lang }) {
           </div>
         )}
 
-        {(!lastAttempt || !lastAttempt.passed || showResults) && (
+        {(!lastAttempt || !lastAttempt.passed || showResults || isRetaking) && (
           <div className="space-y-6">
             {questions.map((question, qIdx) => {
               const questionText = question[`question_${lang}`] || question.question_en;
