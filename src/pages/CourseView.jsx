@@ -819,7 +819,7 @@ export default function CourseView() {
                           </Link>
                         </div>
                       ) : weekQuiz ? (
-                        <Link to={createPageUrl(`Week?courseId=${courseId}&weekId=${selectedContent.data.id}&lang=${lang}`)}>
+                        <Link to={createPageUrl(`Week?id=${selectedContent.data.id}&lang=${lang}`)}>
                           <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
                             {lang === 'es' ? 'Comenzar Cuestionario' : 'Start Quiz'}
                           </Button>
