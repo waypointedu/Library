@@ -39,8 +39,12 @@ export default function Course() {
   const { data: course, isLoading, error } = useQuery({
     queryKey: ['course', courseId],
     queryFn: async () => {
+      console.log('Fetching course with ID:', courseId);
       const allCourses = await base44.entities.Course.list();
-      return allCourses.find(c => c.id === courseId);
+      console.log('All courses:', allCourses.length);
+      const found = allCourses.find(c => c.id === courseId);
+      console.log('Found course:', found ? found.title_en : 'NOT FOUND');
+      return found;
     },
     enabled: !!courseId
   });
@@ -197,7 +201,25 @@ export default function Course() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e3a5f]" />
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e3a5f] mx-auto mb-4" />
+          <p className="text-slate-500">Loading course...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">Error loading course: {error.message}</p>
+          <Link to={createPageUrl(`Catalog?lang=${lang}`)}>
+            <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+              {lang === 'es' ? 'Ir al catálogo' : 'Go to catalog'}
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
