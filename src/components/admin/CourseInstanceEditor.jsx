@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Trash2, CheckCircle } from "lucide-react";
+import CourseInstanceStudentList from './CourseInstanceStudentList';
 
 export default function CourseInstanceEditor({ instanceId, courseId, termId, onClose }) {
   const queryClient = useQueryClient();
@@ -162,10 +163,10 @@ export default function CourseInstanceEditor({ instanceId, courseId, termId, onC
               )}
             </div>
           </div>
-
-
         </CardContent>
       </Card>
+
+      <CourseInstanceStudentList instanceId={instanceId} />
     </div>
   );
 }

@@ -19,6 +19,7 @@ import WeeklyStudyPlan from '@/components/dashboard/WeeklyStudyPlan';
 import StreakCalendar from '@/components/dashboard/StreakCalendar';
 import QuickStats from '@/components/dashboard/QuickStats';
 import CourseCalendar from '@/components/calendar/CourseCalendar';
+import AnnouncementFeed from '@/components/dashboard/AnnouncementFeed';
 
 export default function Dashboard() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -383,6 +384,8 @@ export default function Dashboard() {
 
           {/* Right Column - Weekly Plan & Streak */}
           <div className="space-y-6">
+            <AnnouncementFeed user={user} lang={lang} />
+            
             <WeeklyStudyPlan 
               enrollments={enrollments}
               courses={courses}

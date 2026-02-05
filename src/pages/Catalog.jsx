@@ -116,9 +116,17 @@ export default function Catalog() {
                 {lang === 'es' ? 'Aplicar' : 'Apply'}
               </Button>
             </Link>
-            <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-              {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
-            </Button>
+            {!user ? (
+              <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
+              </Button>
+            ) : (
+              <Link to={createPageUrl(`CourseInstanceCatalog?lang=${lang}`)}>
+                <Button size="sm" className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                  {lang === 'es' ? 'Ver Cursos Disponibles' : 'View Available Courses'}
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </header>

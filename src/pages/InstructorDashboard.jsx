@@ -10,6 +10,7 @@ import { ClipboardCheck, MessageSquare, Eye, FileText, TrendingUp, Users } from 
 import SemesterAvailability from '@/components/instructor/SemesterAvailability';
 import CourseCalendar from '@/components/calendar/CourseCalendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AnnouncementFeed from '@/components/dashboard/AnnouncementFeed';
 
 export default function InstructorDashboard() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -168,6 +169,8 @@ export default function InstructorDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-8 mt-6">
+        
+        <AnnouncementFeed user={user} lang={lang} />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
           <Card>

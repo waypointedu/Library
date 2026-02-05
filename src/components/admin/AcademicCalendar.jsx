@@ -243,7 +243,11 @@ export default function AcademicCalendar({ lang = 'en' }) {
                     </div>
                     <div>
                       <p className="text-slate-500">Instructors</p>
-                      <p className="font-medium">{instance.instructor_emails?.join(', ') || 'Unassigned'}</p>
+                      <p className="font-medium">
+                        {instance.instructor_emails?.length > 0 
+                          ? `${instance.instructor_emails.length} assigned` 
+                          : 'Unassigned'}
+                      </p>
                     </div>
                     <div>
                       <p className="text-slate-500">Enrollment</p>

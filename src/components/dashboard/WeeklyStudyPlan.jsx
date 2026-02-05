@@ -6,6 +6,11 @@ import { Calendar, BookOpen, MessageSquare, FileText } from "lucide-react";
 import { format } from 'date-fns';
 
 export default function WeeklyStudyPlan({ enrollments, courses, weeks }) {
+  // Return null if no enrollments
+  if (!enrollments || enrollments.length === 0) {
+    return null;
+  }
+
   const getCurrentWeekTasks = () => {
     const tasks = [];
     
