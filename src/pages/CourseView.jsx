@@ -92,6 +92,12 @@ export default function CourseView() {
     enabled: !!courseId && isInstructor && !viewAsStudent
   });
 
+  const { data: weekQuizzes = [] } = useQuery({
+    queryKey: ['weekQuizzes', courseId],
+    queryFn: () => base44.entities.WeekQuiz.filter({ course_id: courseId }),
+    enabled: !!courseId
+  });
+
   const createAnnouncementMutation = useMutation({
     mutationFn: (data) => base44.entities.Announcement.create({
       ...data,
@@ -420,6 +426,64 @@ export default function CourseView() {
                 </Card>
               )}
 
+              {selectedContent.data.video_url && (
+                <Card className="border-slate-200 mb-6">
+                  <CardContent className="p-6">
+                    <div className="aspect-video">
+                      <iframe
+                        src={selectedContent.data.video_url}
+                        className="w-full h-full rounded-lg"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {selectedContent.data[`content_blocks_${lang}`] && selectedContent.data[`content_blocks_${lang}`].length > 0 && (
+                <Card className="border-slate-200 mb-6">
+                  <CardContent className="p-6 space-y-6">
+                    {selectedContent.data[`content_blocks_${lang}`].map((block) => (
+                      <div key={block.id}>
+                        {block.type === 'text' && (
+                          <p className="text-slate-700">{block.content}</p>
+                        )}
+                        {block.type === 'richtext' && (
+                          <div 
+                            className="prose prose-slate max-w-none"
+                            dangerouslySetInnerHTML={{ __html: block.content }} 
+                          />
+                        )}
+                        {block.type === 'video' && (
+                          <div>
+                            <div className="aspect-video">
+                              <iframe
+                                src={block.url}
+                                className="w-full h-full rounded-lg"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                              />
+                            </div>
+                            {block.caption && (
+                              <p className="text-sm text-slate-500 mt-2">{block.caption}</p>
+                            )}
+                          </div>
+                        )}
+                        {block.type === 'image' && (
+                          <div>
+                            <img src={block.url} alt={block.caption || ''} className="w-full rounded-lg" />
+                            {block.caption && (
+                              <p className="text-sm text-slate-500 mt-2">{block.caption}</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+
               <Card className="border-slate-200">
                 <CardContent className="p-6">
                   <div 
@@ -430,6 +494,30 @@ export default function CourseView() {
                   />
                 </CardContent>
               </Card>
+
+              {selectedContent.data.attachments && selectedContent.data.attachments.length > 0 && (
+                <Card className="border-slate-200 mt-6">
+                  <CardHeader>
+                    <CardTitle className="text-lg">
+                      {lang === 'es' ? 'Archivos Adjuntos' : 'Attachments'}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {selectedContent.data.attachments.map((attachment, idx) => (
+                      <a
+                        key={idx}
+                        href={attachment.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                      >
+                        <FileText className="w-4 h-4 text-slate-400" />
+                        <span className="text-sm text-slate-700">{attachment.title}</span>
+                      </a>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
 
               {selectedContent.data[`reading_assignment_${lang}`] && (
                 <Card className="border-slate-200 mt-6">
@@ -530,32 +618,54 @@ export default function CourseView() {
             </div>
           ) : selectedContent.type === 'quiz' ? (
             <div className="max-w-4xl mx-auto">
-              <Card className="border-slate-200">
-                <CardHeader>
-                  <CardTitle className="text-2xl">
-                    {lang === 'es' ? 'Cuestionario' : 'Quiz'}
-                  </CardTitle>
-                  <p className="text-slate-600">
-                    {lang === 'es' ? 'Semana' : 'Week'} {selectedContent.data.week_number}
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  {isInstructor && !viewAsStudent ? (
-                    <div className="space-y-4">
-                      <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&weekId=${selectedContent.data.id}&lang=${lang}`)}>
-                        <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
-                          <BarChart3 className="w-4 h-4" />
-                          {lang === 'es' ? 'Ver Intentos y Calificaciones' : 'View Attempts & Grades'}
-                        </Button>
-                      </Link>
-                    </div>
-                  ) : (
-                    <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                      {lang === 'es' ? 'Comenzar Cuestionario' : 'Start Quiz'}
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
+              {(() => {
+                const weekQuiz = weekQuizzes.find(q => q.week_id === selectedContent.data.id);
+
+                return (
+                  <Card className="border-slate-200">
+                    <CardHeader>
+                      <CardTitle className="text-2xl">
+                        {weekQuiz?.[`title_${lang}`] || weekQuiz?.title_en || (lang === 'es' ? 'Cuestionario' : 'Quiz')}
+                      </CardTitle>
+                      <p className="text-slate-600">
+                        {lang === 'es' ? 'Semana' : 'Week'} {selectedContent.data.week_number}
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      {weekQuiz && (
+                        <div className="mb-6 space-y-3">
+                          {weekQuiz[`instructions_${lang}`] && (
+                            <p className="text-slate-600">{weekQuiz[`instructions_${lang}`] || weekQuiz.instructions_en}</p>
+                          )}
+                          <div className="flex gap-4 text-sm text-slate-600">
+                            <span>{lang === 'es' ? 'Umbral de Aprobación:' : 'Pass Threshold:'} {weekQuiz.pass_threshold}%</span>
+                            <span>{lang === 'es' ? 'Intentos Máximos:' : 'Max Attempts:'} {weekQuiz.max_attempts}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {isInstructor && !viewAsStudent ? (
+                        <div className="space-y-4">
+                          <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&weekId=${selectedContent.data.id}&lang=${lang}`)}>
+                            <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
+                              <BarChart3 className="w-4 h-4" />
+                              {lang === 'es' ? 'Ver Intentos y Calificaciones' : 'View Attempts & Grades'}
+                            </Button>
+                          </Link>
+                        </div>
+                      ) : weekQuiz ? (
+                        <Link to={createPageUrl(`Week?courseId=${courseId}&weekId=${selectedContent.data.id}&lang=${lang}`)}>
+                          <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                            {lang === 'es' ? 'Comenzar Cuestionario' : 'Start Quiz'}
+                          </Button>
+                        </Link>
+                      ) : (
+                        <p className="text-slate-500">{lang === 'es' ? 'Cuestionario no disponible' : 'Quiz not available'}</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })()}
             </div>
           ) : null}
         </main>
