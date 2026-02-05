@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ClipboardCheck, MessageSquare, Eye, FileText, TrendingUp, Users } from "lucide-react";
-import LanguageToggle from '@/components/common/LanguageToggle';
 import SemesterAvailability from '@/components/instructor/SemesterAvailability';
 import CourseCalendar from '@/components/calendar/CourseCalendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -133,7 +132,6 @@ export default function InstructorDashboard() {
             <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-10" />
           </Link>
           <div className="flex items-center gap-4">
-            <LanguageToggle currentLang={lang} onToggle={setLang} />
             <Link to={createPageUrl(`InstructorGradebook?lang=${lang}`)}>
               <Button variant="outline" size="sm">
                 <ClipboardCheck className="w-4 h-4 mr-1" />

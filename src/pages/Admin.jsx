@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import LanguageToggle from '@/components/common/LanguageToggle';
 import CourseManager from '@/components/admin/CourseManager';
 import UserManager from '@/components/admin/UserManager';
 import Analytics from '@/components/admin/Analytics';
@@ -97,7 +96,6 @@ export default function Admin() {
           </Link>
 
           <div className="flex items-center gap-4">
-            <LanguageToggle currentLang={lang} onToggle={setLang} />
             {user?.role === 'instructor' && (
               <Link to={createPageUrl(`InstructorDashboard?lang=${lang}`)}>
                 <Button variant="outline" size="sm">

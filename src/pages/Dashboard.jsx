@@ -10,7 +10,6 @@ import {
   GraduationCap, Target, ChevronRight, FileText, Settings 
 } from "lucide-react";
 import CourseCard from '@/components/courses/CourseCard';
-import LanguageToggle from '@/components/common/LanguageToggle';
 import ProgressBar from '@/components/common/ProgressBar';
 import MobileNav from '@/components/common/MobileNav';
 import StreakDisplay from '@/components/gamification/StreakDisplay';
@@ -310,9 +309,6 @@ export default function Dashboard() {
           </Link>
 
           <div className="flex items-center gap-2 md:gap-4">
-            <div className="hidden md:block">
-              <LanguageToggle currentLang={lang} onToggle={setLang} />
-            </div>
             <Link to={createPageUrl(`Transcript?lang=${lang}`)} className="hidden md:block">
               <Button variant="outline" size="sm">
                 <FileText className="w-4 h-4 mr-1" />

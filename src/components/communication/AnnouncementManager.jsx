@@ -151,7 +151,7 @@ export default function AnnouncementManager() {
                 <div className="flex items-center gap-2">
                   <Checkbox 
                     checked={formData.published}
-                    onChange={(e) => setFormData({...formData, published: e.target.checked})}
+                    onCheckedChange={(checked) => setFormData({...formData, published: checked})}
                   />
                   <label className="text-sm">Publish immediately</label>
                 </div>
