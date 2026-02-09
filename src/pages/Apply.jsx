@@ -50,31 +50,39 @@ export default function Apply() {
         status: 'submitted'
       });
 
-      await base44.integrations.Core.SendEmail({
-        to: 'admin@waypoint.institute',
-        subject: `New Application: ${data.full_name}`,
-        body: `
-          <h2>New Application Submitted</h2>
-          <p><strong>Name:</strong> ${data.full_name}</p>
-          <p><strong>Email:</strong> ${data.email}</p>
-          <p><strong>Phone:</strong> ${data.phone || 'Not provided'}</p>
-          <p><strong>Location:</strong> ${data.city || ''}, ${data.country || ''}</p>
-          <p><strong>Primary Language:</strong> ${data.primary_language}</p>
-          <hr />
-          <p><strong>Faith Journey:</strong></p>
-          <p>${data.faith_journey}</p>
-          <p><strong>Why Waypoint:</strong></p>
-          <p>${data.why_waypoint || 'Not provided'}</p>
-          <hr />
-          <p><a href="${window.location.origin}">View in Admin Panel</a></p>
-        `
-      });
+      try {
+        await base44.integrations.Core.SendEmail({
+          to: 'admin@waypoint.institute',
+          subject: `New Application: ${data.full_name}`,
+          body: `
+            <h2>New Application Submitted</h2>
+            <p><strong>Name:</strong> ${data.full_name}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Phone:</strong> ${data.phone || 'Not provided'}</p>
+            <p><strong>Location:</strong> ${data.city || ''}, ${data.country || ''}</p>
+            <p><strong>Primary Language:</strong> ${data.primary_language}</p>
+            <hr />
+            <p><strong>Faith Journey:</strong></p>
+            <p>${data.faith_journey}</p>
+            <p><strong>Why Waypoint:</strong></p>
+            <p>${data.why_waypoint || 'Not provided'}</p>
+            <hr />
+            <p><a href="${window.location.origin}">View in Admin Panel</a></p>
+          `
+        });
+      } catch (emailError) {
+        console.error('Email send failed:', emailError);
+      }
 
       return application;
     },
     onSuccess: () => {
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    onError: (error) => {
+      console.error('Application submission failed:', error);
+      alert(lang === 'es' ? 'Error al enviar la solicitud. Por favor, inténtalo de nuevo.' : 'Failed to submit application. Please try again.');
     }
   });
 
