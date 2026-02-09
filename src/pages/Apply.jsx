@@ -44,10 +44,34 @@ export default function Apply() {
   }, [lang]);
 
   const submitMutation = useMutation({
-    mutationFn: (data) => base44.entities.Application.create({
-      ...data,
-      status: 'submitted'
-    }),
+    mutationFn: async (data) => {
+      const application = await base44.entities.Application.create({
+        ...data,
+        status: 'submitted'
+      });
+
+      await base44.integrations.Core.SendEmail({
+        to: 'admin@waypoint.institute',
+        subject: `New Application: ${data.full_name}`,
+        body: `
+          <h2>New Application Submitted</h2>
+          <p><strong>Name:</strong> ${data.full_name}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Phone:</strong> ${data.phone || 'Not provided'}</p>
+          <p><strong>Location:</strong> ${data.city || ''}, ${data.country || ''}</p>
+          <p><strong>Primary Language:</strong> ${data.primary_language}</p>
+          <hr />
+          <p><strong>Faith Journey:</strong></p>
+          <p>${data.faith_journey}</p>
+          <p><strong>Why Waypoint:</strong></p>
+          <p>${data.why_waypoint || 'Not provided'}</p>
+          <hr />
+          <p><a href="${window.location.origin}">View in Admin Panel</a></p>
+        `
+      });
+
+      return application;
+    },
     onSuccess: () => {
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
