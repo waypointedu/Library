@@ -230,6 +230,27 @@ export default function Week() {
                       )}
                     </div>
                   )}
+                  
+                  {block.type === 'audio' && block.url && (
+                    <div className="space-y-2">
+                      <div className="bg-slate-50 p-4 rounded-lg">
+                        <audio controls className="w-full">
+                          <source src={block.url} />
+                          Your browser does not support the audio element.
+                        </audio>
+                        <a 
+                          href={block.url} 
+                          download 
+                          className="text-sm text-[#1e3a5f] hover:underline mt-2 inline-block"
+                        >
+                          {lang === 'es' ? 'Descargar audio' : 'Download audio'}
+                        </a>
+                      </div>
+                      {block.caption && (
+                        <p className="text-sm text-slate-500 text-center">{block.caption}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </CardContent>

@@ -4,16 +4,18 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { GripVertical, Plus, Trash2, Type, Video, Image as ImageIcon, FileText, AlertCircle } from 'lucide-react';
+import { GripVertical, Plus, Trash2, Type, Video, Image as ImageIcon, FileText, AlertCircle, Music } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import ImageUploader from '@/components/upload/ImageUploader';
+import FileUploader from '@/components/upload/FileUploader';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 
 const BLOCK_TYPES = {
   text: { icon: Type, label: 'Text Block', color: 'blue' },
   video: { icon: Video, label: 'Video Embed', color: 'purple' },
   image: { icon: ImageIcon, label: 'Image', color: 'green' },
-  richtext: { icon: FileText, label: 'Rich Text', color: 'amber' }
+  richtext: { icon: FileText, label: 'Rich Text', color: 'amber' },
+  audio: { icon: Music, label: 'Audio', color: 'rose' }
 };
 
 export default function BlockEditor({ value = [], onChange, lang = 'en' }) {
@@ -86,7 +88,8 @@ export default function BlockEditor({ value = [], onChange, lang = 'en' }) {
       delete: 'Delete',
       dragToReorder: 'Drag to reorder',
       videoSupport: 'Supports YouTube, Loom, and Vimeo',
-      noBlocks: 'No content blocks yet. Add your first block!'
+      noBlocks: 'No content blocks yet. Add your first block!',
+      uploadAudio: 'Upload Audio File'
     },
     es: {
       addBlock: 'Añadir Bloque de Contenido',
@@ -98,7 +101,8 @@ export default function BlockEditor({ value = [], onChange, lang = 'en' }) {
       delete: 'Eliminar',
       dragToReorder: 'Arrastra para reordenar',
       videoSupport: 'Soporta YouTube, Loom y Vimeo',
-      noBlocks: '¡No hay bloques de contenido aún. Añade tu primer bloque!'
+      noBlocks: '¡No hay bloques de contenido aún. Añade tu primer bloque!',
+      uploadAudio: 'Subir Archivo de Audio'
     }
   };
 
@@ -142,6 +146,7 @@ export default function BlockEditor({ value = [], onChange, lang = 'en' }) {
                                 {block.type === 'video' && <Video className="w-4 h-4 text-purple-600" />}
                                 {block.type === 'image' && <ImageIcon className="w-4 h-4 text-green-600" />}
                                 {block.type === 'richtext' && <FileText className="w-4 h-4 text-amber-600" />}
+                                {block.type === 'audio' && <Music className="w-4 h-4 text-rose-600" />}
                                 <span className="text-sm font-medium text-slate-700">
                                   {BLOCK_TYPES[block.type]?.label || block.type}
                                 </span>
@@ -219,6 +224,30 @@ export default function BlockEditor({ value = [], onChange, lang = 'en' }) {
                                 />
                               </div>
                             )}
+
+                            {block.type === 'audio' && (
+                              <div className="space-y-3">
+                                <FileUploader
+                                  label={t.uploadAudio}
+                                  accept="audio/*"
+                                  onUploadComplete={(url) => updateBlock(block.id, { url })}
+                                  lang={lang}
+                                />
+                                {block.url && (
+                                  <div className="bg-slate-50 p-4 rounded-lg">
+                                    <audio controls className="w-full" controlsList="nodownload">
+                                      <source src={block.url} />
+                                      Your browser does not support the audio element.
+                                    </audio>
+                                  </div>
+                                )}
+                                <Input
+                                  value={block.caption || ''}
+                                  onChange={(e) => updateBlock(block.id, { caption: e.target.value })}
+                                  placeholder={t.caption}
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
                       </Card>
@@ -252,6 +281,10 @@ export default function BlockEditor({ value = [], onChange, lang = 'en' }) {
               <Button variant="outline" onClick={() => addBlock('richtext')} className="h-auto py-4 flex flex-col gap-2">
                 <FileText className="w-6 h-6 text-amber-600" />
                 <span className="text-xs">Rich Text</span>
+              </Button>
+              <Button variant="outline" onClick={() => addBlock('audio')} className="h-auto py-4 flex flex-col gap-2">
+                <Music className="w-6 h-6 text-rose-600" />
+                <span className="text-xs">Audio</span>
               </Button>
             </div>
             <Button variant="ghost" onClick={() => setAddingBlock(false)} className="w-full">
