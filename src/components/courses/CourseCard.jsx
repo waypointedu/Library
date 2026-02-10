@@ -1,13 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Clock, BookOpen, ArrowRight } from "lucide-react";
+import { Clock, BookOpen, ArrowRight, Globe } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ProgressBar from '@/components/common/ProgressBar';
 
 export default function CourseCard({ course, lang = 'en', progress = 0, enrolled = false }) {
   const title = course[`title_${lang}`] || course.title_en;
   const description = course[`description_${lang}`] || course.description_en;
+  
+  const languageMap = {
+    en: 'EN',
+    es: 'ES',
+    ps: 'PS',
+    fa: 'FA',
+    km: 'KM'
+  };
+  
+  const availableLanguages = course.language_availability || ['en'];
 
   return (
     <Link
@@ -31,7 +41,15 @@ export default function CourseCard({ course, lang = 'en', progress = 0, enrolled
 
         <div className="p-6">
           <div className="flex flex-wrap gap-2 mb-3">
-            {course.tags?.slice(0, 3).map((tag, i) => (
+            <div className="flex items-center gap-1 mr-2">
+              <Globe className="w-3 h-3 text-slate-500" />
+              {availableLanguages.map((l, i) => (
+                <Badge key={i} variant="outline" className="text-xs px-1.5 py-0 border-slate-300">
+                  {languageMap[l]}
+                </Badge>
+              ))}
+            </div>
+            {course.tags?.slice(0, 2).map((tag, i) => (
               <Badge key={i} variant="secondary" className="bg-slate-50 text-slate-600 font-normal">
                 {tag}
               </Badge>

@@ -189,16 +189,39 @@ export default function WeekEditor({ courseId, lang }) {
               </div>
             </div>
 
-            <FileUploader
-              label={t.upload}
-              accept="*/*"
-              onUploadComplete={(url) => {
-                const attachments = editingWeek.attachments || [];
-                attachments.push({ title: 'Attachment', url });
-                setEditingWeek({...editingWeek, attachments});
-              }}
-              lang={lang}
-            />
+            <div>
+              <FileUploader
+                label={t.upload}
+                accept="*/*"
+                onUploadComplete={(url, fileName) => {
+                  if (url) {
+                    const attachments = editingWeek.attachments || [];
+                    attachments.push({ title: fileName || 'Attachment', url });
+                    setEditingWeek({...editingWeek, attachments});
+                  }
+                }}
+                lang={lang}
+              />
+              {editingWeek.attachments?.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {editingWeek.attachments.map((att, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 bg-slate-50 rounded text-sm">
+                      <span className="truncate">{att.title}</span>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => {
+                          const newAttachments = editingWeek.attachments.filter((_, idx) => idx !== i);
+                          setEditingWeek({...editingWeek, attachments: newAttachments});
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {editingWeek.has_quiz && editingWeek.id && (
               <WeekQuizEditor weekId={editingWeek.id} lang={lang} />
