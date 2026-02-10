@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, GraduationCap, Users, Globe, Star, ChevronRight } from "lucide-react";
 import CourseCard from '@/components/courses/CourseCard';
-import MobileNav from '@/components/common/MobileNav';
 
 // Hero Background Component
 function HeroBackground() {
@@ -348,8 +347,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      <MobileNav lang={lang} currentPage="Home" />
     </div>
   );
 }

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
 import { BookOpen, Users, Video, ArrowRight } from "lucide-react";
-import MobileNav from '@/components/common/MobileNav';
+import LanguageToggle from '@/components/common/LanguageToggle';
+import { base44 } from '@/api/base44Client';
 
 export default function HowItWorks() {
   const [lang, setLang] = useState(() => {
@@ -199,8 +200,6 @@ export default function HowItWorks() {
           </Link>
         </div>
       </div>
-
-      <MobileNav lang={lang} currentPage="HowItWorks" />
     </div>
   );
 }

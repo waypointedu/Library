@@ -4,7 +4,6 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import MobileNav from '@/components/common/MobileNav';
 import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function FAQ() {
