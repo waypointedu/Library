@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star, Award, BookOpen, Clock, CheckCircle2, ArrowRight } from 'lucide-react';
-import MobileNav from '@/components/common/MobileNav';
 import ProgressBar from '@/components/common/ProgressBar';
 
 export default function Pathways() {
@@ -300,8 +299,6 @@ export default function Pathways() {
           </div>
         </section>
       </div>
-
-      <MobileNav lang={lang} currentPage="Pathways" />
     </div>
   );
 }

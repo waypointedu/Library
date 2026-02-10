@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, ArrowLeft, Star } from "lucide-react";
 import CourseCard from '@/components/courses/CourseCard';
-import MobileNav from '@/components/common/MobileNav';
 
 export default function Catalog() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -229,8 +228,6 @@ export default function Catalog() {
           )}
         </div>
       </section>
-
-      <MobileNav lang={lang} currentPage="Catalog" />
     </div>
   );
 }

@@ -161,8 +161,6 @@ export default function FAQ() {
           ))}
         </Accordion>
       </div>
-
-      <MobileNav lang={lang} currentPage="FAQ" />
     </div>
   );
 }
