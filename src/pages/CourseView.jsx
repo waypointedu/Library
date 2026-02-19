@@ -32,7 +32,7 @@ import WeekQuizStudent from '@/components/quiz/WeekQuizStudent';
 
 export default function CourseView() {
   const urlParams = new URLSearchParams(window.location.search);
-  const courseId = urlParams.get('id');
+  const courseId = urlParams.get('id') || urlParams.get('courseId');
   const [lang, setLang] = useState(urlParams.get('lang') || localStorage.getItem('waypoint_lang') || 'en');
   const [user, setUser] = useState(null);
   const [expandedWeeks, setExpandedWeeks] = useState({});
@@ -70,6 +70,15 @@ export default function CourseView() {
 
   const { data: progress = [] } = useQuery({
     queryKey: ['progress', courseId, user?.email],
+    queryFn: async () => {
+      const allProgress = await base44.entities.Progress.list();
+      return allProgress.filter(p => p.course_id === courseId);
+    },
+    enabled: !!courseId && isInstructor && !viewAsStudent
+  });
+
+  const { data: myProgress = [] } = useQuery({
+    queryKey: ['myProgress', courseId, user?.email],
     queryFn: () => base44.entities.Progress.filter({ course_id: courseId, user_email: user?.email }),
     enabled: !!user?.email && !!courseId
   });
@@ -190,11 +199,10 @@ export default function CourseView() {
   }
 
   const title = course[`title_${lang}`] || course.title_en;
-  const completedWeeks = progress.filter(p => p.completed).length;
+  const completedWeeks = myProgress.filter(p => p.completed).length;
 
-  const ungradedSubmissions = submissions.filter(s => !s.grade && !s.graded_date).length;
-  const ungradedQuizzes = quizAttempts.filter(q => !q.graded).length;
-  const totalUngraded = ungradedSubmissions + ungradedQuizzes;
+  const ungradedSubmissions = submissions.filter(s => s.status === 'submitted' && (!s.grade || s.grade === null || s.grade === '')).length;
+  const totalUngraded = ungradedSubmissions;
 
   const activeStudents = enrollments.filter(e => e.status === 'active').length;
   const completedStudents = enrollments.filter(e => e.status === 'completed').length;
@@ -405,6 +413,7 @@ export default function CourseView() {
                       <Card key={enrollment.id} className="border-slate-200">
                         <CardContent className="p-3">
                           <p className="text-sm font-medium text-slate-900">{displayName}</p>
+                          <p className="text-xs text-slate-400 mt-0.5">{enrollment.user_email}</p>
                           <div className="flex items-center justify-between mt-2">
                             <span className="text-xs text-slate-500">{progressPercent}% {lang === 'es' ? 'completado' : 'complete'}</span>
                             <Badge variant="outline" className="text-xs">{enrollment.status}</Badge>
@@ -485,28 +494,30 @@ export default function CourseView() {
               </TabsContent>
 
               {isInstructor && !viewAsStudent && (
-                <TabsContent value="gradebook" className="mt-4">
+                <TabsContent value="gradebook" className="mt-4 space-y-4">
                   <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&lang=${lang}`)}>
                     <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
                       <ClipboardCheck className="w-4 h-4" />
                       {lang === 'es' ? 'Abrir Libro de Calificaciones' : 'Open Gradebook'}
                     </Button>
                   </Link>
-                  <div className="mt-4 p-4 bg-slate-50 rounded-lg">
-                    <p className="text-sm text-slate-600 mb-2">
-                      {lang === 'es' ? 'Resumen rápido:' : 'Quick summary:'}
-                    </p>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>{lang === 'es' ? 'Por calificar:' : 'To grade:'}</span>
-                        <Badge variant="destructive">{totalUngraded}</Badge>
+                  <Card className="border-slate-200">
+                    <CardContent className="p-4">
+                      <p className="text-sm font-medium text-slate-900 mb-3">
+                        {lang === 'es' ? 'Resumen rápido' : 'Quick summary'}
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-slate-600">{lang === 'es' ? 'Por calificar:' : 'To grade:'}</span>
+                          <Badge variant="destructive">{totalUngraded}</Badge>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-slate-600">{lang === 'es' ? 'Total estudiantes:' : 'Total students:'}</span>
+                          <Badge variant="outline">{enrollments.length}</Badge>
+                        </div>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span>{lang === 'es' ? 'Total estudiantes:' : 'Total students:'}</span>
-                        <Badge>{enrollments.length}</Badge>
-                      </div>
-                    </div>
-                  </div>
+                    </CardContent>
+                  </Card>
                 </TabsContent>
               )}
             </Tabs>
