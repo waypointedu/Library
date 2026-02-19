@@ -58,8 +58,10 @@ export default function CourseView() {
 
   const { data: weeks = [] } = useQuery({
     queryKey: ['weeks', courseId],
-    queryFn: () => base44.entities.Week.filter({ course_id: courseId }),
-    select: (data) => data.sort((a, b) => a.week_number - b.week_number),
+    queryFn: async () => {
+      const allWeeks = await base44.entities.Week.filter({ course_id: courseId });
+      return allWeeks.sort((a, b) => a.week_number - b.week_number);
+    },
     enabled: !!courseId
   });
 
