@@ -24,7 +24,9 @@ import {
   Users,
   BarChart3,
   AlertCircle,
-  Eye
+  Eye,
+  Trash2,
+  ClipboardCheck
 } from "lucide-react";
 import WeekQuizStudent from '@/components/quiz/WeekQuizStudent';
 
@@ -39,6 +41,7 @@ export default function CourseView() {
   const [viewAsStudent, setViewAsStudent] = useState(false);
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '' });
+  const [editingAnnouncement, setEditingAnnouncement] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -72,9 +75,16 @@ export default function CourseView() {
   });
 
   const { data: announcements = [] } = useQuery({
-    queryKey: ['announcements'],
-    queryFn: () => base44.entities.Announcement.filter({ published: true }),
-    select: (data) => data.sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 5)
+    queryKey: ['announcements', courseId],
+    queryFn: () => base44.entities.Announcement.filter({ course_id: courseId, published: true }),
+    select: (data) => data.sort((a, b) => new Date(b.created_date) - new Date(a.created_date)),
+    enabled: !!courseId
+  });
+
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list(),
+    enabled: isInstructor && !viewAsStudent
   });
 
   const { data: enrollments = [] } = useQuery({
@@ -114,17 +124,31 @@ export default function CourseView() {
   });
 
   const createAnnouncementMutation = useMutation({
-    mutationFn: (data) => base44.entities.Announcement.create({
-      ...data,
-      published: true,
-      target_audience: 'students',
-      priority: 'normal',
-      created_by: user.email
-    }),
+    mutationFn: (data) => {
+      if (editingAnnouncement) {
+        return base44.entities.Announcement.update(editingAnnouncement.id, data);
+      }
+      return base44.entities.Announcement.create({
+        ...data,
+        course_id: courseId,
+        published: true,
+        target_audience: 'students',
+        priority: 'normal',
+        created_by: user.email
+      });
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      queryClient.invalidateQueries({ queryKey: ['announcements', courseId] });
       setShowAnnouncementDialog(false);
       setNewAnnouncement({ title: '', content: '' });
+      setEditingAnnouncement(null);
+    }
+  });
+
+  const deleteAnnouncementMutation = useMutation({
+    mutationFn: (id) => base44.entities.Announcement.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['announcements', courseId] });
     }
   });
 
@@ -205,9 +229,11 @@ export default function CourseView() {
           </div>
           <div className="flex items-center gap-2">
             {isInstructor && !viewAsStudent && totalUngraded > 0 && (
-              <Badge variant="destructive" className="mr-2">
-                {totalUngraded} {lang === 'es' ? 'por calificar' : 'to grade'}
-              </Badge>
+              <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&lang=${lang}`)}>
+                <Badge variant="destructive" className="mr-2 cursor-pointer hover:bg-red-700">
+                  {totalUngraded} {lang === 'es' ? 'por calificar' : 'to grade'}
+                </Badge>
+              </Link>
             )}
             {isInstructor && (
               <Button
@@ -238,16 +264,21 @@ export default function CourseView() {
         >
           <div className="flex-1 overflow-y-auto p-4">
             <Tabs defaultValue="content" className="w-full">
-              <TabsList className={`w-full ${isInstructor && !viewAsStudent ? 'grid grid-cols-3' : 'grid grid-cols-2'}`}>
-                <TabsTrigger value="content" className="text-xs sm:text-sm">
+              <TabsList className={`w-full ${isInstructor && !viewAsStudent ? 'grid grid-cols-4' : 'grid grid-cols-2'}`}>
+                <TabsTrigger value="content" className="text-xs">
                   {lang === 'es' ? 'Contenido' : 'Content'}
                 </TabsTrigger>
                 {isInstructor && !viewAsStudent && (
-                  <TabsTrigger value="students" className="text-xs sm:text-sm">
-                    {lang === 'es' ? 'Estudiantes' : 'Students'}
-                  </TabsTrigger>
+                  <>
+                    <TabsTrigger value="students" className="text-xs">
+                      {lang === 'es' ? 'Estudiantes' : 'Students'}
+                    </TabsTrigger>
+                    <TabsTrigger value="gradebook" className="text-xs">
+                      {lang === 'es' ? 'Calificaciones' : 'Gradebook'}
+                    </TabsTrigger>
+                  </>
                 )}
-                <TabsTrigger value="announcements" className="text-xs sm:text-sm">
+                <TabsTrigger value="announcements" className="text-xs">
                   {lang === 'es' ? 'Anuncios' : 'Announcements'}
                 </TabsTrigger>
               </TabsList>
@@ -367,11 +398,13 @@ export default function CourseView() {
                   {enrollments.slice(0, 5).map(enrollment => {
                     const studentProgress = progress.filter(p => p.user_email === enrollment.user_email && p.completed).length;
                     const progressPercent = weeks.length > 0 ? Math.round((studentProgress / weeks.length) * 100) : 0;
+                    const studentUser = allUsers.find(u => u.email === enrollment.user_email);
+                    const displayName = studentUser?.display_name || studentUser?.full_name || enrollment.user_email;
                     
                     return (
                       <Card key={enrollment.id} className="border-slate-200">
                         <CardContent className="p-3">
-                          <p className="text-sm font-medium text-slate-900">{enrollment.user_email}</p>
+                          <p className="text-sm font-medium text-slate-900">{displayName}</p>
                           <div className="flex items-center justify-between mt-2">
                             <span className="text-xs text-slate-500">{progressPercent}% {lang === 'es' ? 'completado' : 'complete'}</span>
                             <Badge variant="outline" className="text-xs">{enrollment.status}</Badge>
@@ -386,7 +419,11 @@ export default function CourseView() {
               <TabsContent value="announcements" className="mt-4 space-y-3">
                 {isInstructor && !viewAsStudent && (
                   <Button
-                    onClick={() => setShowAnnouncementDialog(true)}
+                    onClick={() => {
+                      setEditingAnnouncement(null);
+                      setNewAnnouncement({ title: '', content: '' });
+                      setShowAnnouncementDialog(true);
+                    }}
                     className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2 mb-4"
                     size="sm"
                   >
@@ -402,18 +439,76 @@ export default function CourseView() {
                   announcements.map(announcement => (
                     <Card key={announcement.id} className="border-slate-200">
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-medium">{announcement.title}</CardTitle>
-                        <p className="text-xs text-slate-500">
-                          {new Date(announcement.created_date).toLocaleDateString()}
-                        </p>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-sm font-medium">{announcement.title}</CardTitle>
+                            <p className="text-xs text-slate-500 mt-1">
+                              {new Date(announcement.created_date).toLocaleDateString()}
+                            </p>
+                          </div>
+                          {isInstructor && !viewAsStudent && (
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => {
+                                  setEditingAnnouncement(announcement);
+                                  setNewAnnouncement({ title: announcement.title, content: announcement.content });
+                                  setShowAnnouncementDialog(true);
+                                }}
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => {
+                                  if (confirm(lang === 'es' ? '¿Eliminar anuncio?' : 'Delete announcement?')) {
+                                    deleteAnnouncementMutation.mutate(announcement.id);
+                                  }
+                                }}
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </CardHeader>
                       <CardContent className="text-sm text-slate-600">
-                        <div dangerouslySetInnerHTML={{ __html: announcement.content.substring(0, 150) + '...' }} />
+                        <div dangerouslySetInnerHTML={{ __html: announcement.content }} />
                       </CardContent>
                     </Card>
                   ))
                 )}
               </TabsContent>
+
+              {isInstructor && !viewAsStudent && (
+                <TabsContent value="gradebook" className="mt-4">
+                  <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&lang=${lang}`)}>
+                    <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
+                      <ClipboardCheck className="w-4 h-4" />
+                      {lang === 'es' ? 'Abrir Libro de Calificaciones' : 'Open Gradebook'}
+                    </Button>
+                  </Link>
+                  <div className="mt-4 p-4 bg-slate-50 rounded-lg">
+                    <p className="text-sm text-slate-600 mb-2">
+                      {lang === 'es' ? 'Resumen rápido:' : 'Quick summary:'}
+                    </p>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>{lang === 'es' ? 'Por calificar:' : 'To grade:'}</span>
+                        <Badge variant="destructive">{totalUngraded}</Badge>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>{lang === 'es' ? 'Total estudiantes:' : 'Total students:'}</span>
+                        <Badge>{enrollments.length}</Badge>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              )}
             </Tabs>
           </div>
         </aside>
