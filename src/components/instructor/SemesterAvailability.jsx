@@ -61,6 +61,15 @@ export default function SemesterAvailability({ user }) {
     }
   };
 
+  const handleAddAvailability = (termId) => {
+    createAvailabilityMutation.mutate({
+      instructor_email: user.email,
+      term_id: termId,
+      max_courses: 1,
+      is_available: true
+    });
+  };
+
   const handleMaxCoursesChange = (recordId, termId, value) => {
     setEditValues(prev => ({ ...prev, [recordId]: value }));
     setSubmitted(prev => ({ ...prev, [termId]: false }));
