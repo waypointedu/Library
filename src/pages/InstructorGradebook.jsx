@@ -37,6 +37,11 @@ export default function InstructorGradebook() {
     enabled: !!courseId
   });
 
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list()
+  });
+
   const { data: weeks = [] } = useQuery({
     queryKey: ['weeks', courseId],
     queryFn: () => base44.entities.Week.filter({ course_id: courseId }),
@@ -132,6 +137,9 @@ export default function InstructorGradebook() {
   });
 
   const studentRows = enrollments.map(enrollment => {
+    const studentUser = allUsers.find(u => u.email === enrollment.user_email);
+    const displayName = studentUser?.display_name || studentUser?.full_name || enrollment.user_email;
+    
     const studentGrades = assignments.map(assignment => {
       let grade = null;
       const editKey = `${enrollment.user_email}-${assignment.weekId}-${assignment.type}`;
@@ -161,6 +169,7 @@ export default function InstructorGradebook() {
 
     return {
       email: enrollment.user_email,
+      displayName,
       grades: studentGrades,
       average
     };
@@ -218,7 +227,7 @@ export default function InstructorGradebook() {
                   <TableBody>
                     {studentRows.map((student, idx) => (
                       <TableRow key={idx}>
-                        <TableCell className="font-medium">{student.email}</TableCell>
+                        <TableCell className="font-medium">{student.displayName}</TableCell>
                         {student.grades.map((gradeData, gIdx) => (
                           <TableCell key={gIdx} className="text-center">
                             {gradeData.type === 'written' ? (
