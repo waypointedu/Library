@@ -15,6 +15,7 @@ import ApplicationsManager from '@/components/admin/ApplicationsManager';
 import AcademicCalendar from '@/components/admin/AcademicCalendar';
 import SemesterManager from '@/components/admin/SemesterManager';
 import InstructorApprovalManager from '@/components/admin/InstructorApprovalManager';
+import StudentManager from '@/components/admin/StudentManager';
 import GamificationManager from '@/components/admin/GamificationManager';
 import AdvancedCourseManager from '@/components/admin/AdvancedCourseManager';
 import AnnouncementManager from '@/components/communication/AnnouncementManager';
@@ -127,6 +128,7 @@ export default function Admin() {
              {user.role === 'admin' && <TabsTrigger value="overview" className="text-xs md:text-sm">{t.tabs.overview}</TabsTrigger>}
              {user.role === 'admin' && <TabsTrigger value="applications" className="text-xs md:text-sm">{lang === 'es' ? 'Solicitudes' : 'Applications'}</TabsTrigger>}
              <TabsTrigger value="courses" className="text-xs md:text-sm">{t.tabs.courses}</TabsTrigger>
+             {user.role === 'admin' && <TabsTrigger value="students" className="text-xs md:text-sm">{lang === 'es' ? 'Estudiantes' : 'Students'}</TabsTrigger>}
              {user.role === 'admin' && <TabsTrigger value="instructors" className="text-xs md:text-sm">{lang === 'es' ? 'Instructores' : 'Instructors'}</TabsTrigger>}
              {user.role === 'admin' && <TabsTrigger value="calendar" className="text-xs md:text-sm">{lang === 'es' ? 'Calendario' : 'Calendar'}</TabsTrigger>}
              {user.role === 'admin' && <TabsTrigger value="pathways" className="text-xs md:text-sm">{t.tabs.pathways}</TabsTrigger>}
@@ -150,6 +152,12 @@ export default function Admin() {
           <TabsContent value="courses">
             <CourseManager lang={lang} user={user} />
           </TabsContent>
+
+          {user.role === 'admin' && (
+            <TabsContent value="students">
+              <StudentManager />
+            </TabsContent>
+          )}
 
           {user.role === 'admin' && (
             <TabsContent value="instructors">
