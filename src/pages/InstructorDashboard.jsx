@@ -276,9 +276,9 @@ export default function InstructorDashboard() {
                             {t.viewCourse}
                           </Button>
                         </Link>
-                        <Link to={createPageUrl(`CourseEditor?id=${course.id}&lang=${lang}`)}>
+                        <Link to={createPageUrl(`CourseView?id=${course.id}&lang=${lang}`)}>
                           <Button size="sm" className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                            {t.editCourse}
+                            {t.manageCourse}
                           </Button>
                         </Link>
                       </CardContent>
