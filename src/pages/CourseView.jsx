@@ -264,21 +264,21 @@ export default function CourseView() {
         >
           <div className="flex-1 overflow-y-auto p-4">
             <Tabs defaultValue="content" className="w-full">
-              <TabsList className={`w-full ${isInstructor && !viewAsStudent ? 'grid grid-cols-4' : 'grid grid-cols-2'}`}>
-                <TabsTrigger value="content" className="text-xs">
+              <TabsList className={`w-full grid ${isInstructor && !viewAsStudent ? 'grid-cols-4' : 'grid-cols-2'}`}>
+                <TabsTrigger value="content" className="text-[10px] sm:text-xs">
                   {lang === 'es' ? 'Contenido' : 'Content'}
                 </TabsTrigger>
                 {isInstructor && !viewAsStudent && (
                   <>
-                    <TabsTrigger value="students" className="text-xs">
+                    <TabsTrigger value="students" className="text-[10px] sm:text-xs">
                       {lang === 'es' ? 'Estudiantes' : 'Students'}
                     </TabsTrigger>
-                    <TabsTrigger value="gradebook" className="text-xs">
-                      {lang === 'es' ? 'Calificaciones' : 'Gradebook'}
+                    <TabsTrigger value="gradebook" className="text-[10px] sm:text-xs">
+                      {lang === 'es' ? 'Notas' : 'Grades'}
                     </TabsTrigger>
                   </>
                 )}
-                <TabsTrigger value="announcements" className="text-xs">
+                <TabsTrigger value="announcements" className="text-[10px] sm:text-xs">
                   {lang === 'es' ? 'Anuncios' : 'Announcements'}
                 </TabsTrigger>
               </TabsList>
@@ -395,7 +395,7 @@ export default function CourseView() {
                     </Button>
                   </Link>
 
-                  {enrollments.slice(0, 5).map(enrollment => {
+                  {enrollments.map(enrollment => {
                     const studentProgress = progress.filter(p => p.user_email === enrollment.user_email && p.completed).length;
                     const progressPercent = weeks.length > 0 ? Math.round((studentProgress / weeks.length) * 100) : 0;
                     const studentUser = allUsers.find(u => u.email === enrollment.user_email);

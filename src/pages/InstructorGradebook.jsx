@@ -170,9 +170,17 @@ export default function InstructorGradebook() {
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
-            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-10" />
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to={createPageUrl(`CourseView?courseId=${courseId}&lang=${lang}`)}>
+              <Button variant="ghost" size="sm" className="gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                {lang === 'es' ? 'Volver al Curso' : 'Back to Course'}
+              </Button>
+            </Link>
+            <Link to={createPageUrl(`Home?lang=${lang}`)} className="flex items-center gap-3">
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-10" />
+            </Link>
+          </div>
           <LanguageToggle currentLang={lang} onToggle={setLang} />
         </div>
       </header>
