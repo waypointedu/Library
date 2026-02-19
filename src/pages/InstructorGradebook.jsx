@@ -186,14 +186,6 @@ export default function InstructorGradebook() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <Link
-          to={createPageUrl(`Admin?lang=${lang}`)}
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Admin
-        </Link>
-
         <h1 className="text-3xl font-light text-slate-900 mb-2">{t.title}</h1>
         <p className="text-slate-600 mb-8">{course[`title_${lang}`] || course.title_en}</p>
 
