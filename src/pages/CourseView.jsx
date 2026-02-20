@@ -116,7 +116,7 @@ export default function CourseView() {
   });
 
   const { data: enrollments = [] } = useQuery({
-    queryKey: ['courseEnrollments', courseId, courseInstanceId],
+    queryKey: ['courseEnrollments', courseId, courseInstanceId, isInstructor],
     queryFn: async () => {
       let allEnrollments;
       if (courseInstanceId) {
@@ -125,17 +125,24 @@ export default function CourseView() {
         allEnrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
       }
       
+      console.log('CourseView - Raw enrollments:', allEnrollments);
+      
       // Filter out instructors and admins from student list
-      const users = allUsers.length > 0 ? allUsers : await base44.entities.User.list();
+      const users = await base44.entities.User.list();
+      console.log('CourseView - All users:', users);
+      
       const studentEnrollments = allEnrollments.filter(enrollment => {
         const enrolledUser = users.find(u => u.email === enrollment.user_email);
         if (!enrolledUser) return true; // Include if user not found
         // Exclude if user is admin or instructor
         if (enrolledUser.role === 'admin') return false;
         if (enrolledUser.data?.user_type === 'admin' || enrolledUser.data?.user_type === 'instructor') return false;
+        if (enrolledUser.user_type === 'admin' || enrolledUser.user_type === 'instructor') return false;
         // Include students and users without user_type set
         return true;
       });
+      
+      console.log('CourseView - Filtered student enrollments:', studentEnrollments);
       
       // Remove duplicates by keeping only the first enrollment per user
       const uniqueEnrollments = [];
