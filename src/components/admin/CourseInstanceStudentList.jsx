@@ -21,7 +21,7 @@ export default function CourseInstanceStudentList({ instanceId }) {
     const user = users.find(u => u.email === enrollment.user_email);
     return {
       ...enrollment,
-      user_name: user?.full_name || enrollment.user_email
+      user_name: user?.display_name || user?.full_name || enrollment.user_email.split('@')[0]
     };
   }).sort((a, b) => a.user_name.localeCompare(b.user_name));
 
