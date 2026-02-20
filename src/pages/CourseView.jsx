@@ -111,7 +111,11 @@ export default function CourseView() {
       const users = await base44.entities.User.list();
       const studentEnrollments = allEnrollments.filter(enrollment => {
         const user = users.find(u => u.email === enrollment.user_email);
-        return user && (user.data?.user_type === 'student' || !user.data?.user_type);
+        if (!user) return true; // Include if user not found (shouldn't happen)
+        // Exclude if user is admin or instructor
+        if (user.role === 'admin' || user.user_role === 'admin') return false;
+        if (user.data?.user_type === 'admin' || user.data?.user_type === 'instructor') return false;
+        return true;
       });
       
       // Remove duplicates by keeping only the first enrollment per user

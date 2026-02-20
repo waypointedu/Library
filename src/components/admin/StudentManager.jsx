@@ -65,9 +65,23 @@ export default function StudentManager() {
   };
 
   const deleteEnrollmentMutation = useMutation({
-    mutationFn: (enrollmentId) => base44.entities.Enrollment.delete(enrollmentId),
+    mutationFn: async (enrollmentId) => {
+      const enrollment = enrollments.find(e => e.id === enrollmentId);
+      await base44.entities.Enrollment.delete(enrollmentId);
+      
+      // Decrement course instance enrollment count
+      if (enrollment?.course_instance_id) {
+        const instance = courseInstances.find(ci => ci.id === enrollment.course_instance_id);
+        if (instance) {
+          await base44.entities.CourseInstance.update(enrollment.course_instance_id, {
+            current_enrollment: Math.max(0, (instance.current_enrollment || 1) - 1)
+          });
+        }
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allEnrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['courseInstances'] });
     }
   });
 
@@ -85,14 +99,7 @@ export default function StudentManager() {
     }
   });
 
-  const createEnrollmentMutation = useMutation({
-    mutationFn: (data) => base44.entities.Enrollment.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['allEnrollments'] });
-      setShowAddCourseDialog(false);
-      setSelectedCourseInstance('');
-    }
-  });
+
 
   const createPathwayEnrollmentMutation = useMutation({
     mutationFn: (data) => base44.entities.PathwayEnrollment.create(data),
@@ -103,7 +110,7 @@ export default function StudentManager() {
     }
   });
 
-  const handleAddCourseEnrollment = () => {
+  const handleAddCourseEnrollment = async () => {
     if (!selectedCourseInstance || !selectedStudent) return;
 
     // Check for duplicate enrollment
@@ -117,13 +124,27 @@ export default function StudentManager() {
     }
 
     const instance = courseInstances.find(ci => ci.id === selectedCourseInstance);
-    createEnrollmentMutation.mutate({
+    
+    // Create enrollment and update instance count
+    await base44.entities.Enrollment.create({
       user_email: selectedStudent.email,
       course_id: instance.course_id,
       course_instance_id: selectedCourseInstance,
       status: 'active',
       enrolled_date: new Date().toISOString()
     });
+    
+    // Update course instance enrollment count
+    await base44.entities.CourseInstance.update(selectedCourseInstance, {
+      current_enrollment: (instance.current_enrollment || 0) + 1
+    });
+    
+    // Refresh data
+    queryClient.invalidateQueries({ queryKey: ['allEnrollments'] });
+    queryClient.invalidateQueries({ queryKey: ['courseInstances'] });
+    
+    setShowAddCourseDialog(false);
+    setSelectedCourseInstance('');
   };
 
   const handleAddPathwayEnrollment = () => {

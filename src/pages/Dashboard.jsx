@@ -431,15 +431,19 @@ export default function Dashboard() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {enrolledCourses.map(course => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  lang={lang}
-                  enrolled={true}
-                  progress={getCourseProgress(course.id)}
-                />
-              ))}
+              {enrolledCourses.map(course => {
+                const enrollment = enrollments.find(e => e.course_id === course.id);
+                return (
+                  <CourseCard
+                    key={course.id}
+                    course={course}
+                    lang={lang}
+                    enrolled={true}
+                    progress={getCourseProgress(course.id)}
+                    courseInstanceId={enrollment?.course_instance_id}
+                  />
+                );
+              })}
             </div>
           )}
         </div>

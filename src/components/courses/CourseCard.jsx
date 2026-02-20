@@ -5,7 +5,7 @@ import { Clock, BookOpen, ArrowRight, Globe } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ProgressBar from '@/components/common/ProgressBar';
 
-export default function CourseCard({ course, lang = 'en', progress = 0, enrolled = false }) {
+export default function CourseCard({ course, lang = 'en', progress = 0, enrolled = false, courseInstanceId = null }) {
   const title = course[`title_${lang}`] || course.title_en;
   const description = course[`description_${lang}`] || course.description_en;
   
@@ -19,9 +19,14 @@ export default function CourseCard({ course, lang = 'en', progress = 0, enrolled
   
   const availableLanguages = course.language_availability || ['en'];
 
+  // If enrolled and has instance ID, go to CourseView, otherwise go to Course details
+  const linkUrl = enrolled && courseInstanceId
+    ? `CourseView?id=${course.id}&courseInstanceId=${courseInstanceId}&lang=${lang}`
+    : `Course?id=${course.id}&lang=${lang}`;
+
   return (
     <Link
-      to={createPageUrl(`Course?id=${course.id}&lang=${lang}`)}
+      to={createPageUrl(linkUrl)}
       className="group block"
     >
       <article className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg hover:border-slate-200 transition-all duration-300">
