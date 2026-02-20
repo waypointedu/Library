@@ -260,7 +260,7 @@ export default function CourseView() {
               <h1 className="text-lg font-semibold text-slate-900">{title}</h1>
               <p className="text-sm text-slate-500">
                 {isInstructor && !viewAsStudent
-                  ? `${activeStudents} ${lang === 'es' ? 'estudiantes activos' : 'active students'}`
+                  ? `${enrollments.filter(e => e.status === 'active').length} ${lang === 'es' ? 'estudiantes activos' : 'active students'}`
                   : `${completedWeeks} / ${weeks.length} ${lang === 'es' ? 'semanas completadas' : 'weeks completed'}`
                 }
               </p>
@@ -418,43 +418,49 @@ export default function CourseView() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-slate-600">{lang === 'es' ? 'Activos' : 'Active'}</span>
-                        <Badge variant="outline">{activeStudents}</Badge>
+                        <Badge variant="outline">{enrollments.filter(e => e.status === 'active').length}</Badge>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-slate-600">{lang === 'es' ? 'Completados' : 'Completed'}</span>
-                        <Badge variant="outline">{completedStudents}</Badge>
+                        <Badge variant="outline">{enrollments.filter(e => e.status === 'completed').length}</Badge>
                       </div>
                     </CardContent>
                   </Card>
 
-                  <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&lang=${lang}`)}>
+                  <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&courseInstanceId=${courseInstanceId}&lang=${lang}`)}>
                     <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
                       <BarChart3 className="w-4 h-4" />
                       {lang === 'es' ? 'Ver Libro de Calificaciones' : 'View Gradebook'}
                     </Button>
                   </Link>
 
-                  {enrollments.map(enrollment => {
-                    const studentProgress = progress.filter(p => p.user_email === enrollment.user_email && p.completed).length;
-                    const progressPercent = weeks.length > 0 ? Math.round((studentProgress / weeks.length) * 100) : 0;
-                    const studentUser = allUsers.find(u => u.email === enrollment.user_email);
-                    const displayName = studentUser?.full_name || enrollment.user_email.split('@')[0];
-                    
-                    return (
-                      <Card key={enrollment.id} className="border-slate-200">
-                        <CardContent className="p-3">
-                          <p className="text-sm font-medium text-slate-900">{displayName}</p>
-                          {studentUser?.full_name && (
-                            <p className="text-xs text-slate-400 mt-0.5">{enrollment.user_email}</p>
-                          )}
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-slate-500">{progressPercent}% {lang === 'es' ? 'completado' : 'complete'}</span>
-                            <Badge variant="outline" className="text-xs">{enrollment.status}</Badge>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                  {enrollments.length === 0 ? (
+                    <p className="text-sm text-slate-500 text-center py-8">
+                      {lang === 'es' ? 'No hay estudiantes inscritos' : 'No students enrolled yet'}
+                    </p>
+                  ) : (
+                    enrollments.map(enrollment => {
+                      const studentProgress = progress.filter(p => p.user_email === enrollment.user_email && p.completed).length;
+                      const progressPercent = weeks.length > 0 ? Math.round((studentProgress / weeks.length) * 100) : 0;
+                      const studentUser = allUsers.find(u => u.email === enrollment.user_email);
+                      const displayName = studentUser?.full_name || enrollment.user_email.split('@')[0];
+                      
+                      return (
+                        <Card key={enrollment.id} className="border-slate-200">
+                          <CardContent className="p-3">
+                            <p className="text-sm font-medium text-slate-900">{displayName}</p>
+                            {studentUser?.full_name && (
+                              <p className="text-xs text-slate-400 mt-0.5">{enrollment.user_email}</p>
+                            )}
+                            <div className="flex items-center justify-between mt-2">
+                              <span className="text-xs text-slate-500">{progressPercent}% {lang === 'es' ? 'completado' : 'complete'}</span>
+                              <Badge variant="outline" className="text-xs">{enrollment.status}</Badge>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })
+                  )}
                 </TabsContent>
               )}
 
