@@ -49,7 +49,7 @@ export default function CourseView() {
     base44.auth.me().then(setUser).catch(() => setUser(null));
   }, []);
 
-  const isInstructor = user?.role === 'admin' || user?.user_type === 'admin' || user?.user_type === 'instructor';
+  const isInstructor = user?.role === 'admin' || user?.data?.user_type === 'admin' || user?.data?.user_type === 'instructor';
 
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
