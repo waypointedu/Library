@@ -20,9 +20,12 @@ export default function CourseInstanceStudentList({ instanceId }) {
   // Filter out admin and instructor enrollments
   const studentEnrollments = enrollments.filter(enrollment => {
     const user = users.find(u => u.email === enrollment.user_email);
-    if (!user) return true;
-    if (user.role === 'admin' || user.user_role === 'admin') return false;
+    if (!user) return true; // Include if user not found
+    // Check role field (admin)
+    if (user.role === 'admin') return false;
+    // Check data.user_type field (custom user types)
     if (user.data?.user_type === 'admin' || user.data?.user_type === 'instructor') return false;
+    // Include students and users without user_type set
     return true;
   });
 

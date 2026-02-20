@@ -49,8 +49,9 @@ export default function StudentManager() {
 
   const students = users.filter(u => {
     // Exclude admins and instructors
-    if (u.role === 'admin' || u.user_role === 'admin') return false;
+    if (u.role === 'admin') return false;
     if (u.data?.user_type === 'admin' || u.data?.user_type === 'instructor') return false;
+    // Include students and users without user_type set
     return true;
   });
 
