@@ -407,7 +407,7 @@ export default function CourseView() {
                     const studentProgress = progress.filter(p => p.user_email === enrollment.user_email && p.completed).length;
                     const progressPercent = weeks.length > 0 ? Math.round((studentProgress / weeks.length) * 100) : 0;
                     const studentUser = allUsers.find(u => u.email === enrollment.user_email);
-                    const displayName = studentUser?.full_name || studentUser?.display_name || enrollment.user_email.split('@')[0];
+                    const displayName = studentUser?.display_name || studentUser?.full_name || enrollment.user_email.split('@')[0];
                     
                     return (
                       <Card key={enrollment.id} className="border-slate-200">
