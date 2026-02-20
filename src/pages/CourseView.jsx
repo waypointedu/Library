@@ -109,18 +109,12 @@ export default function CourseView() {
       
       // Filter out instructors and admins from student list
       const users = await base44.entities.User.list();
-      console.log('DEBUG: Sample user object structure:', users[0]);
       const studentEnrollments = allEnrollments.filter(enrollment => {
         const enrolledUser = users.find(u => u.email === enrollment.user_email);
         if (!enrolledUser) return true; // Include if user not found
-        console.log('DEBUG: Checking enrollment for', enrolledUser.email, {
-          role: enrolledUser.role,
-          user_type: enrolledUser.user_type,
-          data_user_type: enrolledUser.data?.user_type
-        });
         // Exclude if user is admin or instructor
         if (enrolledUser.role === 'admin') return false;
-        if (enrolledUser.user_type === 'admin' || enrolledUser.user_type === 'instructor') return false;
+        if (enrolledUser.data?.user_type === 'admin' || enrolledUser.data?.user_type === 'instructor') return false;
         // Include students and users without user_type set
         return true;
       });
