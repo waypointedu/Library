@@ -33,13 +33,17 @@ export default function InstructorGradebook() {
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ['enrollments', courseId],
-    queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId }),
+    queryFn: async () => {
+      const allEnrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
+      
+      // Get instructor emails from course instances to filter them out
+      const instances = await base44.entities.CourseInstance.filter({ course_id: courseId });
+      const instructorEmails = instances.flatMap(inst => inst.instructor_emails || []);
+      
+      // Filter out instructors
+      return allEnrollments.filter(enrollment => !instructorEmails.includes(enrollment.user_email));
+    },
     enabled: !!courseId
-  });
-
-  const { data: allUsers = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list()
   });
 
   const { data: weeks = [] } = useQuery({

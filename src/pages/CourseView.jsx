@@ -119,12 +119,6 @@ export default function CourseView() {
     enabled: !!courseId
   });
 
-  const { data: allUsers = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list(),
-    enabled: isInstructor && !viewAsStudent
-  });
-
   const { data: enrollments = [] } = useQuery({
     queryKey: ['courseEnrollments', courseId, courseInstanceId, isInstructor],
     queryFn: async () => {
@@ -137,19 +131,20 @@ export default function CourseView() {
       
       console.log('CourseView - Raw enrollments:', allEnrollments);
       
-      // Filter out instructors and admins from student list
-      const users = await base44.entities.User.list();
-      console.log('CourseView - All users:', users);
+      // Get instructor emails from course instance to filter them out
+      let instructorEmails = [];
+      if (courseInstanceId) {
+        const instances = await base44.entities.CourseInstance.filter({ id: courseInstanceId });
+        if (instances[0]?.instructor_emails) {
+          instructorEmails = instances[0].instructor_emails;
+        }
+      }
       
+      console.log('CourseView - Instructor emails to exclude:', instructorEmails);
+      
+      // Filter out instructors based on email match
       const studentEnrollments = allEnrollments.filter(enrollment => {
-        const enrolledUser = users.find(u => u.email === enrollment.user_email);
-        if (!enrolledUser) return true; // Include if user not found
-        // Exclude if user is admin or instructor
-        if (enrolledUser.role === 'admin') return false;
-        if (enrolledUser.data?.user_type === 'admin' || enrolledUser.data?.user_type === 'instructor') return false;
-        if (enrolledUser.user_type === 'admin' || enrolledUser.user_type === 'instructor') return false;
-        // Include students and users without user_type set
-        return true;
+        return !instructorEmails.includes(enrollment.user_email);
       });
       
       console.log('CourseView - Filtered student enrollments:', studentEnrollments);
