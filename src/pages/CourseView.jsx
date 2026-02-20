@@ -479,16 +479,13 @@ export default function CourseView() {
                     enrollments.map(enrollment => {
                       const studentProgress = progress.filter(p => p.user_email === enrollment.user_email && p.completed).length;
                       const progressPercent = weeks.length > 0 ? Math.round((studentProgress / weeks.length) * 100) : 0;
-                      const studentUser = allUsers.find(u => u.email === enrollment.user_email);
-                      const displayName = studentUser?.full_name || enrollment.user_email.split('@')[0];
+                      const displayName = enrollment.user_email.split('@')[0];
                       
                       return (
                         <Card key={enrollment.id} className="border-slate-200">
                           <CardContent className="p-3">
                             <p className="text-sm font-medium text-slate-900">{displayName}</p>
-                            {studentUser?.full_name && (
-                              <p className="text-xs text-slate-400 mt-0.5">{enrollment.user_email}</p>
-                            )}
+                            <p className="text-xs text-slate-400 mt-0.5">{enrollment.user_email}</p>
                             <div className="flex items-center justify-between mt-2">
                               <span className="text-xs text-slate-500">{progressPercent}% {lang === 'es' ? 'completado' : 'complete'}</span>
                               <Badge variant="outline" className="text-xs">{enrollment.status}</Badge>
