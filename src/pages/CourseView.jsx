@@ -46,14 +46,26 @@ export default function CourseView() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => setUser(null));
+    base44.auth.me().then((u) => {
+      console.log('CourseView - User loaded:', u);
+      console.log('CourseView - user.role:', u.role);
+      console.log('CourseView - user.data:', u.data);
+      console.log('CourseView - user.data?.user_type:', u.data?.user_type);
+      console.log('CourseView - user.user_type:', u.user_type);
+      setUser(u);
+    }).catch(() => setUser(null));
   }, []);
 
   const [isInstructor, setIsInstructor] = useState(false);
 
   useEffect(() => {
     if (user) {
-      setIsInstructor(user.role === 'admin' || user.data?.user_type === 'admin' || user.data?.user_type === 'instructor');
+      const isAdmin = user.role === 'admin' || user.data?.user_type === 'admin';
+      const isInstr = user.data?.user_type === 'instructor' || user.user_type === 'instructor';
+      const result = isAdmin || isInstr;
+      console.log('CourseView - Setting isInstructor to:', result);
+      console.log('CourseView - Breakdown: isAdmin=', isAdmin, 'isInstr=', isInstr);
+      setIsInstructor(result);
     }
   }, [user]);
 
