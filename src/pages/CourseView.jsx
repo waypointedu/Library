@@ -99,11 +99,32 @@ export default function CourseView() {
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ['courseEnrollments', courseId, courseInstanceId],
-    queryFn: () => {
+    queryFn: async () => {
+      let allEnrollments;
       if (courseInstanceId) {
-        return base44.entities.Enrollment.filter({ course_instance_id: courseInstanceId });
+        allEnrollments = await base44.entities.Enrollment.filter({ course_instance_id: courseInstanceId });
+      } else {
+        allEnrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
       }
-      return base44.entities.Enrollment.filter({ course_id: courseId });
+      
+      // Filter out instructors and admins from student list
+      const users = await base44.entities.User.list();
+      const studentEnrollments = allEnrollments.filter(enrollment => {
+        const user = users.find(u => u.email === enrollment.user_email);
+        return user && (user.data?.user_type === 'student' || !user.data?.user_type);
+      });
+      
+      // Remove duplicates by keeping only the first enrollment per user
+      const uniqueEnrollments = [];
+      const seenEmails = new Set();
+      for (const enrollment of studentEnrollments) {
+        if (!seenEmails.has(enrollment.user_email)) {
+          seenEmails.add(enrollment.user_email);
+          uniqueEnrollments.push(enrollment);
+        }
+      }
+      
+      return uniqueEnrollments;
     },
     enabled: !!courseId && isInstructor && !viewAsStudent
   });
@@ -413,7 +434,7 @@ export default function CourseView() {
                     const studentProgress = progress.filter(p => p.user_email === enrollment.user_email && p.completed).length;
                     const progressPercent = weeks.length > 0 ? Math.round((studentProgress / weeks.length) * 100) : 0;
                     const studentUser = allUsers.find(u => u.email === enrollment.user_email);
-                    const displayName = studentUser?.display_name || studentUser?.full_name || enrollment.user_email.split('@')[0];
+                    const displayName = studentUser?.full_name || enrollment.user_email.split('@')[0];
                     
                     return (
                       <Card key={enrollment.id} className="border-slate-200">
