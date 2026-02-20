@@ -140,9 +140,20 @@ export default function InstructorGradebook() {
     return items;
   });
 
-  const studentRows = enrollments.map(enrollment => {
-    const studentUser = allUsers.find(u => u.email === enrollment.user_email);
-    const displayName = studentUser?.full_name || studentUser?.display_name || enrollment.user_email.split('@')[0];
+  const { data: studentUsers = [] } = useQuery({
+    queryKey: ['studentUsers', enrollments],
+    queryFn: async () => {
+      const userPromises = enrollments.map(enrollment => 
+        base44.entities.User.filter({ email: enrollment.user_email }).then(users => users[0])
+      );
+      return Promise.all(userPromises);
+    },
+    enabled: enrollments.length > 0
+  });
+
+  const studentRows = enrollments.map((enrollment, index) => {
+    const studentUser = studentUsers[index];
+    const displayName = studentUser?.full_name || studentUser?.data?.preferred_name || enrollment.user_email.split('@')[0];
     
     const studentGrades = assignments.map(assignment => {
       let grade = null;
