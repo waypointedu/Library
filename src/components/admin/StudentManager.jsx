@@ -138,7 +138,7 @@ export default function StudentManager() {
     }
   });
 
-  const handleAddCourseEnrollment = async () => {
+  const handleAddCourseEnrollment = () => {
     if (!selectedCourseInstance || !selectedStudent) return;
 
     // Check for duplicate enrollment
@@ -153,26 +153,13 @@ export default function StudentManager() {
 
     const instance = courseInstances.find(ci => ci.id === selectedCourseInstance);
     
-    // Create enrollment and update instance count
-    await base44.entities.Enrollment.create({
+    createEnrollmentMutation.mutate({
       user_email: selectedStudent.email,
       course_id: instance.course_id,
       course_instance_id: selectedCourseInstance,
       status: 'active',
       enrolled_date: new Date().toISOString()
     });
-    
-    // Update course instance enrollment count
-    await base44.entities.CourseInstance.update(selectedCourseInstance, {
-      current_enrollment: (instance.current_enrollment || 0) + 1
-    });
-    
-    // Refresh data
-    queryClient.invalidateQueries({ queryKey: ['allEnrollments'] });
-    queryClient.invalidateQueries({ queryKey: ['courseInstances'] });
-    
-    setShowAddCourseDialog(false);
-    setSelectedCourseInstance('');
   };
 
   const handleAddPathwayEnrollment = () => {
