@@ -173,7 +173,7 @@ export default function DetailedAnalytics({ lang }) {
     const user = users.find(u => u.email === e.user_email);
     if (!user) return true;
     if (user.role === 'admin') return false;
-    if (user.data?.user_type === 'admin' || user.data?.user_type === 'instructor') return false;
+    if (user.user_type === 'admin' || user.user_type === 'instructor') return false;
     return true;
   });
 
