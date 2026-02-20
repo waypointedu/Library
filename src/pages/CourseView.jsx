@@ -35,6 +35,7 @@ export default function CourseView() {
   const courseId = urlParams.get('id') || urlParams.get('courseId');
   const courseInstanceId = urlParams.get('courseInstanceId');
   const [lang, setLang] = useState(urlParams.get('lang') || localStorage.getItem('waypoint_lang') || 'en');
+  const [user, setUser] = useState(null);
   const [expandedWeeks, setExpandedWeeks] = useState({});
   const [selectedContent, setSelectedContent] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -44,11 +45,9 @@ export default function CourseView() {
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
   const queryClient = useQueryClient();
 
-  const { data: user } = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
-    retry: false
-  });
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => setUser(null));
+  }, []);
 
   const isInstructor = user?.role === 'admin' || user?.data?.user_type === 'admin' || user?.data?.user_type === 'instructor';
 
