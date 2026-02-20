@@ -168,11 +168,20 @@ export default function DetailedAnalytics({ lang }) {
 
   const t = text[lang];
 
+  // Filter student-only enrollments for accurate counts
+  const studentEnrollments = enrollments.filter(e => {
+    const user = users.find(u => u.email === e.user_email);
+    if (!user) return true;
+    if (user.role === 'admin') return false;
+    if (user.data?.user_type === 'admin' || user.data?.user_type === 'instructor') return false;
+    return true;
+  });
+
   const totalCompletedLessons = progress.filter(p => p.completed).length;
-  const activeEnrollments = enrollments.filter(e => e.status === 'active').length;
-  const totalCompletions = enrollments.filter(e => e.status === 'completed').length;
-  const avgCompletionRate = enrollments.length > 0 
-    ? ((totalCompletions / enrollments.length) * 100).toFixed(0)
+  const activeEnrollments = studentEnrollments.filter(e => e.status === 'active').length;
+  const totalCompletions = studentEnrollments.filter(e => e.status === 'completed').length;
+  const avgCompletionRate = studentEnrollments.length > 0 
+    ? ((totalCompletions / studentEnrollments.length) * 100).toFixed(0)
     : 0;
 
   return (
