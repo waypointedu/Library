@@ -236,8 +236,7 @@ export default function CourseView() {
   const ungradedSubmissions = submissions.filter(s => s.status === 'submitted' && (!s.grade || s.grade === null || s.grade === '')).length;
   const totalUngraded = ungradedSubmissions;
 
-  const activeStudents = enrollments.filter(e => e.status === 'active').length;
-  const completedStudents = enrollments.filter(e => e.status === 'completed').length;
+
 
   const getWeekSubmissions = (weekId) => {
     return submissions.filter(s => s.week_id === weekId && !s.grade).length;
