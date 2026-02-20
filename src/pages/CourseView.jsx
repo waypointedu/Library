@@ -294,11 +294,11 @@ export default function CourseView() {
             </Button>
             <div>
               <h1 className="text-lg font-semibold text-slate-900">{title}</h1>
-              {courseInstance && !isInstructor && (
-                <div className="flex items-center gap-2 text-xs text-slate-500">
+              {courseInstance && !isInstructor && courseInstance.instructor_emails?.[0] && (
+                <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
                   <Badge variant="outline" className="text-xs">{courseInstance.cohort_name}</Badge>
                   <span>•</span>
-                  <span>{lang === 'es' ? 'Instructor:' : 'Instructor:'} {courseInstance.instructor_emails?.[0] || 'TBA'}</span>
+                  <span>{lang === 'es' ? 'Instructor:' : 'Instructor:'} {courseInstance.instructor_emails[0].split('@')[0]}</span>
                 </div>
               )}
               <p className="text-sm text-slate-500">
