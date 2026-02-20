@@ -129,8 +129,6 @@ export default function CourseView() {
         allEnrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
       }
       
-      console.log('CourseView - Raw enrollments:', allEnrollments);
-      
       // Get instructor emails from course instance to filter them out
       let instructorEmails = [];
       if (courseInstanceId) {
@@ -140,14 +138,10 @@ export default function CourseView() {
         }
       }
       
-      console.log('CourseView - Instructor emails to exclude:', instructorEmails);
-      
       // Filter out instructors based on email match
       const studentEnrollments = allEnrollments.filter(enrollment => {
         return !instructorEmails.includes(enrollment.user_email);
       });
-      
-      console.log('CourseView - Filtered student enrollments:', studentEnrollments);
       
       // Remove duplicates by keeping only the first enrollment per user
       const uniqueEnrollments = [];
@@ -162,6 +156,18 @@ export default function CourseView() {
       return uniqueEnrollments;
     },
     enabled: !!courseId && isInstructor
+  });
+
+  const { data: studentUsers = [] } = useQuery({
+    queryKey: ['studentUsers', enrollments],
+    queryFn: async () => {
+      const userPromises = enrollments.map(async (enrollment) => {
+        const users = await base44.entities.User.filter({ email: enrollment.user_email });
+        return users[0];
+      });
+      return Promise.all(userPromises);
+    },
+    enabled: enrollments.length > 0 && isInstructor
   });
 
   const { data: submissions = [] } = useQuery({
@@ -476,10 +482,11 @@ export default function CourseView() {
                       {lang === 'es' ? 'No hay estudiantes inscritos' : 'No students enrolled yet'}
                     </p>
                   ) : (
-                    enrollments.map(enrollment => {
+                    enrollments.map((enrollment, index) => {
                       const studentProgress = progress.filter(p => p.user_email === enrollment.user_email && p.completed).length;
                       const progressPercent = weeks.length > 0 ? Math.round((studentProgress / weeks.length) * 100) : 0;
-                      const displayName = enrollment.user_email.split('@')[0];
+                      const studentUser = studentUsers[index];
+                      const displayName = studentUser?.data?.preferred_name || studentUser?.full_name || enrollment.user_email.split('@')[0];
                       
                       return (
                         <Card key={enrollment.id} className="border-slate-200">
