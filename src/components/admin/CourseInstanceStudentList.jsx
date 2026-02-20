@@ -17,11 +17,20 @@ export default function CourseInstanceStudentList({ instanceId }) {
     queryFn: () => base44.entities.User.list()
   });
 
-  const enrolledStudents = enrollments.map(enrollment => {
+  // Filter out admin and instructor enrollments
+  const studentEnrollments = enrollments.filter(enrollment => {
+    const user = users.find(u => u.email === enrollment.user_email);
+    if (!user) return true;
+    if (user.role === 'admin' || user.user_role === 'admin') return false;
+    if (user.data?.user_type === 'admin' || user.data?.user_type === 'instructor') return false;
+    return true;
+  });
+
+  const enrolledStudents = studentEnrollments.map(enrollment => {
     const user = users.find(u => u.email === enrollment.user_email);
     return {
       ...enrollment,
-      user_name: user?.display_name || user?.full_name || enrollment.user_email.split('@')[0]
+      user_name: user?.full_name || enrollment.user_email.split('@')[0]
     };
   }).sort((a, b) => a.user_name.localeCompare(b.user_name));
 

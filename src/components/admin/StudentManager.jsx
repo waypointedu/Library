@@ -47,7 +47,12 @@ export default function StudentManager() {
     queryFn: () => base44.entities.Pathway.list()
   });
 
-  const students = users.filter(u => u.user_type === 'student' || !u.user_type);
+  const students = users.filter(u => {
+    // Exclude admins and instructors
+    if (u.role === 'admin' || u.user_role === 'admin') return false;
+    if (u.data?.user_type === 'admin' || u.data?.user_type === 'instructor') return false;
+    return true;
+  });
 
   const getStudentEnrollments = (userEmail) => {
     return enrollments.filter(e => e.user_email === userEmail);
