@@ -33,6 +33,7 @@ import WeekQuizStudent from '@/components/quiz/WeekQuizStudent';
 export default function CourseView() {
   const urlParams = new URLSearchParams(window.location.search);
   const courseId = urlParams.get('id') || urlParams.get('courseId');
+  const courseInstanceId = urlParams.get('courseInstanceId');
   const [lang, setLang] = useState(urlParams.get('lang') || localStorage.getItem('waypoint_lang') || 'en');
   const [user, setUser] = useState(null);
   const [expandedWeeks, setExpandedWeeks] = useState({});
@@ -97,8 +98,13 @@ export default function CourseView() {
   });
 
   const { data: enrollments = [] } = useQuery({
-    queryKey: ['courseEnrollments', courseId],
-    queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId }),
+    queryKey: ['courseEnrollments', courseId, courseInstanceId],
+    queryFn: () => {
+      if (courseInstanceId) {
+        return base44.entities.Enrollment.filter({ course_instance_id: courseInstanceId });
+      }
+      return base44.entities.Enrollment.filter({ course_id: courseId });
+    },
     enabled: !!courseId && isInstructor && !viewAsStudent
   });
 

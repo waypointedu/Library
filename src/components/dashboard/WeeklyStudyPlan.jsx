@@ -25,13 +25,17 @@ export default function WeeklyStudyPlan({ enrollments, courses, weeks }) {
       const currentWeek = courseWeeks[0];
       
       if (currentWeek) {
+        const linkUrl = enrollment.course_instance_id 
+          ? `CourseView?id=${course.id}&courseInstanceId=${enrollment.course_instance_id}&lang=en`
+          : `CourseView?id=${course.id}&lang=en`;
+        
         tasks.push({
           type: 'reading',
           course: course.title_en,
           title: currentWeek.title_en,
           description: `Week ${currentWeek.week_number} reading`,
           icon: BookOpen,
-          link: createPageUrl(`CourseView?id=${course.id}&lang=en`)
+          link: createPageUrl(linkUrl)
         });
         
         if (currentWeek.has_discussion) {
@@ -41,7 +45,7 @@ export default function WeeklyStudyPlan({ enrollments, courses, weeks }) {
             title: 'Discussion forum',
             description: `${course.title_en} - Week ${currentWeek.week_number} discussion`,
             icon: MessageSquare,
-            link: createPageUrl(`CourseView?id=${course.id}&lang=en`)
+            link: createPageUrl(linkUrl)
           });
         }
         
@@ -52,7 +56,7 @@ export default function WeeklyStudyPlan({ enrollments, courses, weeks }) {
             title: 'Written assignment',
             description: `Week ${currentWeek.week_number} submission`,
             icon: FileText,
-            link: createPageUrl(`CourseView?id=${course.id}&lang=en`)
+            link: createPageUrl(linkUrl)
           });
         }
       }
