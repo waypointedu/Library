@@ -98,7 +98,7 @@ export default function CourseView() {
   });
 
   const { data: enrollments = [] } = useQuery({
-    queryKey: ['courseEnrollments', courseId, courseInstanceId, allUsers],
+    queryKey: ['courseEnrollments', courseId, courseInstanceId],
     queryFn: async () => {
       let allEnrollments;
       if (courseInstanceId) {
@@ -107,9 +107,10 @@ export default function CourseView() {
         allEnrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
       }
       
-      // Filter out instructors and admins from student list using allUsers from previous query
+      // Filter out instructors and admins from student list
+      const users = allUsers.length > 0 ? allUsers : await base44.entities.User.list();
       const studentEnrollments = allEnrollments.filter(enrollment => {
-        const enrolledUser = allUsers.find(u => u.email === enrollment.user_email);
+        const enrolledUser = users.find(u => u.email === enrollment.user_email);
         if (!enrolledUser) return true; // Include if user not found
         // Exclude if user is admin or instructor
         if (enrolledUser.role === 'admin') return false;
@@ -130,7 +131,7 @@ export default function CourseView() {
       
       return uniqueEnrollments;
     },
-    enabled: !!courseId && isInstructor && allUsers.length > 0
+    enabled: !!courseId && isInstructor
   });
 
   const { data: submissions = [] } = useQuery({
