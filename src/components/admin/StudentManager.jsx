@@ -105,7 +105,29 @@ export default function StudentManager() {
     }
   });
 
-
+  const createEnrollmentMutation = useMutation({
+    mutationFn: async (data) => {
+      const enrollment = await base44.entities.Enrollment.create(data);
+      
+      // Update course instance enrollment count
+      if (data.course_instance_id) {
+        const instance = courseInstances.find(ci => ci.id === data.course_instance_id);
+        if (instance) {
+          await base44.entities.CourseInstance.update(data.course_instance_id, {
+            current_enrollment: (instance.current_enrollment || 0) + 1
+          });
+        }
+      }
+      
+      return enrollment;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allEnrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['courseInstances'] });
+      setShowAddCourseDialog(false);
+      setSelectedCourseInstance('');
+    }
+  });
 
   const createPathwayEnrollmentMutation = useMutation({
     mutationFn: (data) => base44.entities.PathwayEnrollment.create(data),
