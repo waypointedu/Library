@@ -5,10 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { CheckCircle2, FileText, ExternalLink, Clock } from 'lucide-react';
+import { CheckCircle2, FileText, ExternalLink, Clock, Upload, File } from 'lucide-react';
 
 export default function WrittenAssignmentStudent({ week, courseId, user, lang }) {
   const [docsUrl, setDocsUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: submission } = useQuery({
@@ -57,6 +58,22 @@ export default function WrittenAssignmentStudent({ week, courseId, user, lang })
     submitMutation.mutate(docsUrl);
   };
 
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      submitMutation.mutate(file_url);
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert(lang === 'es' ? 'Error al subir el archivo' : 'Error uploading file');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const text = {
     en: {
       title: 'Written Assignment',
@@ -64,6 +81,8 @@ export default function WrittenAssignmentStudent({ week, courseId, user, lang })
       submit: 'Submit Google Docs Link',
       resubmit: 'Update Submission',
       placeholder: 'Paste your Google Docs link here',
+      uploadFile: 'Upload File',
+      or: 'or',
       submitted: 'Submitted',
       graded: 'Graded',
       grade: 'Grade',
@@ -77,6 +96,8 @@ export default function WrittenAssignmentStudent({ week, courseId, user, lang })
       submit: 'Enviar Enlace de Google Docs',
       resubmit: 'Actualizar Envío',
       placeholder: 'Pega tu enlace de Google Docs aquí',
+      uploadFile: 'Subir Archivo',
+      or: 'o',
       submitted: 'Enviado',
       graded: 'Calificado',
       grade: 'Calificación',
@@ -166,28 +187,76 @@ export default function WrittenAssignmentStudent({ week, courseId, user, lang })
             </div>
           </div>
         ) : (
-          <div className="space-y-2">
-            <Label htmlFor="docs-url">{t.submit}</Label>
-            <div className="flex gap-2">
-              <Input
-                id="docs-url"
-                value={docsUrl}
-                onChange={(e) => setDocsUrl(e.target.value)}
-                placeholder={t.placeholder}
-              />
-              <Button
-                onClick={handleSubmit}
-                disabled={submitMutation.isPending || !docsUrl.trim()}
-                className="bg-[#1e3a5f]"
-              >
-                {t.submit}
-              </Button>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="docs-url">{t.submit}</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="docs-url"
+                  value={docsUrl}
+                  onChange={(e) => setDocsUrl(e.target.value)}
+                  placeholder={t.placeholder}
+                />
+                <Button
+                  onClick={handleSubmit}
+                  disabled={submitMutation.isPending || !docsUrl.trim()}
+                  className="bg-[#1e3a5f]"
+                >
+                  {t.submit}
+                </Button>
+              </div>
+              <p className="text-xs text-slate-500">
+                {lang === 'es' 
+                  ? 'Asegúrate de que tu documento de Google Docs esté configurado para que "cualquiera con el enlace pueda ver/comentar"'
+                  : 'Make sure your Google Docs is set to "Anyone with the link can view/comment"'}
+              </p>
             </div>
-            <p className="text-xs text-slate-500">
-              {lang === 'es' 
-                ? 'Asegúrate de que tu documento de Google Docs esté configurado para que "cualquiera con el enlace pueda ver/comentar"'
-                : 'Make sure your Google Docs is set to "Anyone with the link can view/comment"'}
-            </p>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-slate-500">{t.or}</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="file-upload">{t.uploadFile}</Label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="file-upload"
+                  type="file"
+                  onChange={handleFileUpload}
+                  disabled={uploading || submitMutation.isPending}
+                  accept=".pdf,.doc,.docx,.txt"
+                  className="hidden"
+                />
+                <Button
+                  onClick={() => document.getElementById('file-upload').click()}
+                  disabled={uploading || submitMutation.isPending}
+                  variant="outline"
+                  className="w-full border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white"
+                >
+                  {uploading ? (
+                    <>
+                      <Clock className="w-4 h-4 mr-2 animate-spin" />
+                      {lang === 'es' ? 'Subiendo...' : 'Uploading...'}
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 mr-2" />
+                      {lang === 'es' ? 'Seleccionar Archivo' : 'Choose File'}
+                    </>
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-slate-500">
+                {lang === 'es' 
+                  ? 'Formatos aceptados: PDF, DOC, DOCX, TXT'
+                  : 'Accepted formats: PDF, DOC, DOCX, TXT'}
+              </p>
+            </div>
           </div>
         )}
       </CardContent>
