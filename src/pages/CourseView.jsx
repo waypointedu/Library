@@ -29,6 +29,7 @@ import {
   ClipboardCheck
 } from "lucide-react";
 import WeekQuizStudent from '@/components/quiz/WeekQuizStudent';
+import WrittenAssignmentStudent from '@/components/assignments/WrittenAssignmentStudent';
 
 export default function CourseView() {
   const urlParams = new URLSearchParams(window.location.search);
