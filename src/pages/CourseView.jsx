@@ -816,10 +816,15 @@ export default function CourseView() {
                         {lang === 'es' ? 'Ver Entregas y Calificar' : 'View Submissions & Grade'}
                       </Button>
                     </Link>
+                  ) : user ? (
+                    <WrittenAssignmentStudent
+                      week={selectedContent.data}
+                      courseId={courseId}
+                      user={user}
+                      lang={lang}
+                    />
                   ) : (
-                    <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                      {lang === 'es' ? 'Ver Detalles de la Tarea' : 'View Assignment Details'}
-                    </Button>
+                    <p className="text-slate-500 text-sm">{lang === 'es' ? 'Inicia sesión para enviar' : 'Log in to submit'}</p>
                   )}
                 </CardContent>
               </Card>
