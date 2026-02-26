@@ -804,11 +804,13 @@ export default function CourseView() {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="mb-6">
-                    <p className="text-slate-700">
-                      {selectedContent.data[`written_assignment_${lang}`] || selectedContent.data.written_assignment_en}
-                    </p>
-                  </div>
+                  {isInstructor && !viewAsStudent && (
+                    <div className="mb-6">
+                      <p className="text-slate-700">
+                        {selectedContent.data[`written_assignment_${lang}`] || selectedContent.data.written_assignment_en}
+                      </p>
+                    </div>
+                  )}
                   {isInstructor && !viewAsStudent ? (
                     <Link to={createPageUrl(`InstructorGradebook?courseId=${courseId}&weekId=${selectedContent.data.id}&lang=${lang}`)}>
                       <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a] gap-2">
