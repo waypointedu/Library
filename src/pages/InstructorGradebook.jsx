@@ -125,6 +125,17 @@ export default function InstructorGradebook() {
 
   const t = text[lang];
 
+  const { data: studentUsers = [] } = useQuery({
+    queryKey: ['studentUsers', enrollments.map(e => e.user_email).join(',')],
+    queryFn: async () => {
+      const userPromises = enrollments.map(enrollment => 
+        base44.entities.User.filter({ email: enrollment.user_email }).then(users => users[0])
+      );
+      return Promise.all(userPromises);
+    },
+    enabled: enrollments.length > 0
+  });
+
   if (!user || !course) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -138,17 +149,6 @@ export default function InstructorGradebook() {
     if (week.has_quiz) items.push({ weekId: week.id, weekNum: week.week_number, type: 'quiz', name: `W${week.week_number} Quiz` });
     if (week.has_written_assignment) items.push({ weekId: week.id, weekNum: week.week_number, type: 'written', name: `W${week.week_number} Written` });
     return items;
-  });
-
-  const { data: studentUsers = [] } = useQuery({
-    queryKey: ['studentUsers', enrollments],
-    queryFn: async () => {
-      const userPromises = enrollments.map(enrollment => 
-        base44.entities.User.filter({ email: enrollment.user_email }).then(users => users[0])
-      );
-      return Promise.all(userPromises);
-    },
-    enabled: enrollments.length > 0
   });
 
   const studentRows = enrollments.map((enrollment, index) => {
