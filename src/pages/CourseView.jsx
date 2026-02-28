@@ -904,7 +904,7 @@ export default function CourseView() {
                             </div>
                             <p className="text-slate-700 mb-3">{post.content}</p>
                             
-                            {!viewAsStudent && user && (
+                            {user && (
                               <Button
                                 variant="ghost"
                                 size="sm"
