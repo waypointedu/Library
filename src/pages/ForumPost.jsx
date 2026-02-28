@@ -26,8 +26,10 @@ export default function ForumPost() {
 
   const { data: post } = useQuery({
     queryKey: ['forumPost', postId],
-    queryFn: () => base44.entities.ForumPost.filter({ id: postId }),
-    select: (data) => data[0],
+    queryFn: async () => {
+      const posts = await base44.entities.ForumPost.list();
+      return posts.find(p => p.id === postId) || null;
+    },
     enabled: !!postId
   });
 
