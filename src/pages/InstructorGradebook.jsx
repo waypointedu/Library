@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Award, Save } from "lucide-react";
+import { ArrowLeft, Award, Save, ExternalLink, FileText } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
 
 export default function InstructorGradebook() {
