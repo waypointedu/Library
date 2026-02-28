@@ -248,24 +248,44 @@ export default function InstructorGradebook() {
                         {student.grades.map((gradeData, gIdx) => (
                           <TableCell key={gIdx} className="text-center">
                             {gradeData.type === 'written' ? (
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  type="number"
-                                  value={gradeData.grade || ''}
-                                  onChange={(e) => handleGradeChange(student.email, gradeData.weekId, gradeData.type, e.target.value)}
-                                  className="w-16 text-center"
-                                  min="0"
-                                  max="100"
-                                />
-                                {gradeData.isEdited && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => handleSaveGrade(student.email, gradeData.weekId, gradeData.type)}
+                              <div className="flex flex-col items-center gap-1">
+                                {gradeData.submission && (
+                                  <a
+                                    href={gradeData.submission.google_docs_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 text-xs text-[#1e3a5f] hover:underline mb-1"
+                                    title="View submission"
                                   >
-                                    <Save className="w-4 h-4" />
-                                  </Button>
+                                    <FileText className="w-3 h-3" />
+                                    {gradeData.submission.status === 'submitted' ? (
+                                      <span className="text-amber-600">Pending</span>
+                                    ) : (
+                                      <span className="text-emerald-600">Graded</span>
+                                    )}
+                                    <ExternalLink className="w-3 h-3" />
+                                  </a>
                                 )}
+                                <div className="flex items-center gap-1">
+                                  <Input
+                                    type="number"
+                                    value={gradeData.grade || ''}
+                                    onChange={(e) => handleGradeChange(student.email, gradeData.weekId, gradeData.type, e.target.value)}
+                                    className="w-16 text-center"
+                                    min="0"
+                                    max="100"
+                                    placeholder="—"
+                                  />
+                                  {gradeData.isEdited && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleSaveGrade(student.email, gradeData.weekId, gradeData.type)}
+                                    >
+                                      <Save className="w-4 h-4" />
+                                    </Button>
+                                  )}
+                                </div>
                               </div>
                             ) : (
                               <span className="font-semibold text-[#1e3a5f]">
