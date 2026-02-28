@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { CheckCircle2, FileText, ExternalLink, Clock, Upload, File } from 'lucide-react';
+import { CheckCircle2, FileText, ExternalLink, Clock, Upload } from 'lucide-react';
 
 export default function WrittenAssignmentStudent({ week, courseId, user, lang }) {
   const [docsUrl, setDocsUrl] = useState('');
