@@ -237,7 +237,7 @@ export default function CourseView() {
   const createPostMutation = useMutation({
     mutationFn: (postData) => base44.entities.ForumPost.create(postData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['forumPosts'] });
+      queryClient.invalidateQueries({ queryKey: ['forumPosts', selectedContent?.data?.id] });
       setNewPost('');
     }
   });
