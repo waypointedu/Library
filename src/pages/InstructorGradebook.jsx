@@ -161,10 +161,12 @@ export default function InstructorGradebook() {
       const editKey = `${enrollment.user_email}-${assignment.weekId}-${assignment.type}`;
       
       if (assignment.type === 'quiz') {
-        const attempt = allQuizAttempts.find(
-          qa => qa.user_email === enrollment.user_email && qa.week_id === assignment.weekId && qa.passed
+        // Show the best attempt's score regardless of pass/fail
+        const studentAttempts = allQuizAttempts.filter(
+          qa => qa.user_email === enrollment.user_email && qa.week_id === assignment.weekId
         );
-        grade = attempt?.final_score;
+        const bestAttempt = studentAttempts.sort((a, b) => (b.final_score ?? 0) - (a.final_score ?? 0))[0];
+        grade = bestAttempt?.final_score ?? null;
       } else if (assignment.type === 'written') {
         submission = allWrittenSubmissions.find(
           ws => ws.user_email === enrollment.user_email && ws.week_id === assignment.weekId
