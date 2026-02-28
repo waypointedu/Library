@@ -245,7 +245,7 @@ export default function CourseView() {
   const createReplyMutation = useMutation({
     mutationFn: (replyData) => base44.entities.ForumReply.create(replyData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['forumReplies'] });
+      queryClient.invalidateQueries({ queryKey: ['forumReplies', selectedContent?.data?.id] });
       setReplyingTo(null);
       setReplyText('');
     }
