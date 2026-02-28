@@ -341,7 +341,7 @@ export default function InstructorDashboard() {
                       {recentPosts.map(post => (
                         <Link
                           key={post.id}
-                          to={createPageUrl(`ForumPost?id=${post.id}&lang=${lang}`)}
+                          to={createPageUrl(`ForumPost?postId=${post.id}&lang=${lang}`)}
                           className="block p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
                         >
                           <p className="font-medium text-slate-900">{post.title}</p>
