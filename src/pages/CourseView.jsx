@@ -863,15 +863,17 @@ export default function CourseView() {
                       />
                       <Button
                         onClick={() => createPostMutation.mutate({
+                          forum_id: selectedContent.data.id,
                           week_id: selectedContent.data.id,
                           course_id: courseId,
                           user_email: user.email,
+                          title: `Week ${selectedContent.data.week_number} Response`,
                           content: newPost
                         })}
-                        disabled={!newPost.trim()}
+                        disabled={!newPost.trim() || createPostMutation.isPending}
                         className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
                       >
-                        {lang === 'es' ? 'Publicar Respuesta' : 'Post Response'}
+                        {createPostMutation.isPending ? '...' : (lang === 'es' ? 'Publicar Respuesta' : 'Post Response')}
                       </Button>
                     </div>
                   )}
