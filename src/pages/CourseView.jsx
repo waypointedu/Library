@@ -191,7 +191,7 @@ export default function CourseView() {
 
   const { data: forumPosts = [] } = useQuery({
     queryKey: ['forumPosts', selectedContent?.data?.id],
-    queryFn: () => base44.entities.ForumPost.filter({ week_id: selectedContent.data.id }),
+    queryFn: () => base44.entities.ForumPost.filter({ course_id: courseId, forum_id: selectedContent.data.id }),
     enabled: !!selectedContent?.data?.id && selectedContent?.type === 'discussion'
   });
 
