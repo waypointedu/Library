@@ -852,7 +852,7 @@ export default function CourseView() {
                     </p>
                   </div>
 
-                  {!viewAsStudent && user && (
+                  {user && (
                     <div className="mb-6">
                       <Textarea
                         value={newPost}
