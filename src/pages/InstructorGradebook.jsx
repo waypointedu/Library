@@ -157,6 +157,7 @@ export default function InstructorGradebook() {
     
     const studentGrades = assignments.map(assignment => {
       let grade = null;
+      let submission = null;
       const editKey = `${enrollment.user_email}-${assignment.weekId}-${assignment.type}`;
       
       if (assignment.type === 'quiz') {
@@ -165,7 +166,7 @@ export default function InstructorGradebook() {
         );
         grade = attempt?.final_score;
       } else if (assignment.type === 'written') {
-        const submission = allWrittenSubmissions.find(
+        submission = allWrittenSubmissions.find(
           ws => ws.user_email === enrollment.user_email && ws.week_id === assignment.weekId
         );
         grade = submission?.status === 'graded' ? submission.grade : null;
@@ -174,7 +175,8 @@ export default function InstructorGradebook() {
       return {
         ...assignment,
         grade: edits[editKey] !== undefined ? edits[editKey] : grade,
-        isEdited: edits[editKey] !== undefined
+        isEdited: edits[editKey] !== undefined,
+        submission
       };
     });
 
