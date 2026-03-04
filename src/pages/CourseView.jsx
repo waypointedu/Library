@@ -190,8 +190,13 @@ export default function CourseView() {
   });
 
   const { data: forumPosts = [] } = useQuery({
-    queryKey: ['forumPosts', selectedContent?.data?.id],
-    queryFn: () => base44.entities.ForumPost.filter({ course_id: courseId, forum_id: selectedContent.data.id }),
+    queryKey: ['forumPosts', courseId, selectedContent?.data?.id],
+    queryFn: async () => {
+      // Fetch all posts for this course, then filter by both forum_id (= week.id) and week_id
+      const all = await base44.entities.ForumPost.filter({ course_id: courseId });
+      const weekId = selectedContent.data.id;
+      return all.filter(p => p.forum_id === weekId || p.week_id === weekId);
+    },
     enabled: !!selectedContent?.data?.id && selectedContent?.type === 'discussion'
   });
 
