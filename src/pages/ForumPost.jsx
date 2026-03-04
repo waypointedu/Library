@@ -113,10 +113,22 @@ export default function ForumPost() {
   };
   const t = text[lang];
 
-  if (!user || !post) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e3a5f]" />
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center flex-col gap-4">
+        <p className="text-slate-500">{lang === 'es' ? 'Publicación no encontrada' : 'Post not found'}</p>
+        <Button variant="outline" onClick={() => window.history.back()}>
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          {lang === 'es' ? 'Volver' : 'Go Back'}
+        </Button>
       </div>
     );
   }
