@@ -181,7 +181,10 @@ export default function ForumPost() {
           </h2>
           <div className="space-y-4">
             {allReplies.map(reply => {
-              const childReplies = nestedReplies.filter(nr => nr.parent_reply_id === reply.id);
+              const childReplies = nestedReplies.filter(nr => nr.parent_reply_id === reply.id)
+                .sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+              const isReplying = replyingTo === reply.id;
+              const replyText = replyTexts[reply.id] || '';
               
               return (
                 <div key={reply.id}>
@@ -199,39 +202,71 @@ export default function ForumPost() {
                         </div>
                       </div>
                       <p className="text-slate-700 whitespace-pre-wrap ml-11 mb-3">{reply.content}</p>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setReplyingTo(reply.id)}
-                        className="ml-11 text-[#1e3a5f]"
-                      >
-                        {t.reply}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                  
-                  {childReplies.length > 0 && (
-                    <div className="ml-12 mt-3 space-y-3">
-                      {childReplies.map(childReply => (
-                        <Card key={childReply.id} className="bg-white border-l-4 border-[#1e3a5f]">
-                          <CardContent className="p-4">
-                            <div className="flex items-start gap-3 mb-2">
-                              <div className="w-6 h-6 rounded-full bg-[#1e3a5f]/10 flex items-center justify-center shrink-0">
+                      
+                      {/* Nested replies */}
+                      {childReplies.length > 0 && (
+                        <div className="ml-11 mt-3 mb-3 space-y-3 pl-4 border-l-2 border-[#1e3a5f]/20">
+                          {childReplies.map(childReply => (
+                            <div key={childReply.id} className="flex items-start gap-2">
+                              <div className="w-6 h-6 rounded-full bg-[#1e3a5f]/10 flex items-center justify-center shrink-0 mt-0.5">
                                 <User className="w-3 h-3 text-[#1e3a5f]" />
                               </div>
                               <div>
                                 <p className="font-medium text-sm text-slate-900">{childReply.user_name}</p>
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-slate-400 mb-1">
                                   {format(new Date(childReply.created_date), 'MMM d, yyyy h:mm a')}
                                 </p>
+                                <p className="text-slate-700 text-sm whitespace-pre-wrap">{childReply.content}</p>
                               </div>
                             </div>
-                            <p className="text-slate-700 text-sm whitespace-pre-wrap ml-9">{childReply.content}</p>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Inline reply form for nested replies */}
+                      {isReplying ? (
+                        <div className="ml-11 mt-3 space-y-2">
+                          <Textarea
+                            value={replyText}
+                            onChange={(e) => setReplyTexts(prev => ({ ...prev, [reply.id]: e.target.value }))}
+                            placeholder={t.yourReply}
+                            rows={3}
+                            className="text-sm"
+                            autoFocus
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => handleNestedReply(reply.id)}
+                              disabled={!replyText.trim() || createNestedReplyMutation.isPending}
+                              className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
+                            >
+                              <Send className="w-3 h-3 mr-1" />
+                              {t.submit}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => { setReplyingTo(null); setReplyTexts(prev => ({ ...prev, [reply.id]: '' })); }}
+                            >
+                              {lang === 'es' ? 'Cancelar' : 'Cancel'}
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        !post.is_locked && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setReplyingTo(reply.id)}
+                            className="ml-11 text-[#1e3a5f]"
+                          >
+                            {t.reply}
+                          </Button>
+                        )
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
               );
             })}
