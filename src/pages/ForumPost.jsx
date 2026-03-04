@@ -68,32 +68,33 @@ export default function ForumPost() {
     mutationFn: async (data) => {
       return base44.entities.ReplyToReply.create(data);
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['replyToReplies', postId] });
-      setNewReply('');
+      setReplyTexts(prev => ({ ...prev, [variables.parent_reply_id]: '' }));
       setReplyingTo(null);
     }
   });
 
-  const handleReply = () => {
+  const handleTopLevelReply = () => {
     if (!newReply.trim() || post?.is_locked) return;
+    createReplyMutation.mutate({
+      post_id: postId,
+      user_email: user.email,
+      user_name: user.full_name || user.email,
+      content: newReply
+    });
+  };
 
-    if (replyingTo) {
-      createNestedReplyMutation.mutate({
-        parent_reply_id: replyingTo,
-        post_id: postId,
-        user_email: user.email,
-        user_name: user.full_name || user.email,
-        content: newReply
-      });
-    } else {
-      createReplyMutation.mutate({
-        post_id: postId,
-        user_email: user.email,
-        user_name: user.full_name || user.email,
-        content: newReply
-      });
-    }
+  const handleNestedReply = (parentReplyId) => {
+    const text = replyTexts[parentReplyId] || '';
+    if (!text.trim() || post?.is_locked) return;
+    createNestedReplyMutation.mutate({
+      parent_reply_id: parentReplyId,
+      post_id: postId,
+      user_email: user.email,
+      user_name: user.full_name || user.email,
+      content: text
+    });
   };
 
   const text = {
