@@ -273,20 +273,11 @@ export default function ForumPost() {
           </div>
         </div>
 
-        {/* Reply Form */}
+        {/* Top-level Reply Form */}
         {!post.is_locked ? (
           <Card>
             <CardContent className="p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-slate-900">
-                  {replyingTo ? lang === 'es' ? 'Responder a comentario' : 'Reply to comment' : t.reply}
-                </h3>
-                {replyingTo && (
-                  <Button size="sm" variant="ghost" onClick={() => { setReplyingTo(null); setNewReply(''); }}>
-                    {lang === 'es' ? 'Cancelar' : 'Cancel'}
-                  </Button>
-                )}
-              </div>
+              <h3 className="font-semibold text-slate-900">{t.reply}</h3>
               <Textarea
                 placeholder={t.yourReply}
                 value={newReply}
@@ -296,8 +287,8 @@ export default function ForumPost() {
               />
               <div className="flex justify-end">
                 <Button
-                  onClick={handleReply}
-                  disabled={!newReply.trim() || createReplyMutation.isPending || createNestedReplyMutation.isPending}
+                  onClick={handleTopLevelReply}
+                  disabled={!newReply.trim() || createReplyMutation.isPending}
                   size="lg"
                   className="bg-[#1e3a5f]"
                 >
