@@ -186,7 +186,7 @@ export default function ForumPost() {
             {allReplies.map(reply => {
               const childReplies = nestedReplies.filter(nr => nr.parent_reply_id === reply.id)
                 .sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
-              const isReplying = replyingTo === reply.id;
+              const isReplying = replyingTo?.topLevelReplyId === reply.id;
               const replyText = replyTexts[reply.id] || '';
               
               return (
