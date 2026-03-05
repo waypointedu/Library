@@ -214,21 +214,34 @@ export default function ForumPost() {
                               <div className="w-6 h-6 rounded-full bg-[#1e3a5f]/10 flex items-center justify-center shrink-0 mt-0.5">
                                 <User className="w-3 h-3 text-[#1e3a5f]" />
                               </div>
-                              <div>
+                              <div className="flex-1">
                                 <p className="font-medium text-sm text-slate-900">{childReply.user_name}</p>
                                 <p className="text-xs text-slate-400 mb-1">
                                   {format(new Date(childReply.created_date), 'MMM d, yyyy h:mm a')}
                                 </p>
                                 <p className="text-slate-700 text-sm whitespace-pre-wrap">{childReply.content}</p>
+                                {!post.is_locked && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => setReplyingTo({ topLevelReplyId: reply.id, replyToName: childReply.user_name })}
+                                    className="text-[#1e3a5f] h-6 px-2 text-xs mt-1"
+                                  >
+                                    {t.reply}
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           ))}
                         </div>
                       )}
 
-                      {/* Inline reply form for nested replies */}
+                      {/* Inline reply form */}
                       {isReplying ? (
                         <div className="ml-11 mt-3 space-y-2">
+                          {replyingTo?.replyToName && (
+                            <p className="text-xs text-slate-500">Replying to <span className="font-medium">{replyingTo.replyToName}</span></p>
+                          )}
                           <Textarea
                             value={replyText}
                             onChange={(e) => setReplyTexts(prev => ({ ...prev, [reply.id]: e.target.value }))}
@@ -240,7 +253,7 @@ export default function ForumPost() {
                           <div className="flex gap-2">
                             <Button
                               size="sm"
-                              onClick={() => handleNestedReply(reply.id)}
+                              onClick={() => handleNestedReply(reply.id, replyingTo?.replyToName)}
                               disabled={!replyText.trim() || createNestedReplyMutation.isPending}
                               className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
                             >
@@ -261,7 +274,7 @@ export default function ForumPost() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => setReplyingTo(reply.id)}
+                            onClick={() => setReplyingTo({ topLevelReplyId: reply.id, replyToName: null })}
                             className="ml-11 text-[#1e3a5f]"
                           >
                             {t.reply}
