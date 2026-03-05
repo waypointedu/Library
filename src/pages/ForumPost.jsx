@@ -85,15 +85,18 @@ export default function ForumPost() {
     });
   };
 
-  const handleNestedReply = (parentReplyId) => {
-    const text = replyTexts[parentReplyId] || '';
+  // All nested replies (whether replying to a top-level reply or a nested reply)
+  // are stored flat under the top-level reply's ID as parent_reply_id
+  const handleNestedReply = (topLevelReplyId, replyToName) => {
+    const text = replyTexts[topLevelReplyId] || '';
     if (!text.trim() || post?.is_locked) return;
+    const content = replyToName ? `@${replyToName}: ${text}` : text;
     createNestedReplyMutation.mutate({
-      parent_reply_id: parentReplyId,
+      parent_reply_id: topLevelReplyId,
       post_id: postId,
       user_email: user.email,
       user_name: user.full_name || user.email,
-      content: text
+      content: content
     });
   };
 
