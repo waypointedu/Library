@@ -17,8 +17,8 @@ export default function ForumPost() {
   const [lang, setLang] = useState(urlParams.get('lang') || 'en');
   const [user, setUser] = useState(null);
   const [newReply, setNewReply] = useState('');
-  const [replyingTo, setReplyingTo] = useState(null); // reply.id or null (for top-level)
-  const [replyTexts, setReplyTexts] = useState({}); // per-reply text state
+  const [replyingTo, setReplyingTo] = useState(null); // { topLevelReplyId, replyToName } or null
+  const [replyTexts, setReplyTexts] = useState({}); // keyed by topLevelReplyId
   const queryClient = useQueryClient();
 
   useEffect(() => {
