@@ -71,7 +71,7 @@ export default function ForumPost() {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['replyToReplies', postId] });
       setReplyTexts(prev => ({ ...prev, [variables.parent_reply_id]: '' }));
-      setReplyingTo(null);
+      setReplyingTo(null); // close inline form
     }
   });
 
