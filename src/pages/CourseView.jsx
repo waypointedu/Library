@@ -262,11 +262,11 @@ export default function CourseView() {
   });
 
   const createNestedReplyMutation = useMutation({
-    mutationFn: (data) => base44.entities.ReplyToReply.create(data),
+    mutationFn: (data) => base44.entities.ForumReply.create(data),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['replyToReplies'] });
+      queryClient.invalidateQueries({ queryKey: ['forumReplies', selectedContent?.data?.id] });
       setNestedReplyingTo(null);
-      setNestedReplyTexts(prev => ({ ...prev, [variables.parent_reply_id]: '' }));
+      setNestedReplyTexts(prev => ({ ...prev, [variables.parent_id]: '' }));
     }
   });
 
