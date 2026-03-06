@@ -207,11 +207,7 @@ export default function CourseView() {
     enabled: !!selectedContent?.data?.id && selectedContent?.type === 'discussion'
   });
 
-  const { data: replyToReplies = [] } = useQuery({
-    queryKey: ['replyToReplies', forumPosts.map(p => p.id).join(',')],
-    queryFn: () => base44.entities.ReplyToReply.list(),
-    enabled: forumPosts.length > 0 && selectedContent?.type === 'discussion'
-  });
+
 
   const createAnnouncementMutation = useMutation({
     mutationFn: (data) => {
