@@ -264,6 +264,15 @@ export default function CourseView() {
     }
   });
 
+  const createNestedReplyMutation = useMutation({
+    mutationFn: (data) => base44.entities.ReplyToReply.create(data),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['replyToReplies', courseId, selectedContent?.data?.id] });
+      setNestedReplyingTo(null);
+      setNestedReplyTexts(prev => ({ ...prev, [variables.parent_reply_id]: '' }));
+    }
+  });
+
   const toggleWeek = (weekId) => {
     setExpandedWeeks(prev => ({ ...prev, [weekId]: !prev[weekId] }));
   };
