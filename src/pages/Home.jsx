@@ -170,8 +170,9 @@ export default function Home() {
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-slate-900 leading-tight">
-            Toward that which truly{' '}
-            <em className="text-[#c4933f] font-serif">is.</em>
+            to{' '}
+            <em className="text-[#c4933f] font-serif">all</em>
+            {' '}the nations
           </h1>
         </div>
       </section>
