@@ -239,9 +239,9 @@ export default function CourseView() {
   });
 
   const [newPost, setNewPost] = useState('');
-  const [replyingTo, setReplyingTo] = useState(null); // post.id for top-level replies
+  const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
-  const [nestedReplyingTo, setNestedReplyingTo] = useState(null); // { replyId, replyUserEmail }
+  const [nestedReplyingTo, setNestedReplyingTo] = useState(null);
   const [nestedReplyTexts, setNestedReplyTexts] = useState({});
 
   const createPostMutation = useMutation({
