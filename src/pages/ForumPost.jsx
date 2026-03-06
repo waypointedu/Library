@@ -70,8 +70,9 @@ export default function ForumPost() {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['replyToReplies', postId] });
+      // Clear text but keep form open so user can reply again
       setReplyTexts(prev => ({ ...prev, [variables.parent_reply_id]: '' }));
-      setReplyingTo(null); // close inline form
+      setReplyingTo(null);
     }
   });
 
