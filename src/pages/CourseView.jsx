@@ -242,8 +242,10 @@ export default function CourseView() {
   });
 
   const [newPost, setNewPost] = useState('');
-  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyingTo, setReplyingTo] = useState(null); // post.id for top-level replies
   const [replyText, setReplyText] = useState('');
+  const [nestedReplyingTo, setNestedReplyingTo] = useState(null); // { replyId, replyUserEmail }
+  const [nestedReplyTexts, setNestedReplyTexts] = useState({});
 
   const createPostMutation = useMutation({
     mutationFn: (postData) => base44.entities.ForumPost.create(postData),
