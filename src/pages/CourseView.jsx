@@ -207,9 +207,9 @@ export default function CourseView() {
   });
 
   const { data: replyToReplies = [] } = useQuery({
-    queryKey: ['replyToReplies', courseId, selectedContent?.data?.id],
-    queryFn: () => base44.entities.ReplyToReply.filter({ post_id: selectedContent?.data?.id }),
-    enabled: !!selectedContent?.data?.id && selectedContent?.type === 'discussion'
+    queryKey: ['replyToReplies', forumPosts.map(p => p.id).join(',')],
+    queryFn: () => base44.entities.ReplyToReply.list(),
+    enabled: forumPosts.length > 0 && selectedContent?.type === 'discussion'
   });
 
   const createAnnouncementMutation = useMutation({
