@@ -226,7 +226,10 @@ export default function ForumPost() {
                                   <Button
                                     size="sm"
                                     variant="ghost"
-                                    onClick={() => setReplyingTo({ topLevelReplyId: reply.id, replyToName: childReply.user_name })}
+                                    onClick={() => {
+                                      setReplyingTo({ topLevelReplyId: reply.id, replyToName: childReply.user_name });
+                                      setReplyTexts(prev => ({ ...prev, [reply.id]: '' }));
+                                    }}
                                     className="text-[#1e3a5f] h-6 px-2 text-xs mt-1"
                                   >
                                     {t.reply}
