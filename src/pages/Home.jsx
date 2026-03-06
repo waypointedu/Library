@@ -12,7 +12,7 @@ function HeroBackground() {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
       <img
-        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/85c076a40_generated_image.png"
+        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/7a9243256_generated_image.png"
         alt=""
         className="absolute inset-0 w-full h-full object-cover object-center"
       />
