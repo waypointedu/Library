@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import WeekQuizStudent from '@/components/quiz/WeekQuizStudent';
 import WrittenAssignmentStudent from '@/components/assignments/WrittenAssignmentStudent';
+import ThreadedReplies from '@/components/forum/ThreadedReplies';
 
 export default function CourseView() {
   const urlParams = new URLSearchParams(window.location.search);
