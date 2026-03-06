@@ -267,7 +267,7 @@ export default function CourseView() {
   const createNestedReplyMutation = useMutation({
     mutationFn: (data) => base44.entities.ReplyToReply.create(data),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['replyToReplies', courseId, selectedContent?.data?.id] });
+      queryClient.invalidateQueries({ queryKey: ['replyToReplies'] });
       setNestedReplyingTo(null);
       setNestedReplyTexts(prev => ({ ...prev, [variables.parent_reply_id]: '' }));
     }
