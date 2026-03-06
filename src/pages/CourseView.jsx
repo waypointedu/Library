@@ -206,6 +206,12 @@ export default function CourseView() {
     enabled: !!selectedContent?.data?.id && selectedContent?.type === 'discussion'
   });
 
+  const { data: replyToReplies = [] } = useQuery({
+    queryKey: ['replyToReplies', courseId, selectedContent?.data?.id],
+    queryFn: () => base44.entities.ReplyToReply.filter({ post_id: selectedContent?.data?.id }),
+    enabled: !!selectedContent?.data?.id && selectedContent?.type === 'discussion'
+  });
+
   const createAnnouncementMutation = useMutation({
     mutationFn: (data) => {
       if (editingAnnouncement) {
