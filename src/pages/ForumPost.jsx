@@ -64,16 +64,19 @@ export default function ForumPost() {
     }
   });
 
+  const [submittingReply, setSubmittingReply] = useState(false);
+
   const createNestedReplyMutation = useMutation({
     mutationFn: async (data) => {
       return base44.entities.ReplyToReply.create(data);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['replyToReplies', postId] });
-      // Clear text but keep form open so user can reply again
       setReplyTexts(prev => ({ ...prev, [variables.parent_reply_id]: '' }));
       setReplyingTo(null);
-    }
+      setSubmittingReply(false);
+    },
+    onError: () => setSubmittingReply(false)
   });
 
   const handleTopLevelReply = () => {
