@@ -971,89 +971,24 @@ export default function CourseView() {
                               </div>
                             )}
 
-                            {postReplies.length > 0 && (
-                              <div className="mt-4 space-y-3 pl-4 border-l-2 border-slate-200">
-                                {postReplies.map(reply => {
-                                  const childReplies = replyToReplies.filter(r => r.parent_reply_id === reply.id)
-                                    .sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
-                                  const isNestedReplying = nestedReplyingTo?.replyId === reply.id;
-                                  return (
-                                    <div key={reply.id}>
-                                      <div className="flex items-start gap-2">
-                                        <div className="w-8 h-8 rounded-full bg-slate-300 flex items-center justify-center text-slate-700 text-sm font-semibold">
-                                          {reply.user_email?.[0]?.toUpperCase() || 'U'}
-                                        </div>
-                                        <div className="flex-1">
-                                          <div className="flex items-center gap-2 mb-1">
-                                            <p className="text-sm font-medium text-slate-900">{reply.user_email}</p>
-                                            <span className="text-xs text-slate-400">
-                                              {new Date(reply.created_date).toLocaleDateString()}
-                                            </span>
-                                          </div>
-                                          <p className="text-sm text-slate-600">{reply.content}</p>
-                                          {user && (
-                                            <button
-                                              onClick={() => setNestedReplyingTo(isNestedReplying ? null : { replyId: reply.id, replyUserEmail: reply.user_email })}
-                                              className="text-xs text-[#1e3a5f] hover:underline mt-1"
-                                            >
-                                              {lang === 'es' ? 'Responder' : 'Reply'}
-                                            </button>
-                                          )}
-                                          {/* Nested reply form */}
-                                          {isNestedReplying && (
-                                            <div className="mt-2 space-y-2">
-                                              <Textarea
-                                                value={nestedReplyTexts[reply.id] || ''}
-                                                onChange={(e) => setNestedReplyTexts(prev => ({ ...prev, [reply.id]: e.target.value }))}
-                                                placeholder={`@${nestedReplyingTo.replyUserEmail}: ...`}
-                                                rows={2}
-                                                className="text-sm"
-                                                autoFocus
-                                              />
-                                              <div className="flex gap-2">
-                                                <Button
-                                                  size="sm"
-                                                  onClick={() => createNestedReplyMutation.mutate({
-                                                    parent_reply_id: reply.id,
-                                                    post_id: post.id,
-                                                    user_email: user.email,
-                                                    user_name: user.full_name || user.email,
-                                                    content: `@${nestedReplyingTo.replyUserEmail}: ${nestedReplyTexts[reply.id] || ''}`
-                                                  })}
-                                                  disabled={!nestedReplyTexts[reply.id]?.trim()}
-                                                  className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
-                                                >
-                                                  {lang === 'es' ? 'Enviar' : 'Send'}
-                                                </Button>
-                                                <Button size="sm" variant="outline" onClick={() => setNestedReplyingTo(null)}>
-                                                  {lang === 'es' ? 'Cancelar' : 'Cancel'}
-                                                </Button>
-                                              </div>
-                                            </div>
-                                          )}
-                                          {/* Child replies (reply-to-reply) */}
-                                          {childReplies.length > 0 && (
-                                            <div className="mt-2 space-y-2 pl-3 border-l-2 border-slate-100">
-                                              {childReplies.map(child => (
-                                                <div key={child.id} className="flex items-start gap-2">
-                                                  <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 text-xs font-semibold">
-                                                    {child.user_email?.[0]?.toUpperCase() || 'U'}
-                                                  </div>
-                                                  <div className="flex-1">
-                                                    <p className="text-xs font-medium text-slate-900">{child.user_email}</p>
-                                                    <p className="text-xs text-slate-500">{child.content}</p>
-                                                  </div>
-                                                </div>
-                                              ))}
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
+                            <ThreadedReplies
+                              postId={post.id}
+                              allReplies={forumReplies}
+                              user={user}
+                              lang={lang}
+                              nestedReplyingTo={nestedReplyingTo}
+                              setNestedReplyingTo={setNestedReplyingTo}
+                              nestedReplyTexts={nestedReplyTexts}
+                              setNestedReplyTexts={setNestedReplyTexts}
+                              onSubmitNestedReply={(parentReply) => createNestedReplyMutation.mutate({
+                                post_id: post.id,
+                                parent_id: parentReply.id,
+                                depth: (parentReply.depth || 0) + 1,
+                                user_email: user.email,
+                                user_name: user.full_name || user.email,
+                                content: `@${parentReply.user_email}: ${nestedReplyTexts[parentReply.id] || ''}`
+                              })}
+                            />
                           </div>
                         </div>
                       </CardContent>
