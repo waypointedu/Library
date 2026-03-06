@@ -158,12 +158,7 @@ export default function Home() {
         {/* Background */}
         <HeroBackground />
 
-        {/* Tagline - Bottom Left */}
-        <div className="relative z-10 px-8 pb-12 md:px-12 md:pb-16">
-          <h2 className="text-3xl md:text-4xl font-light text-white/95 italic">
-            to all the nations
-          </h2>
-        </div>
+        <div className="relative z-10 px-8 pb-12 md:px-12 md:pb-16" />
       </section>
 
       {/* Tagline Section - Below Hero */}
