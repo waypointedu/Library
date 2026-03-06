@@ -14,7 +14,7 @@ function HeroBackground() {
       <img
         src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/7a9243256_generated_image.png"
         alt=""
-        className="absolute inset-0 w-full h-full object-cover object-center"
+        className="absolute inset-0 w-full h-full object-cover object-bottom"
       />
       <div className="absolute inset-0 bg-black/60" />
     </div>
