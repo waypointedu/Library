@@ -85,19 +85,21 @@ export default function ForumPost() {
     });
   };
 
-  // All nested replies (whether replying to a top-level reply or a nested reply)
-  // are stored flat under the top-level reply's ID as parent_reply_id
-  const handleNestedReply = (topLevelReplyId, replyToName) => {
+  const handleNestedReply = async (topLevelReplyId, replyToName) => {
     const text = replyTexts[topLevelReplyId] || '';
     if (!text.trim() || post?.is_locked) return;
     const content = replyToName ? `@${replyToName}: ${text}` : text;
-    createNestedReplyMutation.mutate({
+    // Optimistically clear state first so user can keep replying
+    setReplyTexts(prev => ({ ...prev, [topLevelReplyId]: '' }));
+    setReplyingTo(null);
+    await base44.entities.ReplyToReply.create({
       parent_reply_id: topLevelReplyId,
       post_id: postId,
       user_email: user.email,
       user_name: user.full_name || user.email,
       content: content
     });
+    queryClient.invalidateQueries({ queryKey: ['replyToReplies', postId] });
   };
 
   const text = {
