@@ -11,24 +11,12 @@ import CourseCard from '@/components/courses/CourseCard';
 function HeroBackground() {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        crossOrigin="anonymous"
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
-        onError={(e) => {
-          console.error('Video load failed:', e);
-          e.target.style.display = 'none';
-        }}
-      >
-        <source src="https://polarwelskkfeibwhyjf.supabase.co/storage/v1/object/public/publicbucket/panorama%20(1).mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f] via-slate-800 to-black" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+      <img
+        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/85c076a40_generated_image.png"
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover object-center"
+      />
+      <div className="absolute inset-0 bg-black/60" />
     </div>
   );
 }
