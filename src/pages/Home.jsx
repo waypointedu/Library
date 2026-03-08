@@ -311,6 +311,7 @@ export default function Home() {
               <ul className="space-y-3 text-white/80">
                 <li><Link to={createPageUrl(`Pathways?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Programas' : 'Programs'}</Link></li>
                 <li><Link to={createPageUrl(`Catalog?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Cursos' : 'Courses'}</Link></li>
+                <li><Link to={createPageUrl(`Faculty?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Facultad' : 'Faculty'}</Link></li>
                 <li><Link to={createPageUrl(`HowItWorks?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Cómo funciona' : 'How it works'}</Link></li>
                 <li><Link to={createPageUrl(`About?lang=${lang}`)} className="hover:text-white transition-colors">{lang === 'es' ? 'Acerca de' : 'About'}</Link></li>
               </ul>
