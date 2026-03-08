@@ -28,6 +28,7 @@ export default function Home() {
     return urlParams.get('lang') || localStorage.getItem('waypoint_lang') || 'en';
   });
   const [user, setUser] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('waypoint_lang', lang);
