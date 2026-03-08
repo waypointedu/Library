@@ -234,8 +234,8 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-light text-slate-900 mb-4">{t.featured}</h2>
             <p className="text-lg text-slate-600">
               {lang === 'es' 
-                ? 'Explora nuestros programas de estudio acreditados'
-                : 'Explore our accredited programs of study'}
+                ? 'Explora nuestros programas de estudio'
+                : 'Explore our programs of study'}
             </p>
           </div>
 
