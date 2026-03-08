@@ -132,7 +132,7 @@ export default function Home() {
             </Link>
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {!user ? (
               <>
                 <Link to={createPageUrl(`Apply?lang=${lang}`)}>
@@ -140,19 +140,74 @@ export default function Home() {
                     {lang === 'es' ? 'Aplicar' : 'Apply'}
                   </Button>
                 </Link>
-                <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a] hidden lg:inline-flex">
                   {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
                 </Button>
               </>
             ) : (
               <Link to={createPageUrl(user.role === 'admin' || user.user_type === 'admin' ? `Admin?lang=${lang}` : user.user_type === 'instructor' ? `InstructorDashboard?lang=${lang}` : `Dashboard?lang=${lang}`)}>
-                <Button size="sm" className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                <Button size="sm" className="bg-[#1e3a5f] hover:bg-[#2d5a8a] hidden lg:inline-flex">
                   {lang === 'es' ? 'Mi Área de Aprendizaje' : 'My Learning Area'}
                 </Button>
               </Link>
             )}
+            {/* Mobile hamburger */}
+            <button
+              className="lg:hidden p-2 rounded-md text-slate-700 hover:bg-slate-100 transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-white border-t border-slate-200 shadow-lg">
+            <nav className="flex flex-col px-6 py-4 space-y-1">
+              {[
+                { label: lang === 'es' ? 'Programas' : 'Programs', page: `Pathways?lang=${lang}` },
+                { label: lang === 'es' ? 'Acerca de' : 'About', page: `About?lang=${lang}` },
+                { label: lang === 'es' ? 'Cursos' : 'Courses', page: `Catalog?lang=${lang}` },
+                { label: lang === 'es' ? 'Facultad' : 'Faculty', page: `Faculty?lang=${lang}` },
+                { label: lang === 'es' ? 'Cómo Funciona' : 'How it works', page: `HowItWorks?lang=${lang}` },
+                { label: lang === 'es' ? 'Apoyar' : 'Support', page: `Support?lang=${lang}` },
+                { label: 'FAQ', page: `FAQ?lang=${lang}` },
+                { label: lang === 'es' ? 'Contacto' : 'Contact', page: `Contact?lang=${lang}` },
+              ].map(({ label, page }) => (
+                <Link
+                  key={page}
+                  to={createPageUrl(page)}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-3 text-slate-700 hover:text-[#1e3a5f] font-medium border-b border-slate-100 last:border-0 transition-colors"
+                >
+                  {label}
+                </Link>
+              ))}
+              <div className="pt-3 flex flex-col gap-2">
+                {!user ? (
+                  <>
+                    <Link to={createPageUrl(`Apply?lang=${lang}`)} onClick={() => setMobileMenuOpen(false)}>
+                      <Button size="sm" variant="outline" className="w-full border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white">
+                        {lang === 'es' ? 'Aplicar' : 'Apply'}
+                      </Button>
+                    </Link>
+                    <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                      {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
+                    </Button>
+                  </>
+                ) : (
+                  <Link to={createPageUrl(user.role === 'admin' || user.user_type === 'admin' ? `Admin?lang=${lang}` : user.user_type === 'instructor' ? `InstructorDashboard?lang=${lang}` : `Dashboard?lang=${lang}`)} onClick={() => setMobileMenuOpen(false)}>
+                    <Button size="sm" className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]">
+                      {lang === 'es' ? 'Mi Área de Aprendizaje' : 'My Learning Area'}
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Hero Section */}
