@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, GraduationCap, Users, Globe, Star, ChevronRight } from "lucide-react";
+import { ArrowRight, BookOpen, GraduationCap, Users, Globe, Star, ChevronRight, Menu, X } from "lucide-react";
 import CourseCard from '@/components/courses/CourseCard';
 
 // Hero Background Component
