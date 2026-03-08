@@ -117,7 +117,6 @@ export default function Home() {
             <Link to={createPageUrl(`Faculty?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
               {lang === 'es' ? 'Facultad' : 'Faculty'}
             </Link>
-
             <Link to={createPageUrl(`HowItWorks?lang=${lang}`)} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">
               {lang === 'es' ? 'Cómo Funciona' : 'How it works'}
             </Link>
