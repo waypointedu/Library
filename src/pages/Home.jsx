@@ -12,10 +12,10 @@ function HeroBackground() {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
       <img
-        src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/7a9243256_generated_image.png"
+        src="https://media.base44.com/images/public/69826d34529ac930f0c94f5a/40c45841e_pexels-pixabay-355288.jpg"
         alt=""
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ objectPosition: '50% 10%' }}
+        style={{ objectPosition: '50% 50%' }}
       />
       <div className="absolute inset-0 bg-black/60" />
     </div>
