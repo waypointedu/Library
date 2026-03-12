@@ -119,16 +119,7 @@ export default function InstructorGradebook() {
 
   const t = text[lang];
 
-  const { data: studentUsersMap = {} } = useQuery({
-    queryKey: ['studentUsers', enrollments.map(e => e.user_email).join(',')],
-    queryFn: async () => {
-      const allUsers = await base44.entities.User.list();
-      const map = {};
-      allUsers.forEach(u => { map[u.email] = u; });
-      return map;
-    },
-    enabled: enrollments.length > 0
-  });
+
 
   if (!user || !course) {
     return (
