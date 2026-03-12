@@ -178,6 +178,7 @@ export default function ThreadedReplies({ postId, allReplies, user, isInstructor
           setNestedReplyTexts={setNestedReplyTexts}
           onSubmitNestedReply={onSubmitNestedReply}
           onDeleteReply={onDeleteReply}
+          onUpdateReply={onUpdateReply}
           depth={0}
         />
       ))}
