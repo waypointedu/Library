@@ -6,7 +6,19 @@ Deno.serve(async (req) => {
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   const body = await req.json();
-  const { courseId, courseInstanceId } = body;
+  const { courseId, courseInstanceId, lookupEmails } = body;
+
+  // Allow looking up display names for any list of emails (e.g. instructors)
+  if (lookupEmails) {
+    const allUsers = await base44.asServiceRole.entities.User.list();
+    const userMap = {};
+    allUsers.forEach(u => { userMap[u.email] = u; });
+    const result = lookupEmails.map(email => ({
+      email,
+      display_name: userMap[email]?.full_name || email.split('@')[0]
+    }));
+    return Response.json({ users: result });
+  }
 
   if (!courseId) return Response.json({ error: 'courseId required' }, { status: 400 });
 
