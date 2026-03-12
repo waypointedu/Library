@@ -91,6 +91,19 @@ export default function CourseView() {
     enabled: !!courseInstanceId
   });
 
+  const { data: instructorNames = {} } = useQuery({
+    queryKey: ['instructorNames', courseInstance?.instructor_emails],
+    queryFn: async () => {
+      const emails = courseInstance.instructor_emails;
+      if (!emails?.length) return {};
+      const res = await base44.functions.invoke('getEnrolledStudents', { lookupEmails: emails });
+      const map = {};
+      (res.data.users || []).forEach(u => { map[u.email] = u.display_name; });
+      return map;
+    },
+    enabled: !!courseInstance?.instructor_emails?.length
+  });
+
   const { data: weeks = [] } = useQuery({
     queryKey: ['weeks', courseId],
     queryFn: async () => {
