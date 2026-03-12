@@ -138,7 +138,7 @@ export default function CourseInstanceCatalog() {
   });
 
   const isEnrolled = (instanceId) => {
-    return myEnrollments.some(e => e.course_instance_id === instanceId);
+    return myEnrollments.some(e => e.course_instance_id === instanceId && e.status !== 'dropped');
   };
 
   const isFull = (instance) => {
