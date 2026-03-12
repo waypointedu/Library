@@ -56,6 +56,11 @@ export default function CourseInstanceCatalog() {
     mutationFn: async (instanceId) => {
       const instance = instances.find(i => i.id === instanceId);
       const course = courses.find(c => c.id === instance.course_id);
+
+      // Check already enrolled
+      if (isEnrolled(instanceId)) {
+        throw new Error('Already enrolled');
+      }
       
       // Check prerequisites
       if (course.prerequisite_course_ids && course.prerequisite_course_ids.length > 0) {
@@ -64,12 +69,8 @@ export default function CourseInstanceCatalog() {
           status: 'completed' 
         });
         const completedCourseIds = completedEnrollments.map(e => e.course_id);
-        
         const missingPrereqs = course.prerequisite_course_ids.filter(pid => !completedCourseIds.includes(pid));
-        
-        if (missingPrereqs.length > 0) {
-          throw new Error('Prerequisites not met');
-        }
+        if (missingPrereqs.length > 0) throw new Error('Prerequisites not met');
       }
       
       // Check if full
@@ -77,7 +78,6 @@ export default function CourseInstanceCatalog() {
         throw new Error('Course is full');
       }
       
-      // Create enrollment
       await base44.entities.Enrollment.create({
         course_id: instance.course_id,
         course_instance_id: instanceId,
@@ -86,7 +86,6 @@ export default function CourseInstanceCatalog() {
         enrolled_date: new Date().toISOString()
       });
       
-      // Increment enrollment count
       await base44.entities.CourseInstance.update(instanceId, {
         current_enrollment: (instance.current_enrollment || 0) + 1
       });
@@ -102,9 +101,27 @@ export default function CourseInstanceCatalog() {
           : 'You must complete prerequisite courses before enrolling.');
       } else if (error.message === 'Course is full') {
         alert(lang === 'es' ? 'Este curso está lleno.' : 'This course is full.');
-      } else {
+      } else if (error.message !== 'Already enrolled') {
         alert(lang === 'es' ? 'Error al inscribirse' : 'Error enrolling');
       }
+    }
+  });
+
+  const unenrollMutation = useMutation({
+    mutationFn: async (instanceId) => {
+      const enrollment = myEnrollments.find(e => e.course_instance_id === instanceId);
+      if (!enrollment) throw new Error('Not enrolled');
+      await base44.entities.Enrollment.update(enrollment.id, { status: 'dropped' });
+      const instance = instances.find(i => i.id === instanceId);
+      if (instance) {
+        await base44.entities.CourseInstance.update(instanceId, {
+          current_enrollment: Math.max(0, (instance.current_enrollment || 1) - 1)
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['courseInstances'] });
     }
   });
 
