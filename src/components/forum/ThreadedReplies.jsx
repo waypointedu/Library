@@ -145,6 +145,7 @@ function ReplyNode({ reply, allReplies, user, isInstructor, lang, nestedReplying
               setNestedReplyTexts={setNestedReplyTexts}
               onSubmitNestedReply={onSubmitNestedReply}
               onDeleteReply={onDeleteReply}
+              onUpdateReply={onUpdateReply}
               depth={depth + 1}
             />
           ))}
@@ -154,7 +155,7 @@ function ReplyNode({ reply, allReplies, user, isInstructor, lang, nestedReplying
   );
 }
 
-export default function ThreadedReplies({ postId, allReplies, user, isInstructor, lang, nestedReplyingTo, setNestedReplyingTo, nestedReplyTexts, setNestedReplyTexts, onSubmitNestedReply, onDeleteReply }) {
+export default function ThreadedReplies({ postId, allReplies, user, isInstructor, lang, nestedReplyingTo, setNestedReplyingTo, nestedReplyTexts, setNestedReplyTexts, onSubmitNestedReply, onDeleteReply, onUpdateReply }) {
   const topLevel = allReplies
     .filter(r => r.post_id === postId && !r.parent_id)
     .sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
