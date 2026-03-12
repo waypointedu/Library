@@ -453,5 +453,6 @@ export default function Dashboard() {
 
       <MobileNav lang={lang} currentPage="Profile" />
     </div>
+    </AccessGate>
   );
 }
