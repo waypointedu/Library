@@ -161,14 +161,13 @@ export default function CourseView() {
     enabled: !!courseId && isInstructor
   });
 
-  const { data: studentUsers = [] } = useQuery({
-    queryKey: ['studentUsers', enrollments],
+  const { data: studentUsersMap = {} } = useQuery({
+    queryKey: ['studentUsers', enrollments.map(e => e.user_email).join(',')],
     queryFn: async () => {
-      const userPromises = enrollments.map(async (enrollment) => {
-        const users = await base44.entities.User.filter({ email: enrollment.user_email });
-        return users[0];
-      });
-      return Promise.all(userPromises);
+      const allUsers = await base44.entities.User.list();
+      const map = {};
+      allUsers.forEach(u => { map[u.email] = u; });
+      return map;
     },
     enabled: enrollments.length > 0 && isInstructor
   });
