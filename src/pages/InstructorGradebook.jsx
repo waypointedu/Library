@@ -35,7 +35,7 @@ export default function InstructorGradebook() {
   const { data: enrollments = [] } = useQuery({
     queryKey: ['enrollments', courseId],
     queryFn: async () => {
-      const res = await base44.functions.invoke('getEnrolledStudents', { courseId });
+      const res = await base44.functions.invoke('getEnrolledStudents', { courseId, courseInstanceId });
       return res.data.students || [];
     },
     enabled: !!courseId
