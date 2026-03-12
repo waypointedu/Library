@@ -30,12 +30,12 @@ function ReplyNode({ reply, allReplies, user, isInstructor, lang, nestedReplying
             backgroundColor: depth === 0 ? '#334155' : '#64748b'
           }}
         >
-          {reply.user_email?.[0]?.toUpperCase() || 'U'}
+          {(reply.user_name || reply.user_email)?.[0]?.toUpperCase() || 'U'}
         </div>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <p className={`font-medium text-slate-900 ${depth > 0 ? 'text-xs' : 'text-sm'}`}>{reply.user_email}</p>
+              <p className={`font-medium text-slate-900 ${depth > 0 ? 'text-xs' : 'text-sm'}`}>{reply.user_name || reply.user_email?.split('@')[0]}</p>
               <span className="text-xs text-slate-400">{new Date(reply.created_date).toLocaleDateString()}</span>
             </div>
             {(canEdit || canDelete) && !editing && (
@@ -105,7 +105,7 @@ function ReplyNode({ reply, allReplies, user, isInstructor, lang, nestedReplying
               <Textarea
                 value={nestedReplyTexts[reply.id] || ''}
                 onChange={(e) => setNestedReplyTexts(prev => ({ ...prev, [reply.id]: e.target.value }))}
-                placeholder={`@${reply.user_email}: ...`}
+                placeholder={`@${reply.user_name || reply.user_email?.split('@')[0]}: ...`}
                 rows={2}
                 className="text-sm"
                 autoFocus
