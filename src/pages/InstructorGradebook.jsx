@@ -13,6 +13,7 @@ import LanguageToggle from '@/components/common/LanguageToggle';
 export default function InstructorGradebook() {
    const urlParams = new URLSearchParams(window.location.search);
    const courseId = urlParams.get('course_id') || urlParams.get('courseId');
+   const courseInstanceId = urlParams.get('courseInstanceId');
   const [lang, setLang] = useState(urlParams.get('lang') || 'en');
   const [user, setUser] = useState(null);
   const [edits, setEdits] = useState({});
