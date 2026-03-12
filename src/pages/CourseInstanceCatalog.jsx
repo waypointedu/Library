@@ -158,7 +158,8 @@ export default function CourseInstanceCatalog() {
       starts: "Starts",
       instructor: "Instructor",
       selfPaced: "Self-paced",
-      noCourses: "No upcoming course offerings available"
+      noCourses: "No upcoming course offerings available",
+      unenroll: "Unenroll"
     },
     es: {
       title: "Próximas Ofertas de Cursos",
