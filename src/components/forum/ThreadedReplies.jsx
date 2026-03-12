@@ -18,11 +18,6 @@ function ReplyNode({ reply, allReplies, user, isInstructor, lang, nestedReplying
   const canEdit = user && reply.user_email === user.email;
   const canDelete = user && (reply.user_email === user.email || isInstructor);
 
-  const handleSaveEdit = async () => {
-    await reply._update?.({ content: editText });
-    setEditing(false);
-  };
-
   return (
     <div className={depth > 0 ? 'pl-4 border-l-2 border-slate-100 mt-2 space-y-2' : ''}>
       <div className="flex items-start gap-2">
