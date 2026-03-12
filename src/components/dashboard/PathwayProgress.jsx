@@ -18,8 +18,14 @@ export default function PathwayProgress({ enrollments, courses, progress }) {
     { order: 8, name: "Apologetics Seminar Series", credits: 1, weeks: 8 }
   ];
 
-  const enrolledCourseIds = enrollments.map(e => e.course_id);
-  
+  const enrolledCourseIds = enrollments.filter(e => e.status !== 'dropped').map(e => e.course_id);
+
+  // Don't show the pathway card if the student isn't enrolled in any pathway courses
+  const isInProgram = pathwayCourses.some(pc => {
+    const course = courses.find(c => c.title_en === pc.name);
+    return course && enrolledCourseIds.includes(course.id);
+  });
+
   const getCourseStatus = (courseName) => {
     const course = courses.find(c => c.title_en === courseName);
     if (!course) return 'locked';
