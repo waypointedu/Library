@@ -153,7 +153,7 @@ export default function InstructorGradebook() {
 
   const studentRows = enrollments.map((enrollment, index) => {
     const studentUser = studentUsers[index];
-    const displayName = studentUser?.full_name || studentUser?.data?.preferred_name || lang === 'es' ? 'Estudiante' : 'Student';
+    const displayName = studentUser?.full_name || studentUser?.data?.preferred_name || (lang === 'es' ? 'Estudiante' : 'Student');
     
     const studentGrades = assignments.map(assignment => {
       let grade = null;
