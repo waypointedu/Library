@@ -5,7 +5,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 
 const MAX_DEPTH = 4;
 
-function ReplyNode({ reply, allReplies, user, isInstructor, lang, nestedReplyingTo, setNestedReplyingTo, nestedReplyTexts, setNestedReplyTexts, onSubmitNestedReply, onDeleteReply, depth = 0 }) {
+function ReplyNode({ reply, allReplies, user, isInstructor, lang, nestedReplyingTo, setNestedReplyingTo, nestedReplyTexts, setNestedReplyTexts, onSubmitNestedReply, onDeleteReply, onUpdateReply, depth = 0 }) {
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(reply.content);
 
@@ -81,11 +81,10 @@ function ReplyNode({ reply, allReplies, user, isInstructor, lang, nestedReplying
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  onClick={() => { onDeleteReply && reply._onUpdate ? reply._onUpdate(reply.id, editText) : null; }}
+                  onClick={() => { onUpdateReply(reply.id, editText); setEditing(false); }}
                   className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
                   disabled={!editText.trim()}
                 >
-                  {/* handled by parent via prop */}
                   {lang === 'es' ? 'Guardar' : 'Save'}
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => setEditing(false)}>
