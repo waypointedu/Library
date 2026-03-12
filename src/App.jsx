@@ -60,6 +60,8 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/FacultyProfile" element={<FacultyProfile />} />
+      <Route path="/FacultyProfileEdit" element={<FacultyProfileEdit />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
