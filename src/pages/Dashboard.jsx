@@ -345,13 +345,13 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        {/* Quick Stats */}
-        <QuickStats 
+        {/* Quick Stats - hidden until gamification is fully implemented */}
+        {/* <QuickStats 
           userProfile={userProfile} 
           userBadges={userBadges}
           endorsements={endorsements}
           readingSessions={readingSessions}
-        />
+        /> */}
 
         {/* Main Dashboard Grid */}
         <div className="grid lg:grid-cols-3 gap-4 md:gap-6 mt-6 md:mt-8 mb-6 md:mb-8">
