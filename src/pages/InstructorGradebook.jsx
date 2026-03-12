@@ -137,8 +137,7 @@ export default function InstructorGradebook() {
   });
 
   const studentRows = enrollments.map((enrollment) => {
-    const studentUser = studentUsersMap[enrollment.user_email];
-    const displayName = studentUser?.full_name || enrollment.user_email.split('@')[0];
+    const displayName = enrollment.display_name || enrollment.user_email.split('@')[0];
     
     const studentGrades = assignments.map(assignment => {
       let grade = null;
