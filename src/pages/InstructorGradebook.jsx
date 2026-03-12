@@ -34,14 +34,8 @@ export default function InstructorGradebook() {
   const { data: enrollments = [] } = useQuery({
     queryKey: ['enrollments', courseId],
     queryFn: async () => {
-      const allEnrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
-      
-      // Get instructor emails from course instances to filter them out
-      const instances = await base44.entities.CourseInstance.filter({ course_id: courseId });
-      const instructorEmails = instances.flatMap(inst => inst.instructor_emails || []);
-      
-      // Filter out instructors
-      return allEnrollments.filter(enrollment => !instructorEmails.includes(enrollment.user_email));
+      const res = await base44.functions.invoke('getEnrolledStudents', { courseId });
+      return res.data.students || [];
     },
     enabled: !!courseId
   });
