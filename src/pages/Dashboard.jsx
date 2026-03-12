@@ -303,7 +303,7 @@ export default function Dashboard() {
 
   return (
     <AccessGate user={user}>
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
+      <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
       {/* Header */}
       <header className="bg-white border-b border-slate-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between overflow-x-auto">
