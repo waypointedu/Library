@@ -151,9 +151,9 @@ export default function InstructorGradebook() {
     return items;
   });
 
-  const studentRows = enrollments.map((enrollment, index) => {
-    const studentUser = studentUsers[index];
-    const displayName = studentUser?.full_name || studentUser?.data?.preferred_name || enrollment.user_email.split('@')[0];
+  const studentRows = enrollments.map((enrollment) => {
+    const studentUser = studentUsersMap[enrollment.user_email];
+    const displayName = studentUser?.full_name || enrollment.user_email.split('@')[0];
     
     const studentGrades = assignments.map(assignment => {
       let grade = null;
