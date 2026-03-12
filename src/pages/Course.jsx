@@ -311,13 +311,24 @@ export default function Course() {
                           </p>
                         )}
                       </div>
-                      <Button
-                        onClick={() => handleEnroll(instance.id)}
-                        disabled={enrollMutation.isPending || isFull}
-                        className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]"
-                      >
-                        {isFull ? t.full : (enrollMutation.isPending ? '...' : t.enroll)}
-                      </Button>
+                      {isEnrolled(instance.id) ? (
+                        <Button
+                          variant="outline"
+                          onClick={() => unenrollMutation.mutate(instance.id)}
+                          disabled={unenrollMutation.isPending}
+                          className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                        >
+                          {unenrollMutation.isPending ? '...' : (lang === 'es' ? 'Cancelar inscripción' : 'Unenroll')}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => handleEnroll(instance.id)}
+                          disabled={enrollMutation.isPending || isFull}
+                          className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]"
+                        >
+                          {isFull ? t.full : (enrollMutation.isPending ? '...' : t.enroll)}
+                        </Button>
+                      )}
                     </CardContent>
                   </Card>
                 );
