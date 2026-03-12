@@ -239,11 +239,11 @@ export default function Transcript() {
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <div className="text-sm text-slate-500">{t.name}</div>
-                  <div className="font-medium">{user.full_name}</div>
+                  <div className="font-medium">{displayUser.full_name}</div>
                 </div>
                 <div>
                   <div className="text-sm text-slate-500">{t.email}</div>
-                  <div className="font-medium">{user.email}</div>
+                  <div className="font-medium">{displayUser.email}</div>
                 </div>
                 <div>
                   <div className="text-sm text-slate-500">{t.enrollmentDate}</div>
