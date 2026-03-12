@@ -26,7 +26,8 @@ import {
   AlertCircle,
   Eye,
   Trash2,
-  ClipboardCheck
+  ClipboardCheck,
+  Pencil
 } from "lucide-react";
 import WeekQuizStudent from '@/components/quiz/WeekQuizStudent';
 import WrittenAssignmentStudent from '@/components/assignments/WrittenAssignmentStudent';
@@ -267,6 +268,32 @@ export default function CourseView() {
       queryClient.invalidateQueries({ queryKey: ['forumReplies', selectedContent?.data?.id] });
       setNestedReplyingTo(null);
       setNestedReplyTexts(prev => ({ ...prev, [variables.parent_id]: '' }));
+    }
+  });
+
+  const [editingPost, setEditingPost] = useState(null);
+  const [editPostText, setEditPostText] = useState('');
+
+  const updatePostMutation = useMutation({
+    mutationFn: ({ id, content }) => base44.entities.ForumPost.update(id, { content }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forumPosts', selectedContent?.data?.id] });
+      setEditingPost(null);
+      setEditPostText('');
+    }
+  });
+
+  const deletePostMutation = useMutation({
+    mutationFn: (id) => base44.entities.ForumPost.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forumPosts', selectedContent?.data?.id] });
+    }
+  });
+
+  const deleteReplyMutation = useMutation({
+    mutationFn: (id) => base44.entities.ForumReply.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forumReplies', selectedContent?.data?.id] });
     }
   });
 
