@@ -20,6 +20,7 @@ import StreakCalendar from '@/components/dashboard/StreakCalendar';
 import QuickStats from '@/components/dashboard/QuickStats';
 import CourseCalendar from '@/components/calendar/CourseCalendar';
 import AnnouncementFeed from '@/components/dashboard/AnnouncementFeed';
+import AccessGate from '@/components/AccessGate';
 
 export default function Dashboard() {
   const urlParams = new URLSearchParams(window.location.search);
