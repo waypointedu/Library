@@ -20,6 +20,7 @@ export default function FacultyProfileEdit() {
   const [newCourse, setNewCourse] = useState({ category: '', title: '' });
   const [newSeminar, setNewSeminar] = useState('');
   const [newResearch, setNewResearch] = useState('');
+  const [newEducation, setNewEducation] = useState({ degree: '', institution: '', year: '', note: '', dissertation: '' });
   const [newBook, setNewBook] = useState({ title: '', note: '' });
   const [newLecture, setNewLecture] = useState({ title: '', venue: '', url: '' });
 
@@ -53,6 +54,7 @@ export default function FacultyProfileEdit() {
         overview: p.overview || '',
         faculty_type: p.faculty_type || 'contributing',
         is_published: p.is_published !== false,
+        education: p.education || [],
         courses_taught: p.courses_taught || [],
         seminars: p.seminars || [],
         research_areas: p.research_areas || [],
@@ -69,6 +71,7 @@ export default function FacultyProfileEdit() {
         overview: '',
         faculty_type: 'contributing',
         is_published: true,
+        education: [],
         courses_taught: [],
         seminars: [],
         research_areas: [],
@@ -190,6 +193,74 @@ export default function FacultyProfileEdit() {
               className="h-36"
             />
           </Field>
+        </Section>
+
+        {/* Education */}
+        <Section title="Education">
+          <div className="space-y-2 mb-4">
+            {form.education.map((edu, i) => (
+              <div key={i} className="flex items-start gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
+                <div className="flex-1">
+                  <p className="text-sm text-slate-800 font-medium">{edu.degree}{edu.note ? <span className="font-normal text-slate-400 ml-1 italic">({edu.note})</span> : ''}</p>
+                  <p className="text-xs text-slate-500">{edu.institution}{edu.year ? `, ${edu.year}` : ''}</p>
+                  {edu.dissertation && <p className="text-xs text-slate-400 italic mt-0.5">Diss: {edu.dissertation}</p>}
+                </div>
+                <button onClick={() => removeFromArray('education', i)} className="text-slate-300 hover:text-red-400 mt-0.5">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Degree (e.g. M.A. in Theology)"
+                value={newEducation.degree}
+                onChange={e => setNewEducation(v => ({ ...v, degree: e.target.value }))}
+                className="flex-1"
+              />
+              <Input
+                placeholder="Note (e.g. ABD)"
+                value={newEducation.note}
+                onChange={e => setNewEducation(v => ({ ...v, note: e.target.value }))}
+                className="w-32 flex-shrink-0"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Institution"
+                value={newEducation.institution}
+                onChange={e => setNewEducation(v => ({ ...v, institution: e.target.value }))}
+                className="flex-1"
+              />
+              <Input
+                placeholder="Year"
+                value={newEducation.year}
+                onChange={e => setNewEducation(v => ({ ...v, year: e.target.value }))}
+                className="w-24 flex-shrink-0"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Dissertation title (optional)"
+                value={newEducation.dissertation}
+                onChange={e => setNewEducation(v => ({ ...v, dissertation: e.target.value }))}
+                className="flex-1"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (newEducation.degree && newEducation.institution) {
+                    addToArray('education', { ...newEducation });
+                    setNewEducation({ degree: '', institution: '', year: '', note: '', dissertation: '' });
+                  }
+                }}
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
         </Section>
 
         {/* Courses */}
