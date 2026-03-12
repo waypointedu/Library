@@ -47,6 +47,8 @@ export default function PathwayProgress({ enrollments, courses, progress }) {
 
   const overallProgress = (completedCredits / totalCredits) * 100;
 
+  if (!isInProgram) return null;
+
   return (
     <Card className="shadow-lg border-slate-200">
       <CardHeader>
