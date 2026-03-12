@@ -126,7 +126,7 @@ export default function Transcript() {
       const imgY = 10;
 
       pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save(`waypoint-transcript-${user?.email || 'student'}.pdf`);
+      pdf.save(`waypoint-transcript-${displayUser?.email || 'student'}.pdf`);
     } catch (error) {
       console.error('PDF generation failed:', error);
     } finally {
