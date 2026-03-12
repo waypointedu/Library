@@ -191,13 +191,16 @@ export default function Transcript() {
 
   const t = text[lang];
 
-  if (!currentUser || !user) {
+  if (!currentUser) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e3a5f]" />
       </div>
     );
   }
+
+  // Use currentUser as fallback if the User entity lookup didn't return a result
+  const displayUser = user || currentUser;
 
   return (
     <div className="min-h-screen bg-slate-50 py-12">
