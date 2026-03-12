@@ -57,31 +57,34 @@ export default function Course() {
     queryFn: () => base44.entities.AcademicTerm.list()
   });
 
+  const { data: myEnrollments = [] } = useQuery({
+    queryKey: ['enrollments', user?.email],
+    queryFn: () => base44.entities.Enrollment.filter({ user_email: user?.email }),
+    enabled: !!user?.email
+  });
+
+  const isEnrolled = (instanceId) => 
+    myEnrollments.some(e => e.course_instance_id === instanceId && e.status !== 'dropped');
+
   const enrollMutation = useMutation({
     mutationFn: async (instanceId) => {
       const instance = courseInstances.find(i => i.id === instanceId);
+
+      if (isEnrolled(instanceId)) throw new Error('Already enrolled');
       
-      // Check prerequisites
       if (course.prerequisite_course_ids && course.prerequisite_course_ids.length > 0) {
         const completedEnrollments = await base44.entities.Enrollment.filter({ 
-          user_email: user.email, 
-          status: 'completed' 
+          user_email: user.email, status: 'completed' 
         });
         const completedCourseIds = completedEnrollments.map(e => e.course_id);
-        
         const missingPrereqs = course.prerequisite_course_ids.filter(pid => !completedCourseIds.includes(pid));
-        
-        if (missingPrereqs.length > 0) {
-          throw new Error('Prerequisites not met');
-        }
+        if (missingPrereqs.length > 0) throw new Error('Prerequisites not met');
       }
       
-      // Check if full
       if (instance?.max_students && instance.current_enrollment >= instance.max_students) {
         throw new Error('Course is full');
       }
       
-      // Create enrollment
       await base44.entities.Enrollment.create({
         course_id: courseId,
         course_instance_id: instanceId,
@@ -90,7 +93,6 @@ export default function Course() {
         enrolled_date: new Date().toISOString()
       });
       
-      // Increment enrollment count
       if (instance) {
         await base44.entities.CourseInstance.update(instanceId, {
           current_enrollment: (instance.current_enrollment || 0) + 1
@@ -98,8 +100,8 @@ export default function Course() {
       }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['enrollments'] });
       queryClient.invalidateQueries({ queryKey: ['courseInstances'] });
-      alert(lang === 'es' ? '¡Inscripción exitosa!' : 'Successfully enrolled!');
     },
     onError: (error) => {
       if (error.message === 'Prerequisites not met') {
@@ -109,6 +111,24 @@ export default function Course() {
       } else if (error.message === 'Course is full') {
         alert(lang === 'es' ? 'Este curso está lleno.' : 'This course is full.');
       }
+    }
+  });
+
+  const unenrollMutation = useMutation({
+    mutationFn: async (instanceId) => {
+      const enrollment = myEnrollments.find(e => e.course_instance_id === instanceId && e.status !== 'dropped');
+      if (!enrollment) throw new Error('Not enrolled');
+      await base44.entities.Enrollment.update(enrollment.id, { status: 'dropped' });
+      const instance = courseInstances.find(i => i.id === instanceId);
+      if (instance) {
+        await base44.entities.CourseInstance.update(instanceId, {
+          current_enrollment: Math.max(0, (instance.current_enrollment || 1) - 1)
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['courseInstances'] });
     }
   });
 
