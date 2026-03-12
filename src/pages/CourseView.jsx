@@ -934,93 +934,148 @@ export default function CourseView() {
                 </Card>
               ) : (
                 forumPosts.map(post => {
-                  const postReplies = forumReplies.filter(r => r.post_id === post.id);
-                  
-                  return (
-                    <Card key={post.id} className="border-slate-200">
-                      <CardContent className="p-6">
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white font-semibold">
-                            {post.user_email?.[0]?.toUpperCase() || 'U'}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
+                const postReplies = forumReplies.filter(r => r.post_id === post.id);
+                const canModifyPost = user && (post.user_email === user.email || isInstructor);
+
+                return (
+                  <Card key={post.id} className="border-slate-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white font-semibold">
+                          {post.user_email?.[0]?.toUpperCase() || 'U'}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
                               <p className="font-medium text-slate-900">{post.user_email}</p>
                               <span className="text-xs text-slate-400">
                                 {new Date(post.created_date).toLocaleDateString()}
                               </span>
                             </div>
-                            <p className="text-slate-700 mb-3">{post.content}</p>
-                            
-                            {user && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setReplyingTo(replyingTo === post.id ? null : post.id)}
-                                className="text-slate-600"
-                              >
-                                {lang === 'es' ? 'Responder' : 'Reply'}
-                              </Button>
-                            )}
-
-                            {replyingTo === post.id && (
-                              <div className="mt-3 space-y-2">
-                                <Textarea
-                                  value={replyText}
-                                  onChange={(e) => setReplyText(e.target.value)}
-                                  placeholder={lang === 'es' ? 'Escribe tu respuesta...' : 'Write your reply...'}
-                                  rows={3}
-                                />
-                                <div className="flex gap-2">
+                            {canModifyPost && (
+                              <div className="flex gap-1">
+                                {post.user_email === user.email && (
                                   <Button
-                                    size="sm"
-                                    onClick={() => createReplyMutation.mutate({
-                                      post_id: post.id,
-                                      user_email: user.email,
-                                      content: replyText
-                                    })}
-                                    disabled={!replyText.trim()}
-                                    className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 text-slate-400 hover:text-slate-600"
+                                    onClick={() => { setEditingPost(post.id); setEditPostText(post.content); }}
                                   >
-                                    {lang === 'es' ? 'Enviar' : 'Send'}
+                                    <Pencil className="w-3 h-3" />
                                   </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      setReplyingTo(null);
-                                      setReplyText('');
-                                    }}
-                                  >
-                                    {lang === 'es' ? 'Cancelar' : 'Cancel'}
-                                  </Button>
-                                </div>
+                                )}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-red-400 hover:text-red-600 hover:bg-red-50"
+                                  onClick={() => {
+                                    if (confirm(lang === 'es' ? '¿Eliminar publicación?' : 'Delete this post?')) {
+                                      deletePostMutation.mutate(post.id);
+                                    }
+                                  }}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
                               </div>
                             )}
-
-                            <ThreadedReplies
-                              postId={post.id}
-                              allReplies={forumReplies}
-                              user={user}
-                              lang={lang}
-                              nestedReplyingTo={nestedReplyingTo}
-                              setNestedReplyingTo={setNestedReplyingTo}
-                              nestedReplyTexts={nestedReplyTexts}
-                              setNestedReplyTexts={setNestedReplyTexts}
-                              onSubmitNestedReply={(parentReply) => createNestedReplyMutation.mutate({
-                                post_id: post.id,
-                                parent_id: parentReply.id,
-                                depth: (parentReply.depth || 0) + 1,
-                                user_email: user.email,
-                                user_name: user.full_name || user.email,
-                                content: `@${parentReply.user_email}: ${nestedReplyTexts[parentReply.id] || ''}`
-                              })}
-                            />
                           </div>
+
+                          {editingPost === post.id ? (
+                            <div className="mb-3 space-y-2">
+                              <Textarea
+                                value={editPostText}
+                                onChange={(e) => setEditPostText(e.target.value)}
+                                rows={4}
+                              />
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => updatePostMutation.mutate({ id: post.id, content: editPostText })}
+                                  disabled={!editPostText.trim() || updatePostMutation.isPending}
+                                  className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
+                                >
+                                  {lang === 'es' ? 'Guardar' : 'Save'}
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={() => setEditingPost(null)}>
+                                  {lang === 'es' ? 'Cancelar' : 'Cancel'}
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-slate-700 mb-3">{post.content}</p>
+                          )}
+
+                          {user && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setReplyingTo(replyingTo === post.id ? null : post.id)}
+                              className="text-slate-600"
+                            >
+                              {lang === 'es' ? 'Responder' : 'Reply'}
+                            </Button>
+                          )}
+
+                          {replyingTo === post.id && (
+                            <div className="mt-3 space-y-2">
+                              <Textarea
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder={lang === 'es' ? 'Escribe tu respuesta...' : 'Write your reply...'}
+                                rows={3}
+                              />
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => createReplyMutation.mutate({
+                                    post_id: post.id,
+                                    user_email: user.email,
+                                    content: replyText
+                                  })}
+                                  disabled={!replyText.trim()}
+                                  className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
+                                >
+                                  {lang === 'es' ? 'Enviar' : 'Send'}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setReplyingTo(null);
+                                    setReplyText('');
+                                  }}
+                                >
+                                  {lang === 'es' ? 'Cancelar' : 'Cancel'}
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
+                          <ThreadedReplies
+                            postId={post.id}
+                            allReplies={forumReplies}
+                            user={user}
+                            isInstructor={isInstructor}
+                            lang={lang}
+                            nestedReplyingTo={nestedReplyingTo}
+                            setNestedReplyingTo={setNestedReplyingTo}
+                            nestedReplyTexts={nestedReplyTexts}
+                            setNestedReplyTexts={setNestedReplyTexts}
+                            onSubmitNestedReply={(parentReply) => createNestedReplyMutation.mutate({
+                              post_id: post.id,
+                              parent_id: parentReply.id,
+                              depth: (parentReply.depth || 0) + 1,
+                              user_email: user.email,
+                              user_name: user.full_name || user.email,
+                              content: `@${parentReply.user_email}: ${nestedReplyTexts[parentReply.id] || ''}`
+                            })}
+                            onDeleteReply={(replyId) => deleteReplyMutation.mutate(replyId)}
+                          />
                         </div>
-                      </CardContent>
-                    </Card>
-                  );
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
                 })
               )}
             </div>
