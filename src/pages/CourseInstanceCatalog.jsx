@@ -173,7 +173,8 @@ export default function CourseInstanceCatalog() {
       starts: "Inicia",
       instructor: "Instructor",
       selfPaced: "A tu ritmo",
-      noCourses: "No hay ofertas de cursos próximos disponibles"
+      noCourses: "No hay ofertas de cursos próximos disponibles",
+      unenroll: "Cancelar inscripción"
     }
   };
 
