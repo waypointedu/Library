@@ -30,7 +30,7 @@ export default function HowItWorks() {
       step3_desc: "Wrap up each course with a 30-minute conversation on the central topic. Record with one or two classmates. Faculty review every voice and assign follow up if needed.",
       step3_details: ["Conversations can be in English or your native language", "Faculty provide individual feedback and next steps", "Remedial assignments or one-on-one dialogue when mastery needs strengthening"],
       tech_title: "Technology Checklist",
-      tech_items: ["Consistent internet access for readings, discussions, and uploads", "Ability to use Google Docs, Sheets, and Slides", "A device capable of joining at least one 30-minute Google Meet call per course", "Microphone (and ideally camera) to record capstone conversations"],
+      tech_items: ["Consistent internet access for readings, discussions, and uploads", "A Google account (free) to access Docs, Sheets, Slides, and Meet", "Ability to use Google Docs, Sheets, and Slides", "A device capable of joining at least one 30-minute Google Meet call per course", "Microphone (and ideally camera) to record capstone conversations"],
       cta: "Ready to Apply?",
       apply: "Start Your Application"
     },
@@ -47,7 +47,7 @@ export default function HowItWorks() {
       step3_desc: "Concluye cada curso con una conversación de 30 minutos sobre el tema central. Graba con uno o dos compañeros. El profesorado revisa cada voz y asigna seguimiento si es necesario.",
       step3_details: ["Las conversaciones pueden ser en inglés o tu idioma nativo", "El profesorado proporciona retroalimentación individual y próximos pasos", "Tareas correctivas o diálogo uno a uno cuando se necesita reforzar el dominio"],
       tech_title: "Lista de Verificación Tecnológica",
-      tech_items: ["Acceso constante a internet para lecturas, discusiones y cargas", "Capacidad para usar Google Docs, Sheets y Slides", "Un dispositivo capaz de unirse a al menos una llamada de Google Meet de 30 minutos por curso", "Micrófono (e idealmente cámara) para grabar conversaciones de capstone"],
+      tech_items: ["Acceso constante a internet para lecturas, discusiones y cargas", "Una cuenta de Google (gratuita) para acceder a Docs, Sheets, Slides y Meet", "Capacidad para usar Google Docs, Sheets y Slides", "Un dispositivo capaz de unirse a al menos una llamada de Google Meet de 30 minutos por curso", "Micrófono (e idealmente cámara) para grabar conversaciones de capstone"],
       cta: "¿Listo para Aplicar?",
       apply: "Comienza Tu Solicitud"
     }
