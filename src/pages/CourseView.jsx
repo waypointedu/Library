@@ -917,11 +917,12 @@ export default function CourseView() {
                       <Button
                         onClick={() => createPostMutation.mutate({
                           forum_id: selectedContent.data.id,
-                          week_id: selectedContent.data.id,
-                          course_id: courseId,
-                          user_email: user.email,
-                          title: `Week ${selectedContent.data.week_number} Response`,
-                          content: newPost
+                             week_id: selectedContent.data.id,
+                             course_id: courseId,
+                             user_email: user.email,
+                             user_name: user.full_name || user.email.split('@')[0],
+                             title: `Week ${selectedContent.data.week_number} Response`,
+                             content: newPost
                         })}
                         disabled={!newPost.trim() || createPostMutation.isPending}
                         className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
@@ -949,12 +950,12 @@ export default function CourseView() {
                     <CardContent className="p-6">
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white font-semibold">
-                          {post.user_email?.[0]?.toUpperCase() || 'U'}
+                          {(post.user_name || post.user_email)?.[0]?.toUpperCase() || 'U'}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <p className="font-medium text-slate-900">{post.user_email}</p>
+                              <p className="font-medium text-slate-900">{post.user_name || post.user_email?.split('@')[0]}</p>
                               <span className="text-xs text-slate-400">
                                 {new Date(post.created_date).toLocaleDateString()}
                               </span>
@@ -1036,8 +1037,9 @@ export default function CourseView() {
                                   size="sm"
                                   onClick={() => createReplyMutation.mutate({
                                     post_id: post.id,
-                                    user_email: user.email,
-                                    content: replyText
+                                      user_email: user.email,
+                                      user_name: user.full_name || user.email.split('@')[0],
+                                      content: replyText
                                   })}
                                   disabled={!replyText.trim()}
                                   className="bg-[#1e3a5f] hover:bg-[#2d5a8a]"
@@ -1073,8 +1075,8 @@ export default function CourseView() {
                               parent_id: parentReply.id,
                               depth: (parentReply.depth || 0) + 1,
                               user_email: user.email,
-                              user_name: user.full_name || user.email,
-                              content: `@${parentReply.user_email}: ${nestedReplyTexts[parentReply.id] || ''}`
+                               user_name: user.full_name || user.email.split('@')[0],
+                               content: `@${parentReply.user_name || parentReply.user_email?.split('@')[0]}: ${nestedReplyTexts[parentReply.id] || ''}`
                             })}
                             onDeleteReply={(replyId) => deleteReplyMutation.mutate(replyId)}
                             onUpdateReply={(replyId, content) => updateReplyMutation.mutate({ id: replyId, content })}
