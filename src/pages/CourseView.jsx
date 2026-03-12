@@ -297,6 +297,13 @@ export default function CourseView() {
     }
   });
 
+  const updateReplyMutation = useMutation({
+    mutationFn: ({ id, content }) => base44.entities.ForumReply.update(id, { content }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forumReplies', selectedContent?.data?.id] });
+    }
+  });
+
   const toggleWeek = (weekId) => {
     setExpandedWeeks(prev => ({ ...prev, [weekId]: !prev[weekId] }));
   };
