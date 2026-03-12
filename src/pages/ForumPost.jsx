@@ -80,7 +80,7 @@ export default function ForumPost() {
     createReplyMutation.mutate({
       post_id: postId,
       user_email: user.email,
-      user_name: user.full_name || (lang === 'es' ? 'Estudiante' : 'Student'),
+      user_name: user.full_name || user.email.split('@')[0],
       content: newReply
     });
   };
@@ -96,7 +96,7 @@ export default function ForumPost() {
       parent_reply_id: topLevelReplyId,
       post_id: postId,
       user_email: user.email,
-      user_name: user.full_name || (lang === 'es' ? 'Estudiante' : 'Student'),
+      user_name: user.full_name || user.email.split('@')[0],
       content: content
     });
     queryClient.invalidateQueries({ queryKey: ['replyToReplies', postId] });
