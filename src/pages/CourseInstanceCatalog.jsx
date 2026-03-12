@@ -314,8 +314,13 @@ export default function CourseInstanceCatalog() {
                       </div>
 
                       {enrolled ? (
-                        <Button disabled className="w-full">
-                          {t.enrolled}
+                        <Button 
+                          variant="outline"
+                          onClick={() => unenrollMutation.mutate(instance.id)}
+                          disabled={unenrollMutation.isPending}
+                          className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                        >
+                          {unenrollMutation.isPending ? '...' : t.unenroll}
                         </Button>
                       ) : full ? (
                         <Button disabled className="w-full">
