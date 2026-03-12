@@ -1077,6 +1077,7 @@ export default function CourseView() {
                               content: `@${parentReply.user_email}: ${nestedReplyTexts[parentReply.id] || ''}`
                             })}
                             onDeleteReply={(replyId) => deleteReplyMutation.mutate(replyId)}
+                            onUpdateReply={(replyId, content) => updateReplyMutation.mutate({ id: replyId, content })}
                           />
                         </div>
                       </div>
