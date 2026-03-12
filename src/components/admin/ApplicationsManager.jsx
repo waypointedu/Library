@@ -61,17 +61,6 @@ export default function ApplicationsManager({ lang = 'en' }) {
       });
       
       await base44.users.inviteUser(application.email, 'user');
-      
-      const introCourses = await base44.entities.Course.filter({ 
-        title_en: { $regex: 'Introduction', $options: 'i' } 
-      });
-      if (introCourses.length > 0) {
-        await base44.entities.Enrollment.create({
-          user_email: application.email,
-          course_id: introCourses[0].id,
-          status: 'active'
-        });
-      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications'] });
