@@ -323,7 +323,7 @@ export default function CourseView() {
                 <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
                   <Badge variant="outline" className="text-xs">{courseInstance.cohort_name}</Badge>
                   <span>•</span>
-                  <span>{lang === 'es' ? 'Instructor:' : 'Instructor:'} {courseInstance.instructor_emails[0].split('@')[0]}</span>
+                  <span>{lang === 'es' ? 'Instructor:' : 'Instructor:'} {instructorNames[courseInstance.instructor_emails[0]] || courseInstance.instructor_emails[0].split('@')[0]}</span>
                 </div>
               )}
               <p className="text-sm text-slate-500">
