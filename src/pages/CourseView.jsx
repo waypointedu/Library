@@ -125,51 +125,10 @@ export default function CourseView() {
   const { data: enrollments = [] } = useQuery({
     queryKey: ['courseEnrollments', courseId, courseInstanceId, isInstructor],
     queryFn: async () => {
-      let allEnrollments;
-      if (courseInstanceId) {
-        allEnrollments = await base44.entities.Enrollment.filter({ course_instance_id: courseInstanceId });
-      } else {
-        allEnrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
-      }
-      
-      // Get instructor emails from course instance to filter them out
-      let instructorEmails = [];
-      if (courseInstanceId) {
-        const instances = await base44.entities.CourseInstance.filter({ id: courseInstanceId });
-        if (instances[0]?.instructor_emails) {
-          instructorEmails = instances[0].instructor_emails;
-        }
-      }
-      
-      // Filter out instructors based on email match
-      const studentEnrollments = allEnrollments.filter(enrollment => {
-        return !instructorEmails.includes(enrollment.user_email);
-      });
-      
-      // Remove duplicates by keeping only the first enrollment per user
-      const uniqueEnrollments = [];
-      const seenEmails = new Set();
-      for (const enrollment of studentEnrollments) {
-        if (!seenEmails.has(enrollment.user_email)) {
-          seenEmails.add(enrollment.user_email);
-          uniqueEnrollments.push(enrollment);
-        }
-      }
-      
-      return uniqueEnrollments;
+      const res = await base44.functions.invoke('getEnrolledStudents', { courseId, courseInstanceId });
+      return res.data.students || [];
     },
     enabled: !!courseId && isInstructor
-  });
-
-  const { data: studentUsersMap = {} } = useQuery({
-    queryKey: ['studentUsers', enrollments.map(e => e.user_email).join(',')],
-    queryFn: async () => {
-      const allUsers = await base44.entities.User.list();
-      const map = {};
-      allUsers.forEach(u => { map[u.email] = u; });
-      return map;
-    },
-    enabled: enrollments.length > 0 && isInstructor
   });
 
   const { data: submissions = [] } = useQuery({
