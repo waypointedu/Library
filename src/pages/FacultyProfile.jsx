@@ -90,7 +90,7 @@ export default function FacultyProfile() {
         {/* HERO */}
         <div className="flex flex-col md:flex-row items-start gap-8 mb-16 pb-16 border-b border-slate-100">
           <div className="flex-shrink-0">
-            <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden bg-slate-100 shadow-lg">
+            <div className="w-32 h-32 md:w-44 md:h-44 rounded-2xl overflow-hidden bg-slate-100 shadow-lg">
               {profile.photo_url ? (
                 <img src={profile.photo_url} alt={profile.display_name} className="w-full h-full object-cover object-center" />
               ) : (
@@ -172,14 +172,17 @@ export default function FacultyProfile() {
           </Section>
         )}
 
-        {/* RESEARCH AREAS */}
-        {profile.research_areas?.length > 0 && (
-          <Section label="Research Areas">
-            <ul className="space-y-1.5">
-              {profile.research_areas.map((r, i) => (
-                <li key={i} className="text-slate-700 flex items-start gap-2">
-                  <span className="text-[#c4933f] mt-1 text-xs">•</span>
-                  <span>{r}</span>
+        {/* EDUCATION */}
+        {profile.education?.length > 0 && (
+          <Section label="Education">
+            <ul className="space-y-4">
+              {profile.education.map((edu, i) => (
+                <li key={i} className="text-slate-700">
+                  <p className="font-medium text-slate-900">{edu.degree}{edu.note ? <span className="font-normal text-slate-500 ml-2 text-sm italic">({edu.note})</span> : ''}</p>
+                  <p className="text-sm text-slate-500">{edu.institution}{edu.year ? `, ${edu.year}` : ''}</p>
+                  {edu.dissertation && (
+                    <p className="text-xs text-slate-400 mt-1 italic">Dissertation: {edu.dissertation}</p>
+                  )}
                 </li>
               ))}
             </ul>
