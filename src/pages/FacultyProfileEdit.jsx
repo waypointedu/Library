@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Plus, Trash2, Save, ChevronUp, ChevronDown } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, ChevronUp, ChevronDown, Pencil, Check, X } from "lucide-react";
 
 export default function FacultyProfileEdit() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -23,6 +23,9 @@ export default function FacultyProfileEdit() {
   const [newEducation, setNewEducation] = useState({ degree: '', institution: '', year: '', note: '', dissertation: '' });
   const [newBook, setNewBook] = useState({ title: '', note: '' });
   const [newLecture, setNewLecture] = useState({ title: '', venue: '', url: '' });
+
+  // Editing states — key: index, value: draft object
+  const [editingIdx, setEditingIdx] = useState({}); // { 'education-0': {...} }
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -99,6 +102,11 @@ export default function FacultyProfileEdit() {
   // Array helpers
   const addToArray = (key, item) => setForm(f => ({ ...f, [key]: [...(f[key] || []), item] }));
   const removeFromArray = (key, index) => setForm(f => ({ ...f, [key]: f[key].filter((_, i) => i !== index) }));
+  const updateInArray = (key, index, item) => setForm(f => {
+    const arr = [...f[key]];
+    arr[index] = item;
+    return { ...f, [key]: arr };
+  });
   const moveInArray = (key, index, direction) => setForm(f => {
     const arr = [...f[key]];
     const newIndex = index + direction;
@@ -106,6 +114,19 @@ export default function FacultyProfileEdit() {
     [arr[index], arr[newIndex]] = [arr[newIndex], arr[index]];
     return { ...f, [key]: arr };
   });
+
+  // Edit helpers
+  const startEdit = (section, index, draft) => setEditingIdx(s => ({ ...s, [`${section}-${index}`]: draft }));
+  const cancelEdit = (section, index) => setEditingIdx(s => { const n = { ...s }; delete n[`${section}-${index}`]; return n; });
+  const getDraft = (section, index) => editingIdx[`${section}-${index}`];
+  const setDraft = (section, index, val) => setEditingIdx(s => ({ ...s, [`${section}-${index}`]: val }));
+  const commitEdit = (section, index) => {
+    const draft = getDraft(section, index);
+    if (draft !== undefined) {
+      updateInArray(section, index, draft);
+      cancelEdit(section, index);
+    }
+  };
 
   if (!form) {
     return (
@@ -205,71 +226,64 @@ export default function FacultyProfileEdit() {
         {/* Education */}
         <Section title="Education">
           <div className="space-y-2 mb-4">
-            {form.education.map((edu, i) => (
-              <div key={i} className="flex items-start gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
-                <div className="flex flex-col gap-0.5 flex-shrink-0 mt-0.5">
-                  <button onClick={() => moveInArray('education', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => moveInArray('education', i, 1)} disabled={i === form.education.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+            {form.education.map((edu, i) => {
+              const draft = getDraft('education', i);
+              if (draft !== undefined) {
+                return (
+                  <div key={i} className="bg-slate-50 border border-blue-200 rounded-lg px-3 py-3 space-y-2">
+                    <div className="flex gap-2">
+                      <Input placeholder="Degree" value={draft.degree} onChange={e => setDraft('education', i, { ...draft, degree: e.target.value })} className="flex-1" />
+                      <Input placeholder="Note (e.g. ABD)" value={draft.note || ''} onChange={e => setDraft('education', i, { ...draft, note: e.target.value })} className="w-32 flex-shrink-0" />
+                    </div>
+                    <div className="flex gap-2">
+                      <Input placeholder="Institution" value={draft.institution} onChange={e => setDraft('education', i, { ...draft, institution: e.target.value })} className="flex-1" />
+                      <Input placeholder="Year" value={draft.year || ''} onChange={e => setDraft('education', i, { ...draft, year: e.target.value })} className="w-24 flex-shrink-0" />
+                    </div>
+                    <div className="flex gap-2">
+                      <Input placeholder="Dissertation title (optional)" value={draft.dissertation || ''} onChange={e => setDraft('education', i, { ...draft, dissertation: e.target.value })} className="flex-1" />
+                      <button onClick={() => commitEdit('education', i)} className="text-green-600 hover:text-green-700"><Check className="w-4 h-4" /></button>
+                      <button onClick={() => cancelEdit('education', i)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div key={i} className="flex items-start gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
+                  <div className="flex flex-col gap-0.5 flex-shrink-0 mt-0.5">
+                    <button onClick={() => moveInArray('education', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => moveInArray('education', i, 1)} disabled={i === form.education.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-slate-800 font-medium">
+                      {edu.degree}{edu.note ? <span className="font-normal text-slate-400 ml-1 italic">({edu.note})</span> : null}
+                    </p>
+                    <p className="text-xs text-slate-500">{edu.institution}{edu.year ? `, ${edu.year}` : ''}</p>
+                    {edu.dissertation ? <p className="text-xs text-slate-400 italic mt-0.5">Diss: {edu.dissertation}</p> : null}
+                  </div>
+                  <button onClick={() => startEdit('education', i, { ...edu })} className="text-slate-300 hover:text-blue-400 mt-0.5"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => removeFromArray('education', i)} className="text-slate-300 hover:text-red-400 mt-0.5"><Trash2 className="w-4 h-4" /></button>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm text-slate-800 font-medium">{edu.degree}{edu.note ? <span className="font-normal text-slate-400 ml-1 italic">({edu.note})</span> : ''}</p>
-                  <p className="text-xs text-slate-500">{edu.institution}{edu.year ? `, ${edu.year}` : ''}</p>
-                  {edu.dissertation && <p className="text-xs text-slate-400 italic mt-0.5">Diss: {edu.dissertation}</p>}
-                </div>
-                <button onClick={() => removeFromArray('education', i)} className="text-slate-300 hover:text-red-400 mt-0.5">
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 border-t border-slate-100 pt-3">
+            <p className="text-xs text-slate-400 font-medium uppercase tracking-wide">Add New</p>
             <div className="flex gap-2">
-              <Input
-                placeholder="Degree (e.g. M.A. in Theology)"
-                value={newEducation.degree}
-                onChange={e => setNewEducation(v => ({ ...v, degree: e.target.value }))}
-                className="flex-1"
-              />
-              <Input
-                placeholder="Note (e.g. ABD)"
-                value={newEducation.note}
-                onChange={e => setNewEducation(v => ({ ...v, note: e.target.value }))}
-                className="w-32 flex-shrink-0"
-              />
+              <Input placeholder="Degree (e.g. M.A. in Theology)" value={newEducation.degree} onChange={e => setNewEducation(v => ({ ...v, degree: e.target.value }))} className="flex-1" />
+              <Input placeholder="Note (e.g. ABD)" value={newEducation.note} onChange={e => setNewEducation(v => ({ ...v, note: e.target.value }))} className="w-32 flex-shrink-0" />
             </div>
             <div className="flex gap-2">
-              <Input
-                placeholder="Institution"
-                value={newEducation.institution}
-                onChange={e => setNewEducation(v => ({ ...v, institution: e.target.value }))}
-                className="flex-1"
-              />
-              <Input
-                placeholder="Year"
-                value={newEducation.year}
-                onChange={e => setNewEducation(v => ({ ...v, year: e.target.value }))}
-                className="w-24 flex-shrink-0"
-              />
+              <Input placeholder="Institution" value={newEducation.institution} onChange={e => setNewEducation(v => ({ ...v, institution: e.target.value }))} className="flex-1" />
+              <Input placeholder="Year (e.g. 2018 or current)" value={newEducation.year} onChange={e => setNewEducation(v => ({ ...v, year: e.target.value }))} className="w-40 flex-shrink-0" />
             </div>
             <div className="flex gap-2">
-              <Input
-                placeholder="Dissertation title (optional)"
-                value={newEducation.dissertation}
-                onChange={e => setNewEducation(v => ({ ...v, dissertation: e.target.value }))}
-                className="flex-1"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (newEducation.degree && newEducation.institution) {
-                    addToArray('education', { ...newEducation, year: newEducation.year ? Number(newEducation.year) : undefined });
-                    setNewEducation({ degree: '', institution: '', year: '', note: '', dissertation: '' });
-                  }
-                }}
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
+              <Input placeholder="Dissertation title (optional)" value={newEducation.dissertation} onChange={e => setNewEducation(v => ({ ...v, dissertation: e.target.value }))} className="flex-1" />
+              <Button variant="outline" size="sm" onClick={() => {
+                if (newEducation.degree && newEducation.institution) {
+                  addToArray('education', { ...newEducation });
+                  setNewEducation({ degree: '', institution: '', year: '', note: '', dissertation: '' });
+                }
+              }}><Plus className="w-4 h-4" /></Button>
             </div>
           </div>
         </Section>
@@ -277,209 +291,187 @@ export default function FacultyProfileEdit() {
         {/* Courses */}
         <Section title="Courses Taught">
           <div className="space-y-2 mb-4">
-            {form.courses_taught.map((c, i) => (
-              <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
-                <div className="flex flex-col gap-0.5 flex-shrink-0">
-                  <button onClick={() => moveInArray('courses_taught', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => moveInArray('courses_taught', i, 1)} disabled={i === form.courses_taught.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+            {form.courses_taught.map((c, i) => {
+              const draft = getDraft('courses_taught', i);
+              if (draft !== undefined) {
+                return (
+                  <div key={i} className="flex gap-2 bg-slate-50 border border-blue-200 rounded-lg px-3 py-2 items-center">
+                    <Input placeholder="Category" value={draft.category || ''} onChange={e => setDraft('courses_taught', i, { ...draft, category: e.target.value })} className="w-36 flex-shrink-0" />
+                    <Input placeholder="Course title" value={draft.title} onChange={e => setDraft('courses_taught', i, { ...draft, title: e.target.value })} className="flex-1" />
+                    <button onClick={() => commitEdit('courses_taught', i)} className="text-green-600 hover:text-green-700"><Check className="w-4 h-4" /></button>
+                    <button onClick={() => cancelEdit('courses_taught', i)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
+                  </div>
+                );
+              }
+              return (
+                <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
+                  <div className="flex flex-col gap-0.5 flex-shrink-0">
+                    <button onClick={() => moveInArray('courses_taught', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => moveInArray('courses_taught', i, 1)} disabled={i === form.courses_taught.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+                  </div>
+                  <span className="text-xs text-slate-400 w-24 flex-shrink-0">{c.category}</span>
+                  <span className="text-sm text-slate-800 flex-1">{c.title}</span>
+                  <button onClick={() => startEdit('courses_taught', i, { ...c })} className="text-slate-300 hover:text-blue-400"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => removeFromArray('courses_taught', i)} className="text-slate-300 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
                 </div>
-                <span className="text-xs text-slate-400 w-24 flex-shrink-0">{c.category}</span>
-                <span className="text-sm text-slate-800 flex-1">{c.title}</span>
-                <button onClick={() => removeFromArray('courses_taught', i)} className="text-slate-300 hover:text-red-400">
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Category (e.g. Core Formation)"
-              value={newCourse.category}
-              onChange={e => setNewCourse(v => ({ ...v, category: e.target.value }))}
-              className="w-40 flex-shrink-0"
-            />
-            <Input
-              placeholder="Course title"
-              value={newCourse.title}
-              onChange={e => setNewCourse(v => ({ ...v, title: e.target.value }))}
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                if (newCourse.title) {
-                  addToArray('courses_taught', { ...newCourse });
-                  setNewCourse({ category: '', title: '' });
-                }
-              }}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
+          <div className="flex gap-2 border-t border-slate-100 pt-3">
+            <Input placeholder="Category (e.g. Core Formation)" value={newCourse.category} onChange={e => setNewCourse(v => ({ ...v, category: e.target.value }))} className="w-40 flex-shrink-0" />
+            <Input placeholder="Course title" value={newCourse.title} onChange={e => setNewCourse(v => ({ ...v, title: e.target.value }))} />
+            <Button variant="outline" size="sm" onClick={() => {
+              if (newCourse.title) { addToArray('courses_taught', { ...newCourse }); setNewCourse({ category: '', title: '' }); }
+            }}><Plus className="w-4 h-4" /></Button>
           </div>
         </Section>
 
         {/* Seminars */}
         <Section title="Seminars & Intensives">
           <div className="space-y-2 mb-4">
-            {form.seminars.map((s, i) => (
-              <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
-                <div className="flex flex-col gap-0.5 flex-shrink-0">
-                  <button onClick={() => moveInArray('seminars', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => moveInArray('seminars', i, 1)} disabled={i === form.seminars.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+            {form.seminars.map((s, i) => {
+              const draft = getDraft('seminars', i);
+              if (draft !== undefined) {
+                return (
+                  <div key={i} className="flex gap-2 items-center bg-slate-50 border border-blue-200 rounded-lg px-3 py-2">
+                    <Input value={draft} onChange={e => setDraft('seminars', i, e.target.value)} className="flex-1" />
+                    <button onClick={() => commitEdit('seminars', i)} className="text-green-600 hover:text-green-700"><Check className="w-4 h-4" /></button>
+                    <button onClick={() => cancelEdit('seminars', i)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
+                  </div>
+                );
+              }
+              return (
+                <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
+                  <div className="flex flex-col gap-0.5 flex-shrink-0">
+                    <button onClick={() => moveInArray('seminars', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => moveInArray('seminars', i, 1)} disabled={i === form.seminars.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+                  </div>
+                  <span className="text-sm text-slate-800 flex-1">{s}</span>
+                  <button onClick={() => startEdit('seminars', i, s)} className="text-slate-300 hover:text-blue-400"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => removeFromArray('seminars', i)} className="text-slate-300 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
                 </div>
-                <span className="text-sm text-slate-800 flex-1">{s}</span>
-                <button onClick={() => removeFromArray('seminars', i)} className="text-slate-300 hover:text-red-400">
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Seminar name"
-              value={newSeminar}
-              onChange={e => setNewSeminar(e.target.value)}
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                if (newSeminar) {
-                  addToArray('seminars', newSeminar);
-                  setNewSeminar('');
-                }
-              }}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
+          <div className="flex gap-2 border-t border-slate-100 pt-3">
+            <Input placeholder="Seminar name" value={newSeminar} onChange={e => setNewSeminar(e.target.value)} />
+            <Button variant="outline" size="sm" onClick={() => {
+              if (newSeminar) { addToArray('seminars', newSeminar); setNewSeminar(''); }
+            }}><Plus className="w-4 h-4" /></Button>
           </div>
         </Section>
 
         {/* Research Areas */}
         <Section title="Research Areas">
           <div className="space-y-2 mb-4">
-            {form.research_areas.map((r, i) => (
-              <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
-                <span className="text-sm text-slate-800 flex-1">{r}</span>
-                <button onClick={() => removeFromArray('research_areas', i)} className="text-slate-300 hover:text-red-400">
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+            {form.research_areas.map((r, i) => {
+              const draft = getDraft('research_areas', i);
+              if (draft !== undefined) {
+                return (
+                  <div key={i} className="flex gap-2 items-center bg-slate-50 border border-blue-200 rounded-lg px-3 py-2">
+                    <Input value={draft} onChange={e => setDraft('research_areas', i, e.target.value)} className="flex-1" />
+                    <button onClick={() => commitEdit('research_areas', i)} className="text-green-600 hover:text-green-700"><Check className="w-4 h-4" /></button>
+                    <button onClick={() => cancelEdit('research_areas', i)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
+                  </div>
+                );
+              }
+              return (
+                <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
+                  <span className="text-sm text-slate-800 flex-1">{r}</span>
+                  <button onClick={() => startEdit('research_areas', i, r)} className="text-slate-300 hover:text-blue-400"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => removeFromArray('research_areas', i)} className="text-slate-300 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
+                </div>
+              );
+            })}
           </div>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Research area"
-              value={newResearch}
-              onChange={e => setNewResearch(e.target.value)}
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                if (newResearch) {
-                  addToArray('research_areas', newResearch);
-                  setNewResearch('');
-                }
-              }}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
+          <div className="flex gap-2 border-t border-slate-100 pt-3">
+            <Input placeholder="Research area" value={newResearch} onChange={e => setNewResearch(e.target.value)} />
+            <Button variant="outline" size="sm" onClick={() => {
+              if (newResearch) { addToArray('research_areas', newResearch); setNewResearch(''); }
+            }}><Plus className="w-4 h-4" /></Button>
           </div>
         </Section>
 
         {/* Books */}
         <Section title="Books">
           <div className="space-y-2 mb-4">
-            {form.books.map((b, i) => (
-              <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
-                <div className="flex flex-col gap-0.5 flex-shrink-0">
-                  <button onClick={() => moveInArray('books', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => moveInArray('books', i, 1)} disabled={i === form.books.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+            {form.books.map((b, i) => {
+              const draft = getDraft('books', i);
+              if (draft !== undefined) {
+                return (
+                  <div key={i} className="flex gap-2 items-center bg-slate-50 border border-blue-200 rounded-lg px-3 py-2">
+                    <Input placeholder="Book title" value={draft.title} onChange={e => setDraft('books', i, { ...draft, title: e.target.value })} className="flex-1" />
+                    <Input placeholder="Note" value={draft.note || ''} onChange={e => setDraft('books', i, { ...draft, note: e.target.value })} className="w-36 flex-shrink-0" />
+                    <button onClick={() => commitEdit('books', i)} className="text-green-600 hover:text-green-700"><Check className="w-4 h-4" /></button>
+                    <button onClick={() => cancelEdit('books', i)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
+                  </div>
+                );
+              }
+              return (
+                <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
+                  <div className="flex flex-col gap-0.5 flex-shrink-0">
+                    <button onClick={() => moveInArray('books', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => moveInArray('books', i, 1)} disabled={i === form.books.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+                  </div>
+                  <span className="text-sm text-slate-800 flex-1">{b.title}</span>
+                  {b.note ? <span className="text-xs text-slate-400 italic">{b.note}</span> : null}
+                  <button onClick={() => startEdit('books', i, { ...b })} className="text-slate-300 hover:text-blue-400"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => removeFromArray('books', i)} className="text-slate-300 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
                 </div>
-                <span className="text-sm text-slate-800 flex-1">{b.title}</span>
-                {b.note && <span className="text-xs text-slate-400 italic">{b.note}</span>}
-                <button onClick={() => removeFromArray('books', i)} className="text-slate-300 hover:text-red-400">
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Book title"
-              value={newBook.title}
-              onChange={e => setNewBook(v => ({ ...v, title: e.target.value }))}
-            />
-            <Input
-              placeholder="Note (e.g. forthcoming)"
-              value={newBook.note}
-              onChange={e => setNewBook(v => ({ ...v, note: e.target.value }))}
-              className="w-40 flex-shrink-0"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                if (newBook.title) {
-                  addToArray('books', { ...newBook });
-                  setNewBook({ title: '', note: '' });
-                }
-              }}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
+          <div className="flex gap-2 border-t border-slate-100 pt-3">
+            <Input placeholder="Book title" value={newBook.title} onChange={e => setNewBook(v => ({ ...v, title: e.target.value }))} />
+            <Input placeholder="Note (e.g. forthcoming)" value={newBook.note} onChange={e => setNewBook(v => ({ ...v, note: e.target.value }))} className="w-40 flex-shrink-0" />
+            <Button variant="outline" size="sm" onClick={() => {
+              if (newBook.title) { addToArray('books', { ...newBook }); setNewBook({ title: '', note: '' }); }
+            }}><Plus className="w-4 h-4" /></Button>
           </div>
         </Section>
 
         {/* Lectures */}
         <Section title="Lectures & Media">
           <div className="space-y-2 mb-4">
-            {form.lectures.map((l, i) => (
-              <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
-                <div className="flex flex-col gap-0.5 flex-shrink-0">
-                  <button onClick={() => moveInArray('lectures', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => moveInArray('lectures', i, 1)} disabled={i === form.lectures.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+            {form.lectures.map((l, i) => {
+              const draft = getDraft('lectures', i);
+              if (draft !== undefined) {
+                return (
+                  <div key={i} className="bg-slate-50 border border-blue-200 rounded-lg px-3 py-2 space-y-2">
+                    <Input placeholder="Lecture title" value={draft.title} onChange={e => setDraft('lectures', i, { ...draft, title: e.target.value })} />
+                    <div className="flex gap-2">
+                      <Input placeholder="Venue / Event" value={draft.venue || ''} onChange={e => setDraft('lectures', i, { ...draft, venue: e.target.value })} className="flex-1" />
+                      <Input placeholder="URL (optional)" value={draft.url || ''} onChange={e => setDraft('lectures', i, { ...draft, url: e.target.value })} className="flex-1" />
+                      <button onClick={() => commitEdit('lectures', i)} className="text-green-600 hover:text-green-700"><Check className="w-4 h-4" /></button>
+                      <button onClick={() => cancelEdit('lectures', i)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
+                  <div className="flex flex-col gap-0.5 flex-shrink-0">
+                    <button onClick={() => moveInArray('lectures', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => moveInArray('lectures', i, 1)} disabled={i === form.lectures.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-slate-800">{l.title}</p>
+                    {l.venue ? <p className="text-xs text-slate-400">{l.venue}</p> : null}
+                  </div>
+                  <button onClick={() => startEdit('lectures', i, { ...l })} className="text-slate-300 hover:text-blue-400"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => removeFromArray('lectures', i)} className="text-slate-300 hover:text-red-400"><Trash2 className="w-4 h-4" /></button>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm text-slate-800">{l.title}</p>
-                  {l.venue && <p className="text-xs text-slate-400">{l.venue}</p>}
-                </div>
-                <button onClick={() => removeFromArray('lectures', i)} className="text-slate-300 hover:text-red-400">
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
-          <div className="grid grid-cols-1 gap-2">
-            <Input
-              placeholder="Lecture title"
-              value={newLecture.title}
-              onChange={e => setNewLecture(v => ({ ...v, title: e.target.value }))}
-            />
+          <div className="grid grid-cols-1 gap-2 border-t border-slate-100 pt-3">
+            <Input placeholder="Lecture title" value={newLecture.title} onChange={e => setNewLecture(v => ({ ...v, title: e.target.value }))} />
             <div className="flex gap-2">
-              <Input
-                placeholder="Venue / Event"
-                value={newLecture.venue}
-                onChange={e => setNewLecture(v => ({ ...v, venue: e.target.value }))}
-              />
-              <Input
-                placeholder="URL (optional)"
-                value={newLecture.url}
-                onChange={e => setNewLecture(v => ({ ...v, url: e.target.value }))}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (newLecture.title) {
-                    addToArray('lectures', { ...newLecture });
-                    setNewLecture({ title: '', venue: '', url: '' });
-                  }
-                }}
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
+              <Input placeholder="Venue / Event" value={newLecture.venue} onChange={e => setNewLecture(v => ({ ...v, venue: e.target.value }))} />
+              <Input placeholder="URL (optional)" value={newLecture.url} onChange={e => setNewLecture(v => ({ ...v, url: e.target.value }))} />
+              <Button variant="outline" size="sm" onClick={() => {
+                if (newLecture.title) { addToArray('lectures', { ...newLecture }); setNewLecture({ title: '', venue: '', url: '' }); }
+              }}><Plus className="w-4 h-4" /></Button>
             </div>
           </div>
         </Section>
