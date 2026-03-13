@@ -86,15 +86,29 @@ export default function FacultyProfileEdit() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const { id, ...data } = form;
-      // Coerce education years to string in case old numeric values are present
-      if (data.education) {
-        data.education = data.education.map(edu => ({
-          ...edu,
-          year: edu.year !== undefined && edu.year !== null ? String(edu.year) : undefined,
-        }));
-      }
-      if (id) return base44.entities.InstructorProfile.update(id, data);
+      const data = {
+        instructor_email: form.instructor_email,
+        display_name: form.display_name,
+        title: form.title,
+        photo_url: form.photo_url,
+        positioning_sentence: form.positioning_sentence,
+        overview: form.overview,
+        faculty_type: form.faculty_type,
+        is_published: form.is_published,
+        education: (form.education || []).map(edu => ({
+          degree: edu.degree || '',
+          institution: edu.institution || '',
+          year: edu.year ? String(edu.year) : '',
+          note: edu.note || '',
+          dissertation: edu.dissertation || '',
+        })),
+        courses_taught: form.courses_taught || [],
+        seminars: form.seminars || [],
+        research_areas: form.research_areas || [],
+        books: form.books || [],
+        lectures: form.lectures || [],
+      };
+      if (form.id) return base44.entities.InstructorProfile.update(form.id, data);
       return base44.entities.InstructorProfile.create(data);
     },
     onSuccess: () => {
