@@ -263,7 +263,7 @@ export default function FacultyProfileEdit() {
                 size="sm"
                 onClick={() => {
                   if (newEducation.degree && newEducation.institution) {
-                    addToArray('education', { ...newEducation });
+                    addToArray('education', { ...newEducation, year: newEducation.year ? Number(newEducation.year) : undefined });
                     setNewEducation({ degree: '', institution: '', year: '', note: '', dissertation: '' });
                   }
                 }}
