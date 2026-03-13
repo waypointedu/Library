@@ -178,7 +178,7 @@ export default function FacultyProfile() {
             <ul className="space-y-4">
               {profile.education.map((edu, i) => (
                 <li key={i} className="text-slate-700">
-                  <p className="font-medium text-slate-900">{edu.degree}{edu.note ? <span className="font-normal text-slate-500 ml-2 text-sm italic">({edu.note})</span> : ''}</p>
+                  <p className="font-medium text-slate-900">{edu.degree}{edu.note ? <span className="font-normal text-slate-500 ml-2 text-sm italic">({edu.note})</span> : null}</p>
                   <p className="text-sm text-slate-500">{edu.institution}{edu.year ? `, ${edu.year}` : ''}</p>
                   {edu.dissertation && (
                     <p className="text-xs text-slate-400 mt-1 italic">Dissertation: {edu.dissertation}</p>
