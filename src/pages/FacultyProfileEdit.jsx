@@ -99,6 +99,13 @@ export default function FacultyProfileEdit() {
   // Array helpers
   const addToArray = (key, item) => setForm(f => ({ ...f, [key]: [...(f[key] || []), item] }));
   const removeFromArray = (key, index) => setForm(f => ({ ...f, [key]: f[key].filter((_, i) => i !== index) }));
+  const moveInArray = (key, index, direction) => setForm(f => {
+    const arr = [...f[key]];
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= arr.length) return f;
+    [arr[index], arr[newIndex]] = [arr[newIndex], arr[index]];
+    return { ...f, [key]: arr };
+  });
 
   if (!form) {
     return (
