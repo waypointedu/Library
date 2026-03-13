@@ -393,6 +393,10 @@ export default function FacultyProfileEdit() {
           <div className="space-y-2 mb-4">
             {form.books.map((b, i) => (
               <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-lg px-3 py-2">
+                <div className="flex flex-col gap-0.5 flex-shrink-0">
+                  <button onClick={() => moveInArray('books', i, -1)} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronUp className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => moveInArray('books', i, 1)} disabled={i === form.books.length - 1} className="text-slate-300 hover:text-slate-600 disabled:opacity-20"><ChevronDown className="w-3.5 h-3.5" /></button>
+                </div>
                 <span className="text-sm text-slate-800 flex-1">{b.title}</span>
                 {b.note && <span className="text-xs text-slate-400 italic">{b.note}</span>}
                 <button onClick={() => removeFromArray('books', i)} className="text-slate-300 hover:text-red-400">
