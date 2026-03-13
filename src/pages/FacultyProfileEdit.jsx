@@ -57,7 +57,7 @@ export default function FacultyProfileEdit() {
         overview: p.overview || '',
         faculty_type: p.faculty_type || 'contributing',
         is_published: p.is_published !== false,
-        education: p.education || [],
+        education: (p.education || []).map(edu => ({ ...edu, year: edu.year !== undefined && edu.year !== null ? String(edu.year) : '' })),
         courses_taught: p.courses_taught || [],
         seminars: p.seminars || [],
         research_areas: p.research_areas || [],
