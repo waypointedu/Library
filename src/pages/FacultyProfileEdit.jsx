@@ -87,6 +87,13 @@ export default function FacultyProfileEdit() {
   const saveMutation = useMutation({
     mutationFn: async () => {
       const { id, ...data } = form;
+      // Coerce education years to string in case old numeric values are present
+      if (data.education) {
+        data.education = data.education.map(edu => ({
+          ...edu,
+          year: edu.year !== undefined && edu.year !== null ? String(edu.year) : undefined,
+        }));
+      }
       if (id) return base44.entities.InstructorProfile.update(id, data);
       return base44.entities.InstructorProfile.create(data);
     },
