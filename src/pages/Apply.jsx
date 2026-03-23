@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import MobileNav from '@/components/common/MobileNav';
+import PublicHeader from '@/components/common/PublicHeader';
 
 export default function Apply() {
   const [lang, setLang] = useState(() => {

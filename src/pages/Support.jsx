@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DollarSign, BookOpen, Users, Mail } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
 import { base44 } from '@/api/base44Client';
+import PublicHeader from '@/components/common/PublicHeader';
 
 export default function Support() {
   const [lang, setLang] = useState(() => {

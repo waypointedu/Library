@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import LanguageToggle from '@/components/common/LanguageToggle';
+import PublicHeader from '@/components/common/PublicHeader';
 
 export default function FAQ() {
   const [lang, setLang] = useState(() => {

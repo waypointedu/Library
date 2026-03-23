@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star, Award, BookOpen, Clock, CheckCircle2, ArrowRight } from 'lucide-react';
 import ProgressBar from '@/components/common/ProgressBar';
+import PublicHeader from '@/components/common/PublicHeader';
 
 export default function Pathways() {
   const urlParams = new URLSearchParams(window.location.search);

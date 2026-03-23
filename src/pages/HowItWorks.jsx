@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, Users, Video, ArrowRight } from "lucide-react";
 import LanguageToggle from '@/components/common/LanguageToggle';
 import { base44 } from '@/api/base44Client';
+import PublicHeader from '@/components/common/PublicHeader';
 
 export default function HowItWorks() {
   const [lang, setLang] = useState(() => {
