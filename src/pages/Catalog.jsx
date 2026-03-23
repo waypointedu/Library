@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, ArrowLeft, Star } from "lucide-react";
 import CourseCard from '@/components/courses/CourseCard';
+import PublicHeader from '@/components/common/PublicHeader';
 
 export default function Catalog() {
   const urlParams = new URLSearchParams(window.location.search);
