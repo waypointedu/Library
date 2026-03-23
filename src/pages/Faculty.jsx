@@ -31,41 +31,7 @@ export default function Faculty() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
-          <Link to={createPageUrl('Home')} className="flex items-center">
-            <img
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png"
-              alt="Waypoint Institute"
-              className="h-12"
-            />
-          </Link>
-          <nav className="hidden lg:flex items-center gap-10">
-            <Link to={createPageUrl('Pathways')} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">Programs</Link>
-            <Link to={createPageUrl('About')} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">About</Link>
-            <Link to={createPageUrl('Catalog')} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">Courses</Link>
-            <Link to={createPageUrl('Faculty')} className="text-[#1e3a5f] font-semibold">Faculty</Link>
-            <Link to={createPageUrl('HowItWorks')} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">How it works</Link>
-            <Link to={createPageUrl('Support')} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">Support</Link>
-            <Link to={createPageUrl('FAQ')} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">FAQ</Link>
-            <Link to={createPageUrl('Contact')} className="text-slate-700 hover:text-[#1e3a5f] transition-colors font-medium">Contact</Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            {!user ? (
-              <Link to={createPageUrl('Apply')}>
-                <Button size="sm" variant="outline" className="border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f] hover:text-white hidden sm:inline-flex">
-                  Apply
-                </Button>
-              </Link>
-            ) : (
-              <Link to={createPageUrl(user.role === 'admin' ? 'Admin' : user.user_type === 'instructor' ? 'InstructorDashboard' : 'Dashboard')}>
-                <Button size="sm" className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">My Learning Area</Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
+      <PublicHeader lang="en" />
 
       <div className="max-w-5xl mx-auto px-4 md:px-6 pt-36 pb-24">
         {/* Hero */}
