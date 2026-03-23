@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import PublicHeader from '@/components/common/PublicHeader';
 
 export default function Faculty() {
   const [user, setUser] = useState(null);
