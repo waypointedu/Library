@@ -140,9 +140,9 @@ export default function Home() {
                     {lang === 'es' ? 'Aplicar' : 'Apply'}
                   </Button>
                 </Link>
-                <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="bg-[#1e3a5f] hover:bg-[#2d5a8a] hidden lg:inline-flex">
-                  {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
-                </Button>
+                <button onClick={() => base44.auth.redirectToLogin()} className="text-sm text-slate-400 hover:text-slate-600 transition-colors hidden lg:inline-flex">
+                  {lang === 'es' ? 'Portal de estudiantes' : 'Current Students'}
+                </button>
               </>
             ) : (
               <Link to={createPageUrl(user.role === 'admin' || user.user_type === 'admin' ? `Admin?lang=${lang}` : user.user_type === 'instructor' ? `InstructorDashboard?lang=${lang}` : `Dashboard?lang=${lang}`)}>
@@ -193,9 +193,9 @@ export default function Home() {
                         {lang === 'es' ? 'Aplicar' : 'Apply'}
                       </Button>
                     </Link>
-                    <Button size="sm" onClick={() => base44.auth.redirectToLogin()} className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8a]">
-                      {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
-                    </Button>
+                    <button onClick={() => base44.auth.redirectToLogin()} className="text-sm text-slate-400 hover:text-slate-600 transition-colors text-center w-full py-1">
+                      {lang === 'es' ? 'Portal de estudiantes' : 'Current Students'}
+                    </button>
                   </>
                 ) : (
                   <Link to={createPageUrl(user.role === 'admin' || user.user_type === 'admin' ? `Admin?lang=${lang}` : user.user_type === 'instructor' ? `InstructorDashboard?lang=${lang}` : `Dashboard?lang=${lang}`)} onClick={() => setMobileMenuOpen(false)}>
