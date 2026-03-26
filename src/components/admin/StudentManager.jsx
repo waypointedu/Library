@@ -47,12 +47,17 @@ export default function StudentManager() {
     queryFn: () => base44.entities.Pathway.list()
   });
 
+  const { data: acceptedApplications = [] } = useQuery({
+    queryKey: ['acceptedApplications'],
+    queryFn: () => base44.entities.Application.filter({ status: 'accepted' })
+  });
+
+  const acceptedEmails = new Set(acceptedApplications.map(a => a.email));
+
   const students = users.filter(u => {
-    // Exclude admins and instructors
     if (u.role === 'admin') return false;
-    if (u.data?.user_type === 'admin' || u.data?.user_type === 'instructor') return false;
-    // Include students and users without user_type set
-    return true;
+    // Only show users who have an accepted application
+    return acceptedEmails.has(u.email);
   });
 
   const getStudentEnrollments = (userEmail) => {
