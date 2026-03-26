@@ -39,10 +39,7 @@ export default function AcademicCalendar({ lang = 'en' }) {
 
   const { data: instructors = [] } = useQuery({
     queryKey: ['instructors'],
-    queryFn: async () => {
-      const allUsers = await base44.entities.User.list();
-      return allUsers.filter(u => u.user_type === 'instructor' || u.role === 'admin');
-    }
+    queryFn: () => base44.entities.User.list()
   });
 
   const createTermMutation = useMutation({
@@ -403,16 +400,14 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
     return { currentLoad, maxCourses };
   };
 
-  // Filter instructors: course + term selected, approved for course, available for semester, and under load limit
+  // Filter instructors: must have semester availability record OR be an instructor role, and under load limit
   const availableInstructors = (!formData.course_id || !formData.term_id) ? [] : instructors.filter(u => {
-    const isApproved = (u.approved_courses || []).includes(formData.course_id);
-    if (!isApproved) return false;
-    
     const availability = semesterAvailability.find(a => a.instructor_email === u.email);
-    if (!availability || availability.max_courses <= 0) return false;
+    // If no availability record, still show them (admin can assign anyone)
+    const maxCourses = availability?.max_courses ?? 99;
+    if (availability && !availability.is_available) return false;
 
-    const { currentLoad, maxCourses } = getInstructorLoadAndMax(u.email);
-    // Count how many are currently selected in the form
+    const { currentLoad } = getInstructorLoadAndMax(u.email);
     const selectedInForm = (formData.instructor_emails || []).includes(u.email) ? 1 : 0;
     return currentLoad + selectedInForm < maxCourses;
   });
