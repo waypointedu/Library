@@ -71,17 +71,15 @@ export default function CourseInstanceEditor({ instanceId, courseId, termId, onC
     }
   });
 
-  // Filter instructors: approved for course AND available for semester
+  // Filter instructors: role=instructor OR has semester availability record, not already assigned
+  const assignedEmails = instance?.instructor_emails || [];
   const availableInstructors = users.filter(u => {
-    if (u.user_type !== 'instructor') return false;
-    if (!(u.approved_courses || []).includes(courseId)) return false;
-    
-    const availability = semesterAvailability.find(a => a.instructor_email === u.email);
-    if (!availability || !availability.is_available) return false;
-    
-    // Check course capacity
-    const assignedCount = (instance.instructor_emails || []).length;
-    return assignedCount < availability.max_courses;
+    // Skip already assigned instructors
+    if (assignedEmails.includes(u.email)) return false;
+    // Must be instructor role or have a semester availability record for this term
+    const hasAvailability = semesterAvailability.some(a => a.instructor_email === u.email && a.is_available);
+    const isInstructor = u.role === 'instructor';
+    return isInstructor || hasAvailability;
   });
 
   if (!instance || !course) {
@@ -126,7 +124,7 @@ export default function CourseInstanceEditor({ instanceId, courseId, termId, onC
                         </SelectContent>
                       </Select>
                       {availableInstructors.length === 0 && (
-                        <p className="text-sm text-amber-600 mt-2">No instructors available (must be approved for this course AND available this semester)</p>
+                        <p className="text-sm text-amber-600 mt-2">No instructors available (must have instructor role or semester availability record)</p>
                       )}
                       {selectedInstructor && (
                         <Button 
