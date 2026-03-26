@@ -406,9 +406,12 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
     if (!availability) return false;
     if (availability.is_available === false) return false;
 
+    // Always show already-assigned instructors so they can be deselected
+    const alreadyAssigned = (formData.instructor_emails || []).includes(u.email);
+    if (alreadyAssigned) return true;
+
     const { currentLoad, maxCourses } = getInstructorLoadAndMax(u.email);
-    const selectedInForm = (formData.instructor_emails || []).includes(u.email) ? 1 : 0;
-    return currentLoad + selectedInForm < maxCourses;
+    return currentLoad < maxCourses;
   });
 
   return (
