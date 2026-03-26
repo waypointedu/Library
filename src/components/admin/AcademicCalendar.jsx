@@ -400,14 +400,12 @@ function CourseInstanceForm({ instance, courses, terms, instructors, onSubmit, o
     return { currentLoad, maxCourses };
   };
 
-  // Filter instructors: must have semester availability record OR be an instructor role, and under load limit
+  // Filter instructors: must have a semester availability record for this term and be marked available
   const availableInstructors = (!formData.course_id || !formData.term_id) ? [] : instructors.filter(u => {
     const availability = semesterAvailability.find(a => a.instructor_email === u.email);
-    // If no availability record, still show them (admin can assign anyone)
-    const maxCourses = availability?.max_courses ?? 99;
-    if (availability && !availability.is_available) return false;
+    if (!availability || !availability.is_available) return false;
 
-    const { currentLoad } = getInstructorLoadAndMax(u.email);
+    const { currentLoad, maxCourses } = getInstructorLoadAndMax(u.email);
     const selectedInForm = (formData.instructor_emails || []).includes(u.email) ? 1 : 0;
     return currentLoad + selectedInForm < maxCourses;
   });
