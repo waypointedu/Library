@@ -47,6 +47,14 @@ export default function Week() {
     enabled: !!week?.course_id
   });
 
+  const availableLanguages = course?.language_availability || ['en'];
+
+  useEffect(() => {
+    if (course && availableLanguages.length > 0 && !availableLanguages.includes(courseLang)) {
+      setCourseLang(availableLanguages[0]);
+    }
+  }, [course, availableLanguages]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -69,14 +77,6 @@ export default function Week() {
       </div>
     );
   }
-
-  const availableLanguages = course?.language_availability || ['en'];
-  
-  useEffect(() => {
-    if (course && availableLanguages.length > 0 && !availableLanguages.includes(courseLang)) {
-      setCourseLang(availableLanguages[0]);
-    }
-  }, [course, availableLanguages]);
 
   const title = week[`title_${courseLang}`] || week.title_en;
   const overview = week[`overview_${courseLang}`] || week.overview_en;

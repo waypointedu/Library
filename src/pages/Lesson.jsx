@@ -83,6 +83,15 @@ export default function Lesson() {
     enabled: !!user?.email && !!lessonId
   });
 
+  const { data: allProgress = [] } = useQuery({
+    queryKey: ['moduleProgress', user?.email, lesson?.module_id],
+    queryFn: () => base44.entities.Progress.filter({ 
+      user_email: user?.email,
+      module_id: lesson?.module_id
+    }),
+    enabled: !!user?.email && !!lesson?.module_id
+  });
+
   const markCompleteMutation = useMutation({
     mutationFn: async () => {
       if (progress) {
@@ -215,15 +224,6 @@ export default function Lesson() {
     allProgress.some(p => p.lesson_id === l.id && p.completed)
   ).length;
   const moduleProgress = moduleLessons.length > 0 ? Math.round((completedInModule / moduleLessons.length) * 100) : 0;
-
-  const { data: allProgress = [] } = useQuery({
-    queryKey: ['moduleProgress', user?.email, lesson?.module_id],
-    queryFn: () => base44.entities.Progress.filter({ 
-      user_email: user?.email,
-      module_id: lesson?.module_id
-    }),
-    enabled: !!user?.email && !!lesson?.module_id
-  });
 
   return (
     <div className="min-h-screen bg-white pb-20 md:pb-6">

@@ -318,7 +318,7 @@ export default function CourseView() {
               {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
             <div>
-              <h1 className="text-lg font-semibold text-slate-900">{title}</h1>
+              <h1 className="text-sm sm:text-lg font-semibold text-slate-900 truncate max-w-[160px] sm:max-w-xs lg:max-w-none">{title}</h1>
               {courseInstance && !isInstructor && courseInstance.instructor_emails?.[0] && (
                 <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
                   <Badge variant="outline" className="text-xs">{courseInstance.cohort_name}</Badge>
