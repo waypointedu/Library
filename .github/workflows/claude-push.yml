@@ -1,0 +1,20 @@
+name: Claude Push
+on:
+  repository_dispatch:
+    types: [claude-push]
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate
+        run: |
+          [ "${{ github.event.client_payload.secret }}" = "${{ secrets.PUSH_SECRET }}" ] || exit 1
+      - uses: actions/checkout@v3
+      - name: Write and commit
+        run: |
+          echo '${{ github.event.client_payload.content }}' | base64 -d > '${{ github.event.client_payload.path }}'
+          git config user.email "claude@waypoint.institute"
+          git config user.name "Claude"
+          git add -A
+          git commit -m "${{ github.event.client_payload.message }}" || true
+          git push
