@@ -1,16 +1,28 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-// Add page imports here
+import Layout from '@/components/Layout';
+
+// Pages
+import Dashboard from '@/pages/Dashboard';
+import Courses from '@/pages/Courses';
+import CourseDetail from '@/pages/CourseDetail';
+import Admin from '@/pages/Admin';
+import AdminCourses from '@/pages/admin/AdminCourses';
+import AdminCourseWeeks from '@/pages/admin/AdminCourseWeeks';
+import AdminUsers from '@/pages/admin/AdminUsers';
+import AdminEnrollments from '@/pages/admin/AdminEnrollments';
+import AdminApplications from '@/pages/admin/AdminApplications';
+import AdminTerms from '@/pages/admin/AdminTerms';
+import AdminFaculty from '@/pages/admin/AdminFaculty';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
@@ -19,29 +31,37 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
       navigateToLogin();
       return null;
     }
   }
 
-  // Render the main app
   return (
     <Routes>
-      {/* Add your page Route elements here */}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route element={<Layout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/courses/:courseId" element={<CourseDetail />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/courses" element={<AdminCourses />} />
+        <Route path="/admin/courses/:courseId/weeks" element={<AdminCourseWeeks />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/enrollments" element={<AdminEnrollments />} />
+        <Route path="/admin/applications" element={<AdminApplications />} />
+        <Route path="/admin/terms" element={<AdminTerms />} />
+        <Route path="/admin/faculty" element={<AdminFaculty />} />
+      </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 };
 
-
 function App() {
-
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
