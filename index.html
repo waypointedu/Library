@@ -29,6 +29,10 @@
     background: var(--cream);
     color: var(--ink);
     min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(196,147,63,0.05) 0, transparent 46%),
+      radial-gradient(circle at 80% 0%, rgba(30,58,95,0.05) 0, transparent 40%),
+      repeating-linear-gradient(0deg, rgba(30,58,95,0.02), rgba(30,58,95,0.02) 1px, transparent 1px, transparent 28px);
   }
 
   /* NAV */
@@ -220,6 +224,55 @@
     padding: 0 2rem 80px;
   }
 
+  .stacks {
+    max-width: 900px;
+    margin: 0 auto 52px;
+    padding: 0 2rem;
+  }
+
+  .stacks-panel {
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.75);
+    border-radius: 14px;
+    padding: 18px;
+  }
+
+  .stacks-title {
+    font-family: var(--serif);
+    color: var(--navy);
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .stacks-help {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .shelf-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .shelf-pill {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    background: linear-gradient(180deg, #fff, #f9f7f2);
+    color: var(--navy);
+    cursor: pointer;
+  }
+
+  .shelf-pill:hover {
+    border-color: rgba(30,58,95,0.38);
+    transform: translateY(-1px);
+  }
+
   .section-header {
     display: flex; align-items: baseline; justify-content: space-between;
     margin-bottom: 28px;
@@ -300,6 +353,14 @@
     line-height: 1.4;
     color: var(--ink);
     transition: color 0.15s;
+  }
+
+  .card-subseries {
+    font-size: 11px;
+    color: var(--navy-light);
+    border-left: 2px solid var(--gold);
+    padding-left: 8px;
+    margin-top: -2px;
   }
 
   .card-author {
@@ -527,10 +588,16 @@
   <button class="filter-btn active" data-filter="all">All</button>
   <button class="filter-btn" data-filter="book">Books</button>
   <button class="filter-btn" data-filter="article">Articles</button>
-  <button class="filter-btn" data-filter="video">Video</button>
-  <button class="filter-btn" data-filter="audio">Audio</button>
-  <button class="filter-btn" data-filter="collection">Collections</button>
+  <button class="filter-btn" data-filter="media">Media & Collections</button>
 </div>
+
+<section class="stacks">
+  <div class="stacks-panel">
+    <h3 class="stacks-title">Browse the Stacks</h3>
+    <p class="stacks-help">Not sure what to search? Wander by shelf: each card opens a themed lane in the catalog.</p>
+    <div class="shelf-row" id="shelf-row"></div>
+  </div>
+</section>
 
 <!-- FEATURED RESOURCES -->
 <section class="section" id="resources">
@@ -728,6 +795,15 @@ const RESOURCES = [
     desc: "An update to Niebuhr's classic typology — examines how each of the five 'Christ and culture' positions handles Scripture.",
     tag: "Academic", free: false,
     url: ""
+  },
+  {
+    id: 21, type: "article", course: "Biblical Culture",
+    title: "Ante-Nicene Fathers (Student Handout)",
+    author: "Waypoint Institute Faculty",
+    desc: "A guided handout introducing selected Early Church Fathers for doctrinal formation and apologetics discussion in class.",
+    tag: "Formation", free: true,
+    subseries: "Early Church Fathers",
+    url: ""
   }
 ];
 
@@ -764,6 +840,7 @@ function renderCard(r) {
         <span class="card-course">${r.course}</span>
       </div>
       <div class="card-title">${r.title}</div>
+      ${r.subseries ? `<div class="card-subseries">Subseries: ${r.subseries}</div>` : ""}
       <div class="card-author">${r.author}</div>
       <div class="card-desc">${r.desc}</div>
       <div class="card-footer">
@@ -772,6 +849,24 @@ function renderCard(r) {
       </div>
     </div>
   `;
+}
+
+function renderShelves() {
+  const shelfRow = document.getElementById("shelf-row");
+  shelfRow.innerHTML = COURSES.map(c =>
+    `<button class="shelf-pill" onclick="filterByCourse('${c.id}')">${c.label}</button>`
+  ).join("") +
+  `<button class="shelf-pill" onclick="filterByTerm('Early Church Fathers')">Early Church Fathers subseries</button>`;
+}
+
+function filterByTerm(term) {
+  currentSearch = term;
+  document.getElementById("search-input").value = term;
+  currentFilter = "all";
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  document.querySelector('[data-filter="all"]').classList.add("active");
+  renderGrid();
+  document.getElementById("resources").scrollIntoView({ behavior: "smooth" });
 }
 
 function renderCourses() {
@@ -805,13 +900,16 @@ function renderGrid() {
   const q = currentSearch.toLowerCase();
 
   const filtered = RESOURCES.filter(r => {
-    const matchType = currentFilter === "all" || r.type === currentFilter;
+    const matchType = currentFilter === "all" ||
+      r.type === currentFilter ||
+      (currentFilter === "media" && ["video", "audio", "collection"].includes(r.type));
     const matchSearch = !q ||
       r.title.toLowerCase().includes(q) ||
       r.author.toLowerCase().includes(q) ||
       r.desc.toLowerCase().includes(q) ||
       r.course.toLowerCase().includes(q) ||
-      r.tag.toLowerCase().includes(q);
+      r.tag.toLowerCase().includes(q) ||
+      (r.subseries && r.subseries.toLowerCase().includes(q));
     return matchType && matchSearch;
   });
 
@@ -847,6 +945,7 @@ document.getElementById("search-input").addEventListener("input", e => {
 
 renderGrid();
 renderCourses();
+renderShelves();
 </script>
 </body>
 </html>
