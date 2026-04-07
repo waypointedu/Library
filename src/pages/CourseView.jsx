@@ -304,7 +304,7 @@ export default function CourseView() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col overflow-x-hidden">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="px-6 h-16 flex items-center justify-between">
@@ -362,7 +362,7 @@ export default function CourseView() {
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         {/* Sidebar */}
         <aside
           className={`${
