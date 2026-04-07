@@ -23,7 +23,7 @@ export default function InstructorDashboard() {
 
   useEffect(() => {
     base44.auth.me().then((u) => {
-      const isAuthorized = u.role === 'admin' || u.user_type === 'admin' || u.user_type === 'instructor';
+      const isAuthorized = u.role === 'admin' || u.role === 'instructor';
       if (!isAuthorized) {
         window.location.href = createPageUrl('Dashboard');
       }
