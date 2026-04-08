@@ -98,11 +98,18 @@ export default function Home() {
         </div>
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-slate-100 bg-white py-4 px-4 space-y-3">
-            <Link to={createPageUrl(`Pathways?lang=${lang}`)} className="block text-sm text-slate-600">Programs</Link>
-            <Link to={createPageUrl(`About?lang=${lang}`)} className="block text-sm text-slate-600">About</Link>
-            <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="block text-sm text-slate-600">Courses</Link>
-            <Link to={createPageUrl(`Faculty?lang=${lang}`)} className="block text-sm text-slate-600">Faculty</Link>
-            <Link to={createPageUrl(`Apply?lang=${lang}`)} className="block text-sm font-medium text-[#1e3a5f]">Apply</Link>
+            <Link to={createPageUrl(`Pathways?lang=${lang}`)} className="block text-sm text-slate-600" onClick={() => setMobileMenuOpen(false)}>Programs</Link>
+            <Link to={createPageUrl(`About?lang=${lang}`)} className="block text-sm text-slate-600" onClick={() => setMobileMenuOpen(false)}>About</Link>
+            <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="block text-sm text-slate-600" onClick={() => setMobileMenuOpen(false)}>Courses</Link>
+            <Link to={createPageUrl(`Faculty?lang=${lang}`)} className="block text-sm text-slate-600" onClick={() => setMobileMenuOpen(false)}>Faculty</Link>
+            <Link to={createPageUrl(`Apply?lang=${lang}`)} className="block text-sm font-medium text-[#1e3a5f]" onClick={() => setMobileMenuOpen(false)}>Apply</Link>
+            <div className="pt-2 border-t border-slate-100">
+              {user ? (
+                <Link to={createPageUrl(user.role === 'admin' ? `Admin?lang=${lang}` : `Dashboard?lang=${lang}`)} className="block text-sm font-semibold text-[#1e3a5f]" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+              ) : (
+                <button onClick={() => { setMobileMenuOpen(false); base44.auth.redirectToLogin(); }} className="block text-sm font-semibold text-[#1e3a5f]">Sign In</button>
+              )}
+            </div>
           </div>
         )}
       </nav>
