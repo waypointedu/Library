@@ -232,79 +232,33 @@ export default function CourseView() {
     const contentBlocks = week[`content_blocks_${lang}`] || week.content_blocks_en || [];
     const lessonContent = week[`lesson_content_${lang}`] || week.lesson_content_en;
     const readingAssignment = week[`reading_assignment_${lang}`] || week.reading_assignment_en;
-    const writtenAssignment = week[`written_assignment_${lang}`] || week.written_assignment_en;
     const discussionPrompt = week[`discussion_prompt_${lang}`] || week.discussion_prompt_en;
 
-    return (
-      <div className="p-6 max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <p className="text-slate-500 text-sm">Week {week.week_number}</p>
-            <h2 className="text-2xl font-bold text-slate-900">{weekTitle}</h2>
-          </div>
-          {!isInstructor && !isWeekCompleted(week) && (
-            <Button size="sm" onClick={() => markWeekComplete.mutate(week)} disabled={markWeekComplete.isPending} className="bg-[#1e3a5f]">
-              <CheckCircle2 className="w-4 h-4 mr-1" />
-              {lang === 'es' ? 'Marcar completa' : 'Mark Complete'}
-            </Button>
-          )}
-          {isWeekCompleted(week) && (
-            <Badge className="bg-green-100 text-green-700">
-              <CheckCircle2 className="w-3 h-3 mr-1" />Completed
-            </Badge>
-          )}
+    const weekHeader = (
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <p className="text-slate-500 text-sm">Week {week.week_number}</p>
+          <h2 className="text-2xl font-bold text-slate-900">{weekTitle}</h2>
         </div>
-
-        {weekOverview && (
-          <div className="bg-blue-50 rounded-xl p-4 mb-6">
-            <p className="text-slate-700">{weekOverview}</p>
-          </div>
+        {!isInstructor && !isWeekCompleted(week) && (
+          <Button size="sm" onClick={() => markWeekComplete.mutate(week)} disabled={markWeekComplete.isPending} className="bg-[#1e3a5f]">
+            <CheckCircle2 className="w-4 h-4 mr-1" />
+            {lang === 'es' ? 'Marcar completa' : 'Mark Complete'}
+          </Button>
         )}
-
-        {contentBlocks.length > 0 && (
-          <div className="space-y-6 mb-6">
-            {contentBlocks.map((block, i) => (
-              <div key={i}>
-                {block.type === 'text' && <p className="text-slate-700 whitespace-pre-wrap">{block.content}</p>}
-                {block.type === 'richtext' && <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: block.content }} />}
-                {block.type === 'video' && block.url && (
-                  <div className="aspect-video rounded-xl overflow-hidden">
-                    <iframe src={getVideoEmbedUrl(block.url)} className="w-full h-full" allowFullScreen />
-                  </div>
-                )}
-                {block.type === 'image' && block.url && (
-                  <img src={block.url} alt={block.caption || ''} className="rounded-xl max-w-full" />
-                )}
-                {block.caption && <p className="text-slate-400 text-sm text-center mt-1">{block.caption}</p>}
-              </div>
-            ))}
-          </div>
+        {isWeekCompleted(week) && (
+          <Badge className="bg-green-100 text-green-700">
+            <CheckCircle2 className="w-3 h-3 mr-1" />Completed
+          </Badge>
         )}
+      </div>
+    );
 
-        {lessonContent && (
-          <div className="prose max-w-none mb-6" dangerouslySetInnerHTML={{ __html: lessonContent }} />
-        )}
-
-        {readingAssignment && (
-          <Card className="mb-6">
-            <CardHeader><CardTitle className="text-base flex items-center gap-2"><BookOpen className="w-4 h-4" />{lang === 'es' ? 'Lectura Asignada' : 'Reading Assignment'}</CardTitle></CardHeader>
-            <CardContent><p className="text-slate-700">{readingAssignment}</p></CardContent>
-          </Card>
-        )}
-
-        {week.has_written_assignment && user && (
-          <div className="mb-6">
-            <WrittenAssignmentStudent week={week} courseId={courseId} user={user} lang={lang} />
-          </div>
-        )}
-
-        {week.has_quiz && user && (
-          <div className="mb-6">
-            <WeekQuizStudent weekId={week.id} user={user} lang={lang} />
-          </div>
-        )}
-
-        {week.has_discussion && (
+    // Discussion-only view
+    if (type === 'discussion') {
+      return (
+        <div className="p-6 max-w-3xl mx-auto">
+          {weekHeader}
           <Card className="mb-6">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2"><MessageSquare className="w-4 h-4" />{lang === 'es' ? 'Foro de Discusión' : 'Discussion Forum'}</CardTitle>
@@ -389,6 +343,62 @@ export default function CourseView() {
               </div>
             </CardContent>
           </Card>
+        </div>
+      );
+    }
+
+    // Lesson view (default)
+    return (
+      <div className="p-6 max-w-3xl mx-auto">
+        {weekHeader}
+
+        {weekOverview && (
+          <div className="bg-blue-50 rounded-xl p-4 mb-6">
+            <p className="text-slate-700">{weekOverview}</p>
+          </div>
+        )}
+
+        {contentBlocks.length > 0 && (
+          <div className="space-y-6 mb-6">
+            {contentBlocks.map((block, i) => (
+              <div key={i}>
+                {block.type === 'text' && <p className="text-slate-700 whitespace-pre-wrap">{block.content}</p>}
+                {block.type === 'richtext' && <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: block.content }} />}
+                {block.type === 'video' && block.url && (
+                  <div className="aspect-video rounded-xl overflow-hidden">
+                    <iframe src={getVideoEmbedUrl(block.url)} className="w-full h-full" allowFullScreen />
+                  </div>
+                )}
+                {block.type === 'image' && block.url && (
+                  <img src={block.url} alt={block.caption || ''} className="rounded-xl max-w-full" />
+                )}
+                {block.caption && <p className="text-slate-400 text-sm text-center mt-1">{block.caption}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {lessonContent && (
+          <div className="prose max-w-none mb-6" dangerouslySetInnerHTML={{ __html: lessonContent }} />
+        )}
+
+        {readingAssignment && (
+          <Card className="mb-6">
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><BookOpen className="w-4 h-4" />{lang === 'es' ? 'Lectura Asignada' : 'Reading Assignment'}</CardTitle></CardHeader>
+            <CardContent><p className="text-slate-700">{readingAssignment}</p></CardContent>
+          </Card>
+        )}
+
+        {week.has_written_assignment && user && (
+          <div className="mb-6">
+            <WrittenAssignmentStudent week={week} courseId={courseId} user={user} lang={lang} />
+          </div>
+        )}
+
+        {week.has_quiz && user && (
+          <div className="mb-6">
+            <WeekQuizStudent weekId={week.id} user={user} lang={lang} />
+          </div>
         )}
       </div>
     );
