@@ -100,7 +100,7 @@ export default function Week() {
       <div className="bg-white border-b border-slate-100 px-4 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           {course && (
-            <Link to={createPageUrl(`Course?id=${course.id}&lang=${lang}`)} className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900">
+            <Link to={createPageUrl(`CourseView?id=${course.id}&lang=${lang}`)} className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900">
               <ArrowLeft className="w-4 h-4" />{t.backToCourse}
             </Link>
           )}

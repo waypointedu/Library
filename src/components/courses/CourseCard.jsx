@@ -15,8 +15,8 @@ export default function CourseCard({ course, lang = 'en', progress = 0, enrolled
 
   const availableLanguages = course.language_availability || ['en'];
 
-  const linkUrl = enrolled && courseInstanceId
-    ? `CourseView?id=${course.id}&courseInstanceId=${courseInstanceId}&lang=${lang}`
+  const linkUrl = enrolled
+    ? `CourseView?id=${course.id}${courseInstanceId && courseInstanceId !== 'direct' ? `&courseInstanceId=${courseInstanceId}` : ''}&lang=${lang}`
     : `Course?id=${course.id}&lang=${lang}`;
 
   return (

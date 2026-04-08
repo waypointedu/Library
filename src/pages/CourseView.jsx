@@ -411,8 +411,8 @@ export default function CourseView() {
         <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1">
           <Menu className="w-5 h-5 text-slate-500" />
         </button>
-        <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="text-sm text-slate-500 hover:text-slate-700">
-          ← {lang === 'es' ? 'Catálogo' : 'Catalog'}
+        <Link to={createPageUrl(`Dashboard?lang=${lang}`)} className="text-sm text-slate-500 hover:text-slate-700">
+          ← {lang === 'es' ? 'Mi Panel' : 'My Dashboard'}
         </Link>
         <span className="text-slate-300">/</span>
         <span className="text-sm font-medium text-slate-900 truncate">{title}</span>

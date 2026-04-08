@@ -247,9 +247,12 @@ export default function Dashboard() {
                   </Card>
                 ) : (
                   <div className="grid md:grid-cols-2 gap-4">
-                    {enrolledCourses.map(course => (
-                      <CourseCard key={course.id} course={course} lang={lang} enrolled={true} />
-                    ))}
+                    {enrolledCourses.map(course => {
+                      const enrollment = enrollments.find(e => e.course_id === course.id);
+                      return (
+                        <CourseCard key={course.id} course={course} lang={lang} enrolled={true} courseInstanceId={enrollment?.course_instance_id || 'direct'} />
+                      );
+                    })}
                   </div>
                 )}
               </div>
