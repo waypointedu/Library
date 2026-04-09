@@ -254,6 +254,18 @@ export default function CourseView() {
       </div>
     );
 
+    // Quiz-only view
+    if (type === 'quiz') {
+      return (
+        <div className="p-6 max-w-3xl mx-auto">
+          {weekHeader}
+          {user && (
+            <WeekQuizStudent weekId={week.id} user={user} lang={lang} />
+          )}
+        </div>
+      );
+    }
+
     // Assignment-only view
     if (type === 'assignment') {
       return (
@@ -401,11 +413,7 @@ export default function CourseView() {
           </Card>
         )}
 
-        {week.has_quiz && user && (
-          <div className="mb-6">
-            <WeekQuizStudent weekId={week.id} user={user} lang={lang} />
-          </div>
-        )}
+
       </div>
     );
   };
@@ -520,6 +528,15 @@ export default function CourseView() {
                             >
                               <FileText className="w-3 h-3 flex-shrink-0" />
                               {lang === 'es' ? 'Tarea' : 'Assignment'}
+                            </button>
+                          )}
+                          {week.has_quiz && (
+                            <button
+                              onClick={() => setSelectedContent({ type: 'quiz', data: week })}
+                              className={`w-full flex items-center gap-2 p-2 rounded-lg text-sm text-left transition-colors ${selectedContent?.data?.id === week.id && selectedContent?.type === 'quiz' ? 'bg-[#1e3a5f] text-white' : 'hover:bg-white text-slate-600'}`}
+                            >
+                              <ClipboardCheck className="w-3 h-3 flex-shrink-0" />
+                              {lang === 'es' ? 'Prueba' : 'Quiz'}
                             </button>
                           )}
                           {week.has_discussion && (
