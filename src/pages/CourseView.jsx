@@ -25,7 +25,7 @@ export default function CourseView() {
   const [user, setUser] = useState(null);
   const [expandedWeeks, setExpandedWeeks] = useState({});
   const [selectedContent, setSelectedContent] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
   const [viewAsStudent, setViewAsStudent] = useState(false);
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
   const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '' });
@@ -254,6 +254,18 @@ export default function CourseView() {
       </div>
     );
 
+    // Assignment-only view
+    if (type === 'assignment') {
+      return (
+        <div className="p-6 max-w-3xl mx-auto">
+          {weekHeader}
+          {user && (
+            <WrittenAssignmentStudent week={week} courseId={courseId} user={user} lang={lang} />
+          )}
+        </div>
+      );
+    }
+
     // Discussion-only view
     if (type === 'discussion') {
       return (
@@ -389,12 +401,6 @@ export default function CourseView() {
           </Card>
         )}
 
-        {week.has_written_assignment && user && (
-          <div className="mb-6">
-            <WrittenAssignmentStudent week={week} courseId={courseId} user={user} lang={lang} />
-          </div>
-        )}
-
         {week.has_quiz && user && (
           <div className="mb-6">
             <WeekQuizStudent weekId={week.id} user={user} lang={lang} />
@@ -432,10 +438,10 @@ export default function CourseView() {
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         {/* Sidebar */}
         {sidebarOpen && (
-          <div className="w-72 border-r border-slate-200 overflow-y-auto flex-shrink-0 bg-slate-50">
+          <div className="absolute md:relative z-20 w-72 h-full border-r border-slate-200 overflow-y-auto flex-shrink-0 bg-slate-50 shadow-lg md:shadow-none">
             {/* Instructor panel */}
             {isInstructor && !viewAsStudent && (
               <div className="p-4 border-b border-slate-200">
@@ -533,6 +539,11 @@ export default function CourseView() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Mobile overlay backdrop */}
+        {sidebarOpen && (
+          <div className="md:hidden absolute inset-0 z-10 bg-black/30" onClick={() => setSidebarOpen(false)} />
         )}
 
         {/* Main content */}
