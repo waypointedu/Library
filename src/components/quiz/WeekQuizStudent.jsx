@@ -54,10 +54,18 @@ export default function WeekQuizStudent({ weekId, user, lang }) {
     es: { title: 'Quiz', start: 'Comenzar', submit: 'Enviar', score: 'Puntaje', passed: 'Aprobado', failed: 'Inténtalo de nuevo', retake: 'Repetir Quiz', attemptsLeft: 'intento(s) restante(s)', noQuiz: 'No hay quiz esta semana.' }
   }[lang] || {};
 
-  if (!quiz) return null;
+  if (!quiz || (quiz.questions || []).length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-6 text-center text-slate-500">
+          <ClipboardCheck className="w-8 h-8 mx-auto mb-2 opacity-40" />
+          <p>{lang === 'es' ? 'El quiz aún no está disponible.' : 'Quiz not available yet.'}</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const questions = quiz.questions || [];
-  if (questions.length === 0) return null;
 
   const passed = lastAttempt?.passed;
   const attemptsLeft = maxAttempts - attempts.length;

@@ -413,6 +413,22 @@ export default function CourseView() {
           </Card>
         )}
 
+        {week.attachments?.length > 0 && (
+          <Card className="mb-6">
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><FileText className="w-4 h-4" />{lang === 'es' ? 'Materiales' : 'Handouts'}</CardTitle></CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {week.attachments.map((att, i) => (
+                  <a key={i} href={att.url} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-2 p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm text-blue-600 hover:text-blue-800">
+                    <FileText className="w-4 h-4 flex-shrink-0" />
+                    {att.title}
+                  </a>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
       </div>
     );
