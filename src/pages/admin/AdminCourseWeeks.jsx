@@ -34,7 +34,7 @@ export default function AdminCourseWeeks() {
     load();
   };
 
-  if (user?.role !== 'admin') return <div className="text-center py-16 text-gray-500">Access denied.</div>;
+  if (user?.role !== 'admin' && user?.role !== 'instructor') return <div className="text-center py-16 text-gray-500">Access denied.</div>;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

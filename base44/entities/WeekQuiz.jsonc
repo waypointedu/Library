@@ -1,0 +1,50 @@
+{
+  "name": "WeekQuiz",
+  "type": "object",
+  "properties": {
+    "week_id": {
+      "type": "string",
+      "description": "Parent week ID"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Parent course ID"
+    },
+    "pass_threshold": {
+      "type": "number",
+      "default": 70,
+      "description": "Percentage needed to pass"
+    },
+    "max_attempts": {
+      "type": "number",
+      "default": 2,
+      "description": "Maximum attempts allowed"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "correct_answer": {
+            "type": "number",
+            "description": "Index of the correct option"
+          }
+        }
+      },
+      "description": "Quiz questions with answer options"
+    }
+  },
+  "required": [
+    "week_id",
+    "questions"
+  ]
+}

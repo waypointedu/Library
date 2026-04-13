@@ -472,6 +472,12 @@ export default function CourseView() {
                 <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Instructor</p>
                 <div className="space-y-1 text-sm">
                   <p className="text-slate-700">{enrollments.length} students enrolled</p>
+                  <Link
+                    to={`/admin/courses/${courseId}/weeks`}
+                    className="inline-block mt-2 text-xs text-[#1e3a5f] underline hover:text-[#c4933f]"
+                  >
+                    Edit Weeks &amp; Quizzes →
+                  </Link>
                 </div>
               </div>
             )}

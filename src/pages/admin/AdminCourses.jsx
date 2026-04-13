@@ -24,7 +24,7 @@ export default function AdminCourses() {
 
   useEffect(() => { load(); }, []);
 
-  if (user?.role !== 'admin') return <div className="text-center py-16 text-gray-500">Access denied.</div>;
+  if (user?.role !== 'admin' && user?.role !== 'instructor') return <div className="text-center py-16 text-gray-500">Access denied.</div>;
 
   const STATUS_COLORS = { draft: 'secondary', published: 'default', archived: 'destructive' };
 
