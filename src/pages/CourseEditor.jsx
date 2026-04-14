@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Plus, Trash2, Save, ChevronUp, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Upload, FileText, X } from 'lucide-react';
 
 const SUBJECTS = [
   ['theology', 'Theology'], ['biblical_studies', 'Biblical Studies'], ['philosophy', 'Philosophy'],
@@ -48,6 +48,7 @@ export default function CourseEditor() {
 
   const [courseForm, setCourseForm] = useState(null);
   const [weekForms, setWeekForms] = useState({});
+  const [uploadingWeekId, setUploadingWeekId] = useState(null);
 
   useEffect(() => {
     if (course && !courseForm) {
@@ -71,6 +72,7 @@ export default function CourseEditor() {
           written_assignment_en: w.written_assignment_en || '',
           has_discussion: w.has_discussion || false,
           discussion_prompt_en: w.discussion_prompt_en || '',
+          attachments: w.attachments || [],
         };
       });
       setWeekForms(forms);
@@ -113,6 +115,26 @@ export default function CourseEditor() {
 
   const setWeekField = (weekId, key, val) => {
     setWeekForms(prev => ({ ...prev, [weekId]: { ...prev[weekId], [key]: val } }));
+  };
+
+  const handleAttachmentUpload = async (weekId, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingWeekId(weekId);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setWeekForms(prev => ({
+      ...prev,
+      [weekId]: { ...prev[weekId], attachments: [...(prev[weekId].attachments || []), { title: file.name, url: file_url }] }
+    }));
+    setUploadingWeekId(null);
+    e.target.value = '';
+  };
+
+  const removeAttachment = (weekId, idx) => {
+    setWeekForms(prev => ({
+      ...prev,
+      [weekId]: { ...prev[weekId], attachments: prev[weekId].attachments.filter((_, i) => i !== idx) }
+    }));
   };
 
   if (!user || courseLoading) {
@@ -223,6 +245,28 @@ export default function CourseEditor() {
                   <Label>Reading Assignment</Label>
                   <Textarea className="mt-1" rows={3} value={activeWeekForm.reading_assignment_en} onChange={e => setWeekField(activeWeekId, 'reading_assignment_en', e.target.value)} />
                 </div>
+                {/* Attachments */}
+                <div>
+                  <Label>Handouts / Attachments</Label>
+                  <div className="mt-1 space-y-2">
+                    {(activeWeekForm.attachments || []).map((att, i) => (
+                      <div key={i} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border text-sm">
+                        <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                        <span className="flex-1 truncate text-slate-700">{att.title}</span>
+                        <button onClick={() => removeAttachment(activeWeekId, i)} className="text-slate-400 hover:text-red-500">
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                    <label className="cursor-pointer">
+                      <input type="file" className="hidden" onChange={e => handleAttachmentUpload(activeWeekId, e)} disabled={!!uploadingWeekId} />
+                      <Button type="button" variant="outline" size="sm" disabled={!!uploadingWeekId} asChild>
+                        <span><Upload className="w-4 h-4 mr-1" />{uploadingWeekId === activeWeekId ? 'Uploading...' : 'Upload File'}</span>
+                      </Button>
+                    </label>
+                  </div>
+                </div>
+
                 <div className="flex items-center gap-2">
                   <input type="checkbox" id="has_written" checked={activeWeekForm.has_written_assignment} onChange={e => setWeekField(activeWeekId, 'has_written_assignment', e.target.checked)} />
                   <Label htmlFor="has_written">Written Assignment</Label>

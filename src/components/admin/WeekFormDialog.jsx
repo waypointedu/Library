@@ -59,8 +59,13 @@ export default function WeekFormDialog({ open, onClose, week, courseId, existing
   }, [week, open]);
 
   useEffect(() => {
+    // Only load existing questions if they have the correct format (question string + options array of strings)
     if (existingQuiz?.questions?.length > 0) {
-      setQuestions(existingQuiz.questions);
+      const firstQ = existingQuiz.questions[0];
+      if (typeof firstQ.question === 'string' && Array.isArray(firstQ.options) && typeof firstQ.options[0] === 'string') {
+        setQuestions(existingQuiz.questions);
+      }
+      // If old format (question_en, options with objects), discard it and keep empty questions
     }
   }, [existingQuiz]);
 
