@@ -46,9 +46,17 @@ export default function CourseEditor() {
     enabled: !!courseId
   });
 
+  const { data: weekQuizzes = [] } = useQuery({
+    queryKey: ['weekQuizzes', courseId],
+    queryFn: () => base44.entities.WeekQuiz.filter({ course_id: courseId }),
+    enabled: !!courseId
+  });
+
   const [courseForm, setCourseForm] = useState(null);
   const [weekForms, setWeekForms] = useState({});
   const [uploadingWeekId, setUploadingWeekId] = useState(null);
+  const [quizForms, setQuizForms] = useState({});  // weekId -> { questions, pass_threshold }
+  const [savingQuizId, setSavingQuizId] = useState(null);
 
   useEffect(() => {
     if (course && !courseForm) {
@@ -79,6 +87,28 @@ export default function CourseEditor() {
       if (!activeWeekId && weeks.length) setActiveWeekId(weeks[0].id);
     }
   }, [weeks]);
+
+  useEffect(() => {
+    if (weekQuizzes.length) {
+      const qf = {};
+      weekQuizzes.forEach(q => {
+        // Normalize old format
+        const questions = (q.questions || []).map(qs => {
+          if (qs.question_en !== undefined) {
+            const opts = (qs.options || []);
+            return {
+              question: qs.question_en || '',
+              options: opts.map(o => typeof o === 'string' ? o : (o.text_en || '')),
+              correct_answer: opts.findIndex(o => typeof o === 'object' && o.is_correct) >= 0 ? opts.findIndex(o => typeof o === 'object' && o.is_correct) : 0
+            };
+          }
+          return qs;
+        });
+        qf[q.week_id] = { id: q.id, questions, pass_threshold: q.pass_threshold || 70 };
+      });
+      setQuizForms(qf);
+    }
+  }, [weekQuizzes]);
 
   const saveCourse = useMutation({
     mutationFn: () => base44.entities.Course.update(courseId, {
@@ -128,6 +158,50 @@ export default function CourseEditor() {
     }));
     setUploadingWeekId(null);
     e.target.value = '';
+  };
+
+  const emptyQuestion = () => ({ question: '', options: ['', '', '', ''], correct_answer: 0 });
+
+  const setQuizField = (weekId, key, val) => setQuizForms(prev => ({ ...prev, [weekId]: { ...prev[weekId], [key]: val } }));
+
+  const setQuestionField = (weekId, qi, key, val) => {
+    setQuizForms(prev => {
+      const qs = [...(prev[weekId]?.questions || [])];
+      qs[qi] = { ...qs[qi], [key]: val };
+      return { ...prev, [weekId]: { ...prev[weekId], questions: qs } };
+    });
+  };
+
+  const setOptionText = (weekId, qi, oi, val) => {
+    setQuizForms(prev => {
+      const qs = [...(prev[weekId]?.questions || [])];
+      const opts = [...(qs[qi].options || [])];
+      opts[oi] = val;
+      qs[qi] = { ...qs[qi], options: opts };
+      return { ...prev, [weekId]: { ...prev[weekId], questions: qs } };
+    });
+  };
+
+  const addQuestion = (weekId) => setQuizForms(prev => ({
+    ...prev, [weekId]: { ...prev[weekId], questions: [...(prev[weekId]?.questions || []), emptyQuestion()] }
+  }));
+
+  const removeQuestion = (weekId, qi) => setQuizForms(prev => ({
+    ...prev, [weekId]: { ...prev[weekId], questions: prev[weekId].questions.filter((_, i) => i !== qi) }
+  }));
+
+  const saveQuiz = async (weekId) => {
+    setSavingQuizId(weekId);
+    const qf = quizForms[weekId];
+    const payload = { week_id: weekId, course_id: courseId, questions: qf.questions, pass_threshold: qf.pass_threshold || 70, max_attempts: 2 };
+    if (qf?.id) {
+      await base44.entities.WeekQuiz.update(qf.id, payload);
+    } else {
+      const created = await base44.entities.WeekQuiz.create(payload);
+      setQuizForms(prev => ({ ...prev, [weekId]: { ...prev[weekId], id: created.id } }));
+    }
+    queryClient.invalidateQueries({ queryKey: ['weekQuizzes', courseId] });
+    setSavingQuizId(null);
   };
 
   const removeAttachment = (weekId, idx) => {
@@ -216,7 +290,7 @@ export default function CourseEditor() {
         {/* Main content — active week editor */}
         <div className="flex-1">
           {activeWeek && weekForms[activeWeekId] !== undefined ? (
-            <Card>
+            <><Card>
               <CardHeader className="flex flex-row items-center justify-between py-4 px-6">
                 <CardTitle className="text-base">Week {activeWeek.week_number}</CardTitle>
                 <div className="flex gap-2">
@@ -289,6 +363,52 @@ export default function CourseEditor() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Quiz Editor */}
+            <Card className="mt-4">
+              <CardHeader className="flex flex-row items-center justify-between py-4 px-6">
+                <CardTitle className="text-base">Quiz</CardTitle>
+                <Button onClick={() => saveQuiz(activeWeekId)} disabled={savingQuizId === activeWeekId} size="sm" className="bg-[#1e3a5f]">
+                  <Save className="w-4 h-4 mr-1" />{savingQuizId === activeWeekId ? 'Saving...' : 'Save Quiz'}
+                </Button>
+              </CardHeader>
+              <CardContent className="px-6 pb-6 space-y-4">
+                <div className="flex items-center gap-3">
+                  <Label className="shrink-0">Pass Threshold (%)</Label>
+                  <Input type="number" className="w-24" value={quizForms[activeWeekId]?.pass_threshold || 70}
+                    onChange={e => setQuizField(activeWeekId, 'pass_threshold', Number(e.target.value))} />
+                </div>
+                {(quizForms[activeWeekId]?.questions || []).map((q, qi) => (
+                  <div key={qi} className="border border-slate-200 rounded-lg p-4 space-y-3">
+                    <div className="flex items-start gap-2">
+                      <span className="text-sm font-medium text-slate-500 mt-2 w-5 shrink-0">{qi + 1}.</span>
+                      <Textarea className="flex-1" rows={2} placeholder="Question text" value={q.question}
+                        onChange={e => setQuestionField(activeWeekId, qi, 'question', e.target.value)} />
+                      <button onClick={() => removeQuestion(activeWeekId, qi)} className="mt-2 text-slate-400 hover:text-red-500">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="pl-7 space-y-2">
+                      {(q.options || []).map((opt, oi) => (
+                        <div key={oi} className="flex items-center gap-2">
+                          <input type="radio" name={`q${qi}-correct`} checked={q.correct_answer === oi}
+                            onChange={() => setQuestionField(activeWeekId, qi, 'correct_answer', oi)}
+                            className="w-4 h-4 shrink-0" title="Mark as correct" />
+                          <Input className="flex-1 text-sm" placeholder={`Option ${oi + 1}`} value={opt}
+                            onChange={e => setOptionText(activeWeekId, qi, oi, e.target.value)} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <Button variant="outline" size="sm" onClick={() => addQuestion(activeWeekId)}>
+                  <Plus className="w-4 h-4 mr-1" /> Add Question
+                </Button>
+                {!(quizForms[activeWeekId]?.questions?.length > 0) && (
+                  <p className="text-sm text-slate-400">No questions yet. Click "Add Question" to start building the quiz.</p>
+                )}
+              </CardContent>
+            </Card></>
           ) : (
             <Card>
               <CardContent className="p-12 text-center text-slate-400">

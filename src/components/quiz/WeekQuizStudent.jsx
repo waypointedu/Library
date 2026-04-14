@@ -20,11 +20,14 @@ export default function WeekQuizStudent({ weekId, user, lang }) {
       if (!raw) return null;
       // Normalize old format → new format
       const normalized = (raw.questions || []).map(q => {
-        if (typeof q.question === 'string') return q; // already new format
-        // Old format: question_en, options[{text_en, is_correct}]
-        const options = (q.options || []).map(o => o.text_en || o.text_es || '');
-        const correct_answer = (q.options || []).findIndex(o => o.is_correct);
-        return { question: q.question_en || q.question_es || '', options, correct_answer: correct_answer >= 0 ? correct_answer : 0 };
+        // Old format has question_en; new format has question
+        if (q.question_en !== undefined) {
+          const opts = (q.options || []);
+          const options = opts.map(o => (typeof o === 'string' ? o : (o.text_en || o.text_es || '')));
+          const correct_answer = opts.findIndex(o => typeof o === 'object' && o.is_correct);
+          return { question: q.question_en || '', options, correct_answer: correct_answer >= 0 ? correct_answer : 0 };
+        }
+        return q; // already new format
       });
       return { ...raw, questions: normalized };
     },
