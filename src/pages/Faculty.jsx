@@ -108,7 +108,7 @@ function FacultyCard({ profile, isCore }) {
       {/* Top: photo + name */}
       <div className="flex items-start gap-4 mb-4">
         {profile.photo_url ? (
-          <img src={profile.photo_url} alt={profile.display_name} className="w-16 h-16 rounded-full object-cover flex-shrink-0" />
+          <img src={profile.photo_url} alt={profile.display_name} className="w-16 h-16 rounded-full object-cover object-[center_20%] flex-shrink-0" />
         ) : (
           <div className="w-16 h-16 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
             {(profile.display_name || '?')[0]}
@@ -145,7 +145,7 @@ function FacultyCard({ profile, isCore }) {
           </div>
         )}
         {(!profile.courses_taught?.length && !profile.seminars?.length) && (
-          <p className="text-sm text-slate-400 italic">Courses coming soon</p>
+          <p className="text-sm text-slate-400 italic">More coming soon</p>
         )}
       </div>
 

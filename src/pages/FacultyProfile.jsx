@@ -75,7 +75,7 @@ export default function FacultyProfile() {
       <div className="bg-[#1e3a5f] py-16 px-4">
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8">
           {profile.photo_url ? (
-            <img src={profile.photo_url} alt={profile.display_name} className="w-32 h-32 rounded-full object-cover ring-4 ring-white/20" />
+            <img src={profile.photo_url} alt={profile.display_name} className="w-32 h-32 rounded-full object-cover object-[center_20%] ring-4 ring-white/20" />
           ) : (
             <div className="w-32 h-32 rounded-full bg-white/20 flex items-center justify-center text-white text-4xl font-bold">
               {(profile.display_name || '?')[0]}
@@ -89,9 +89,7 @@ export default function FacultyProfile() {
             {profile.faculty_type === 'core' && profile.title && (
               <p className="text-white/80 mb-2">{profile.title}</p>
             )}
-            {profile.positioning_sentence && (
-              <p className="text-white/70 italic">{profile.positioning_sentence}</p>
-            )}
+
             <div className="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
               <a href={`mailto:${profile.instructor_email}`} className="flex items-center gap-1 text-white/70 hover:text-white text-sm">
                 <Mail className="w-4 h-4" /> Contact
@@ -108,7 +106,7 @@ export default function FacultyProfile() {
         {/* OVERVIEW */}
         {profile.overview && (
           <Section label="Overview">
-            <p className="text-slate-700 leading-relaxed">{profile.overview}</p>
+            <p className="text-slate-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: profile.overview }} />
           </Section>
         )}
 
