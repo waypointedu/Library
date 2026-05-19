@@ -14,39 +14,48 @@ import { Upload, ZoomIn, ZoomOut, Check, X, Move } from 'lucide-react';
  */
 export default function ImageCropUploader({ value, onChange, shape = 'rect', aspectRatio = 16 / 9, label }) {
   const [localSrc, setLocalSrc] = useState(null);
-  const [imgSize, setImgSize] = useState({ w: 1, h: 1 }); // natural px
-  const [zoom, setZoom] = useState(1);       // multiplier on top of "fit" scale
-  const [offset, setOffset] = useState({ x: 0, y: 0 }); // pixels in DISPLAY space
+  const [naturalSize, setNaturalSize] = useState({ w: 0, h: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [uploading, setUploading] = useState(false);
+  const [containerSize, setContainerSize] = useState({ w: 400, h: 225 });
 
   const fileInputRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Fixed display canvas size — must never be shrunk by CSS or crop math breaks
-  const DISPLAY_W = 400;
-  const DISPLAY_H = shape === 'circle' ? 400 : Math.round(DISPLAY_W / aspectRatio);
+  // Measure the actual rendered container size
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ro = new ResizeObserver(entries => {
+      const { width, height } = entries[0].contentRect;
+      if (width > 0 && height > 0) setContainerSize({ w: width, h: height });
+    });
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, [localSrc]); // re-run when crop UI mounts
 
-  // "fit" scale: smallest scale that makes image cover the display canvas
+  const CW = containerSize.w;
+  const CH = containerSize.h;
+
   const fitScale = useCallback(() => {
-    return Math.max(DISPLAY_W / imgSize.w, DISPLAY_H / imgSize.h);
-  }, [imgSize, DISPLAY_W, DISPLAY_H]);
+    if (!naturalSize.w || !naturalSize.h) return 1;
+    return Math.max(CW / naturalSize.w, CH / naturalSize.h);
+  }, [naturalSize, CW, CH]);
 
-  // Total display scale = fitScale * zoom
-  const dispScale = useCallback(() => fitScale() * zoom, [fitScale, zoom]);
+  const totalScale = useCallback(() => fitScale() * zoom, [fitScale, zoom]);
 
-  // Clamp offset so image always covers the canvas
-  const clamp = useCallback((ox, oy, ds) => {
-    const iw = imgSize.w * ds;
-    const ih = imgSize.h * ds;
-    const maxX = Math.max(0, (iw - DISPLAY_W) / 2);
-    const maxY = Math.max(0, (ih - DISPLAY_H) / 2);
+  const clamp = useCallback((ox, oy, ts) => {
+    const iw = naturalSize.w * ts;
+    const ih = naturalSize.h * ts;
+    const maxX = Math.max(0, (iw - CW) / 2);
+    const maxY = Math.max(0, (ih - CH) / 2);
     return {
       x: Math.max(-maxX, Math.min(maxX, ox)),
       y: Math.max(-maxY, Math.min(maxY, oy)),
     };
-  }, [imgSize, DISPLAY_W, DISPLAY_H]);
+  }, [naturalSize, CW, CH]);
 
   const handleFile = (file) => {
     if (!file || !file.type.startsWith('image/')) return;
@@ -59,6 +68,12 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
     reader.readAsDataURL(file);
   };
 
+  const onImgLoad = (e) => {
+    setNaturalSize({ w: e.target.naturalWidth, h: e.target.naturalHeight });
+    setZoom(1);
+    setOffset({ x: 0, y: 0 });
+  };
+
   // Mouse drag
   const onMouseDown = (e) => {
     e.preventDefault();
@@ -68,8 +83,8 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
   const onMouseMove = useCallback((e) => {
     if (!dragging) return;
     const raw = { x: e.clientX - dragStart.x, y: e.clientY - dragStart.y };
-    setOffset(clamp(raw.x, raw.y, dispScale()));
-  }, [dragging, dragStart, dispScale, clamp]);
+    setOffset(clamp(raw.x, raw.y, totalScale()));
+  }, [dragging, dragStart, totalScale, clamp]);
   const onMouseUp = () => setDragging(false);
 
   useEffect(() => {
@@ -85,13 +100,12 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
   const dragStartTouch = useRef({ x: 0, y: 0 });
   const onTouchStart = (e) => {
     const t = e.touches[0];
-    setDragging(true);
     dragStartTouch.current = { x: t.clientX - offset.x, y: t.clientY - offset.y };
   };
   const onTouchMove = (e) => {
     const t = e.touches[0];
     const raw = { x: t.clientX - dragStartTouch.current.x, y: t.clientY - dragStartTouch.current.y };
-    setOffset(clamp(raw.x, raw.y, dispScale()));
+    setOffset(clamp(raw.x, raw.y, totalScale()));
   };
 
   // Scroll to zoom
@@ -100,32 +114,31 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
     const delta = e.deltaY < 0 ? 0.08 : -0.08;
     setZoom(z => {
       const next = Math.max(1, Math.min(5, z + delta));
-      const nextDs = fitScale() * next;
-      setOffset(prev => clamp(prev.x, prev.y, nextDs));
+      const nextTs = fitScale() * next;
+      setOffset(prev => clamp(prev.x, prev.y, nextTs));
       return next;
     });
   };
 
-  // Crop and upload — uses the same math as the live preview
+  // Crop and upload — uses the exact same display values as the preview
   const cropAndUpload = async () => {
     setUploading(true);
 
-    const ds = dispScale();
+    const ts = totalScale();
 
-    // In display space: top-left corner of the image
-    const imgLeft = DISPLAY_W / 2 - (imgSize.w * ds) / 2 + offset.x;
-    const imgTop  = DISPLAY_H / 2 - (imgSize.h * ds) / 2 + offset.y;
+    // Top-left of image in display space
+    const imgLeft = CW / 2 - (naturalSize.w * ts) / 2 + offset.x;
+    const imgTop  = CH / 2 - (naturalSize.h * ts) / 2 + offset.y;
 
-    // The visible display area in image-natural coordinates:
-    // srcX/Y = how many natural pixels from the image's top-left are cropped off
-    const srcX = -imgLeft / ds;
-    const srcY = -imgTop  / ds;
-    const srcW =  DISPLAY_W / ds;
-    const srcH =  DISPLAY_H / ds;
+    // Source rectangle in natural image pixels
+    const srcX = -imgLeft / ts;
+    const srcY = -imgTop  / ts;
+    const srcW =  CW / ts;
+    const srcH =  CH / ts;
 
-    // Output canvas at 2× for crispness
-    const OUT_W = DISPLAY_W * 2;
-    const OUT_H = DISPLAY_H * 2;
+    // Output at 2× for crispness
+    const OUT_W = Math.round(CW * 2);
+    const OUT_H = Math.round(CH * 2);
 
     const canvas = document.createElement('canvas');
     canvas.width  = OUT_W;
@@ -140,9 +153,8 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
 
     const img = new Image();
     img.src = localSrc;
-    await new Promise(r => { img.onload = r; });
+    await new Promise(r => { img.onload = r; if (img.complete) r(); });
 
-    // drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
     ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, OUT_W, OUT_H);
 
     canvas.toBlob(async (blob) => {
@@ -162,7 +174,7 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
     setOffset({ x: 0, y: 0 });
   };
 
-  const ds = dispScale();
+  const ts = totalScale();
 
   return (
     <div className="space-y-3">
@@ -170,16 +182,12 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
 
       {localSrc ? (
         <div className="space-y-3">
-          {/* Outer wrapper prevents any CSS from resizing the fixed crop window */}
-          <div style={{ overflowX: 'auto' }}>
-          {/* Live preview — exactly what will be cropped */}
+          {/* Preview container — CSS aspect-ratio keeps it the right shape always */}
           <div
             ref={containerRef}
-            className="relative overflow-hidden bg-slate-800 cursor-grab active:cursor-grabbing select-none mx-auto"
+            className="relative overflow-hidden bg-slate-800 cursor-grab active:cursor-grabbing select-none w-full"
             style={{
-              width: DISPLAY_W,
-              height: DISPLAY_H,
-              flexShrink: 0,
+              aspectRatio: shape === 'circle' ? '1 / 1' : `${aspectRatio} / 1`,
               borderRadius: shape === 'circle' ? '50%' : '0.5rem',
             }}
             onMouseDown={onMouseDown}
@@ -187,30 +195,39 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
             onTouchMove={onTouchMove}
             onTouchEnd={() => setDragging(false)}
             onWheel={onWheel}
-            onDragOver={e => e.preventDefault()}
           >
+            {naturalSize.w > 0 && (
+              <img
+                src={localSrc}
+                alt=""
+                style={{
+                  position: 'absolute',
+                  width:  naturalSize.w * ts,
+                  height: naturalSize.h * ts,
+                  left: '50%',
+                  top:  '50%',
+                  transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
+                  pointerEvents: 'none',
+                  userSelect: 'none',
+                }}
+                draggable={false}
+              />
+            )}
+            {/* Hidden img just to get natural size */}
             <img
               src={localSrc}
               alt=""
-              onLoad={e => setImgSize({ w: e.target.naturalWidth, h: e.target.naturalHeight })}
-              style={{
-                position: 'absolute',
-                width:  imgSize.w * ds,
-                height: imgSize.h * ds,
-                left: '50%',
-                top:  '50%',
-                transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
-                pointerEvents: 'none',
-                userSelect: 'none',
-              }}
-              draggable={false}
+              onLoad={onImgLoad}
+              style={{ display: 'none' }}
             />
-          </div>
           </div>
 
           {/* Zoom slider */}
           <div className="flex items-center gap-3 justify-center">
-            <button onClick={() => setZoom(z => { const n = Math.max(1, z - 0.1); setOffset(prev => clamp(prev.x, prev.y, fitScale() * n)); return n; })} className="p-1 rounded hover:bg-slate-100">
+            <button
+              onClick={() => setZoom(z => { const n = Math.max(1, z - 0.1); setOffset(prev => clamp(prev.x, prev.y, fitScale() * n)); return n; })}
+              className="p-1 rounded hover:bg-slate-100"
+            >
               <ZoomOut className="w-4 h-4 text-slate-600" />
             </button>
             <input
@@ -222,7 +239,10 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
               }}
               className="w-32 accent-[#1e3a5f]"
             />
-            <button onClick={() => setZoom(z => { const n = Math.min(5, z + 0.1); setOffset(prev => clamp(prev.x, prev.y, fitScale() * n)); return n; })} className="p-1 rounded hover:bg-slate-100">
+            <button
+              onClick={() => setZoom(z => { const n = Math.min(5, z + 0.1); setOffset(prev => clamp(prev.x, prev.y, fitScale() * n)); return n; })}
+              className="p-1 rounded hover:bg-slate-100"
+            >
               <ZoomIn className="w-4 h-4 text-slate-600" />
             </button>
             <span className="text-xs text-slate-400 w-10">{Math.round(zoom * 100)}%</span>
