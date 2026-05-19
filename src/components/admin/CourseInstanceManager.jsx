@@ -155,7 +155,15 @@ export default function CourseInstanceManager() {
               </div>
               <div>
                 <Label className="text-xs">Term</Label>
-                <Select value={form.term_id} onValueChange={v => setForm(f => ({ ...f, term_id: v }))}>
+                <Select value={form.term_id} onValueChange={v => {
+                  const term = terms.find(t => t.id === v);
+                  setForm(f => ({
+                    ...f,
+                    term_id: v,
+                    start_date: term?.start_date || f.start_date,
+                    end_date: term?.end_date || f.end_date,
+                  }));
+                }}>
                   <SelectTrigger className="mt-1"><SelectValue placeholder="Select term..." /></SelectTrigger>
                   <SelectContent>
                     {terms.map(t => <SelectItem key={t.id} value={t.id}>{t.name || `${t.season} ${t.year}`}</SelectItem>)}
@@ -171,11 +179,11 @@ export default function CourseInstanceManager() {
                 <Input className="mt-1" placeholder="e.g. Tuesdays 7pm GMT" value={form.meeting_schedule} onChange={e => setForm(f => ({ ...f, meeting_schedule: e.target.value }))} />
               </div>
               <div>
-                <Label className="text-xs">Start Date</Label>
+                <Label className="text-xs">Start Date <span className="text-slate-400 font-normal">(auto-filled from term)</span></Label>
                 <Input className="mt-1" type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} />
               </div>
               <div>
-                <Label className="text-xs">End Date</Label>
+                <Label className="text-xs">End Date <span className="text-slate-400 font-normal">(auto-filled from term)</span></Label>
                 <Input className="mt-1" type="date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))} />
               </div>
               <div>
@@ -234,7 +242,7 @@ export default function CourseInstanceManager() {
             <div className="flex gap-2 pt-2">
               <Button
                 onClick={handleSave}
-                disabled={!form.course_id || !form.term_id || !form.cohort_name || !form.start_date || !form.end_date || createMutation.isPending || updateMutation.isPending}
+                disabled={!form.course_id || !form.term_id || !form.cohort_name || createMutation.isPending || updateMutation.isPending}
                 className="bg-[#1e3a5f]"
               >
                 <Check className="w-4 h-4 mr-1" /> {editingId ? 'Update' : 'Create'}
