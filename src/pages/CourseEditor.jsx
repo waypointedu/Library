@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Plus, Trash2, Save, Upload, FileText, X } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Upload, FileText, X, BookOpen, Settings } from 'lucide-react';
 
 const SUBJECTS = [
   ['theology', 'Theology'], ['biblical_studies', 'Biblical Studies'], ['philosophy', 'Philosophy'],
@@ -24,6 +24,7 @@ export default function CourseEditor() {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [activeWeekId, setActiveWeekId] = useState(null);
+  const [activeTab, setActiveTab] = useState('course'); // 'course' | weekId
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -55,16 +56,22 @@ export default function CourseEditor() {
   const [courseForm, setCourseForm] = useState(null);
   const [weekForms, setWeekForms] = useState({});
   const [uploadingWeekId, setUploadingWeekId] = useState(null);
-  const [quizForms, setQuizForms] = useState({});  // weekId -> { questions, pass_threshold }
+  const [uploadingCoverImage, setUploadingCoverImage] = useState(false);
+  const [quizForms, setQuizForms] = useState({});
   const [savingQuizId, setSavingQuizId] = useState(null);
 
   useEffect(() => {
     if (course && !courseForm) {
       setCourseForm({
-        title_en: course.title_en || '', description_en: course.description_en || '',
-        status: course.status || 'draft', primary_subject_area: course.primary_subject_area || '',
-        duration_weeks: course.duration_weeks || '', credits: course.credits || '',
+        title_en: course.title_en || '',
+        description_en: course.description_en || '',
+        status: course.status || 'draft',
+        primary_subject_area: course.primary_subject_area || '',
+        duration_weeks: course.duration_weeks || '',
+        credits: course.credits || '',
         cover_image_url: course.cover_image_url || '',
+        prerequisites_en: course.prerequisites_en || '',
+        learning_outcomes_en: course.learning_outcomes_en || [],
       });
     }
   }, [course]);
@@ -92,7 +99,6 @@ export default function CourseEditor() {
     if (weekQuizzes.length) {
       const qf = {};
       weekQuizzes.forEach(q => {
-        // Normalize old format
         const questions = (q.questions || []).map(qs => {
           if (qs.question_en !== undefined) {
             const opts = (qs.options || []);
@@ -132,6 +138,7 @@ export default function CourseEditor() {
     onSuccess: (newWeek) => {
       queryClient.invalidateQueries({ queryKey: ['weeks', courseId] });
       setActiveWeekId(newWeek.id);
+      setActiveTab(newWeek.id);
     }
   });
 
@@ -139,7 +146,8 @@ export default function CourseEditor() {
     mutationFn: (weekId) => base44.entities.Week.delete(weekId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['weeks', courseId] });
-      setActiveWeekId(weeks[0]?.id || null);
+      setActiveTab('course');
+      setActiveWeekId(null);
     }
   });
 
@@ -157,6 +165,16 @@ export default function CourseEditor() {
       [weekId]: { ...prev[weekId], attachments: [...(prev[weekId].attachments || []), { title: file.name, url: file_url }] }
     }));
     setUploadingWeekId(null);
+    e.target.value = '';
+  };
+
+  const handleCoverImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingCoverImage(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setCourseForm(f => ({ ...f, cover_image_url: file_url }));
+    setUploadingCoverImage(false);
     e.target.value = '';
   };
 
@@ -211,12 +229,29 @@ export default function CourseEditor() {
     }));
   };
 
+  const addLearningOutcome = () => {
+    setCourseForm(f => ({ ...f, learning_outcomes_en: [...(f.learning_outcomes_en || []), ''] }));
+  };
+
+  const setLearningOutcome = (i, val) => {
+    setCourseForm(f => {
+      const outcomes = [...(f.learning_outcomes_en || [])];
+      outcomes[i] = val;
+      return { ...f, learning_outcomes_en: outcomes };
+    });
+  };
+
+  const removeLearningOutcome = (i) => {
+    setCourseForm(f => ({ ...f, learning_outcomes_en: f.learning_outcomes_en.filter((_, idx) => idx !== i) }));
+  };
+
   if (!user || courseLoading) {
     return <div className="fixed inset-0 flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div></div>;
   }
 
-  const activeWeek = weeks.find(w => w.id === activeWeekId);
-  const activeWeekForm = weekForms[activeWeekId] || {};
+  const activeWeek = weeks.find(w => w.id === activeTab);
+  const activeWeekForm = weekForms[activeTab] || {};
+  const showCourseInfo = activeTab === 'course';
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -226,190 +261,274 @@ export default function CourseEditor() {
           <ArrowLeft className="w-4 h-4" /> Back to Admin
         </Link>
         <h1 className="text-lg font-semibold text-slate-900">{course?.title_en || 'Course Editor'}</h1>
-        <Button onClick={() => saveCourse.mutate()} disabled={saveCourse.isPending} className="bg-[#1e3a5f]">
-          <Save className="w-4 h-4 mr-1" />{saveCourse.isPending ? 'Saving...' : 'Save Course'}
-        </Button>
+        {showCourseInfo ? (
+          <Button onClick={() => saveCourse.mutate()} disabled={saveCourse.isPending} className="bg-[#1e3a5f]">
+            <Save className="w-4 h-4 mr-1" />{saveCourse.isPending ? 'Saving...' : 'Save Course'}
+          </Button>
+        ) : (
+          <Button onClick={() => saveWeek.mutate(activeTab)} disabled={saveWeek.isPending} className="bg-[#1e3a5f]">
+            <Save className="w-4 h-4 mr-1" />{saveWeek.isPending ? 'Saving...' : 'Save Week'}
+          </Button>
+        )}
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-6 flex gap-6">
-        {/* Sidebar — weeks */}
-        <div className="w-56 flex-shrink-0">
-          <Card>
-            <CardHeader className="py-3 px-4">
-              <CardTitle className="text-sm">Weeks</CardTitle>
-            </CardHeader>
-            <CardContent className="p-2 space-y-1">
-              {weeks.map(w => (
-                <button
-                  key={w.id}
-                  onClick={() => setActiveWeekId(w.id)}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${activeWeekId === w.id ? 'bg-[#1e3a5f] text-white' : 'hover:bg-slate-100 text-slate-700'}`}
-                >
-                  Week {w.week_number}: {w.title_en?.slice(0, 20) || 'Untitled'}
-                </button>
-              ))}
-              <Button variant="outline" size="sm" className="w-full mt-2" onClick={() => addWeek.mutate()} disabled={addWeek.isPending}>
-                <Plus className="w-4 h-4 mr-1" /> Add Week
-              </Button>
-            </CardContent>
-          </Card>
+        {/* Sidebar */}
+        <div className="w-56 flex-shrink-0 space-y-1">
+          {/* Course Info tab */}
+          <button
+            onClick={() => setActiveTab('course')}
+            className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${activeTab === 'course' ? 'bg-[#1e3a5f] text-white' : 'hover:bg-slate-100 text-slate-700'}`}
+          >
+            <Settings className="w-4 h-4 shrink-0" /> Course Info
+          </button>
 
-          {/* Course settings */}
-          {courseForm && (
-            <Card className="mt-4">
-              <CardHeader className="py-3 px-4"><CardTitle className="text-sm">Course Settings</CardTitle></CardHeader>
-              <CardContent className="p-4 space-y-3">
-                <div>
-                  <Label className="text-xs">Title</Label>
-                  <Input className="mt-1 text-sm" value={courseForm.title_en} onChange={e => setCourseForm(f => ({ ...f, title_en: e.target.value }))} />
-                </div>
-                <div>
-                  <Label className="text-xs">Status</Label>
-                  <Select value={courseForm.status} onValueChange={v => setCourseForm(f => ({ ...f, status: v }))}>
-                    <SelectTrigger className="mt-1 text-sm"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="published">Published</SelectItem>
-                      <SelectItem value="archived">Archived</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs">Credits</Label>
-                  <Input className="mt-1 text-sm" type="number" value={courseForm.credits} onChange={e => setCourseForm(f => ({ ...f, credits: e.target.value }))} />
-                </div>
-                <div>
-                  <Label className="text-xs">Duration (weeks)</Label>
-                  <Input className="mt-1 text-sm" type="number" value={courseForm.duration_weeks} onChange={e => setCourseForm(f => ({ ...f, duration_weeks: e.target.value }))} />
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <div className="pt-2 pb-1 px-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Weeks</div>
+
+          {weeks.map(w => (
+            <button
+              key={w.id}
+              onClick={() => { setActiveTab(w.id); setActiveWeekId(w.id); }}
+              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${activeTab === w.id ? 'bg-[#1e3a5f] text-white' : 'hover:bg-slate-100 text-slate-700'}`}
+            >
+              <BookOpen className="w-4 h-4 shrink-0" />
+              <span className="truncate">W{w.week_number}: {w.title_en?.slice(0, 16) || 'Untitled'}</span>
+            </button>
+          ))}
+          <Button variant="outline" size="sm" className="w-full mt-1" onClick={() => addWeek.mutate()} disabled={addWeek.isPending}>
+            <Plus className="w-4 h-4 mr-1" /> Add Week
+          </Button>
         </div>
 
-        {/* Main content — active week editor */}
+        {/* Main panel */}
         <div className="flex-1">
-          {activeWeek && weekForms[activeWeekId] !== undefined ? (
-            <><Card>
-              <CardHeader className="flex flex-row items-center justify-between py-4 px-6">
-                <CardTitle className="text-base">Week {activeWeek.week_number}</CardTitle>
-                <div className="flex gap-2">
-                  <Button onClick={() => saveWeek.mutate(activeWeekId)} disabled={saveWeek.isPending} size="sm" className="bg-[#1e3a5f]">
-                    <Save className="w-4 h-4 mr-1" />{saveWeek.isPending ? 'Saving...' : 'Save Week'}
-                  </Button>
-                  <Button onClick={() => deleteWeek.mutate(activeWeekId)} variant="destructive" size="sm">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="px-6 pb-6 space-y-4">
-                <div>
-                  <Label>Title</Label>
-                  <Input className="mt-1" value={activeWeekForm.title_en} onChange={e => setWeekField(activeWeekId, 'title_en', e.target.value)} />
-                </div>
-                <div>
-                  <Label>Lesson Content (Markdown)</Label>
-                  <Textarea className="mt-1 font-mono text-sm" rows={10} value={activeWeekForm.overview_en} onChange={e => setWeekField(activeWeekId, 'overview_en', e.target.value)} />
-                </div>
-                <div>
-                  <Label>Video URL</Label>
-                  <Input className="mt-1" placeholder="https://youtube.com/..." value={activeWeekForm.video_url} onChange={e => setWeekField(activeWeekId, 'video_url', e.target.value)} />
-                </div>
-                <div>
-                  <Label>Reading Assignment</Label>
-                  <Textarea className="mt-1" rows={3} value={activeWeekForm.reading_assignment_en} onChange={e => setWeekField(activeWeekId, 'reading_assignment_en', e.target.value)} />
-                </div>
-                {/* Attachments */}
-                <div>
-                  <Label>Handouts / Attachments</Label>
-                  <div className="mt-1 space-y-2">
-                    {(activeWeekForm.attachments || []).map((att, i) => (
-                      <div key={i} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border text-sm">
-                        <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                        <span className="flex-1 truncate text-slate-700">{att.title}</span>
-                        <button onClick={() => removeAttachment(activeWeekId, i)} className="text-slate-400 hover:text-red-500">
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
+
+          {/* === COURSE INFO PANEL === */}
+          {showCourseInfo && courseForm && (
+            <div className="space-y-4">
+              {/* Cover Image */}
+              <Card>
+                <CardHeader className="py-4 px-6"><CardTitle className="text-base">Cover Image</CardTitle></CardHeader>
+                <CardContent className="px-6 pb-6 space-y-4">
+                  {courseForm.cover_image_url && (
+                    <img src={courseForm.cover_image_url} alt="Cover" className="w-full h-48 object-cover rounded-lg border border-slate-200" />
+                  )}
+                  <div className="flex items-center gap-3">
                     <label className="cursor-pointer">
-                      <input type="file" className="hidden" onChange={e => handleAttachmentUpload(activeWeekId, e)} disabled={!!uploadingWeekId} />
-                      <Button type="button" variant="outline" size="sm" disabled={!!uploadingWeekId} asChild>
-                        <span><Upload className="w-4 h-4 mr-1" />{uploadingWeekId === activeWeekId ? 'Uploading...' : 'Upload File'}</span>
+                      <input type="file" accept="image/*" className="hidden" onChange={handleCoverImageUpload} disabled={uploadingCoverImage} />
+                      <Button type="button" variant="outline" size="sm" disabled={uploadingCoverImage} asChild>
+                        <span><Upload className="w-4 h-4 mr-1" />{uploadingCoverImage ? 'Uploading...' : 'Upload Image'}</span>
                       </Button>
                     </label>
+                    {courseForm.cover_image_url && (
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setCourseForm(f => ({ ...f, cover_image_url: '' }))}>
+                        <X className="w-4 h-4 mr-1" /> Remove
+                      </Button>
+                    )}
                   </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <input type="checkbox" id="has_written" checked={activeWeekForm.has_written_assignment} onChange={e => setWeekField(activeWeekId, 'has_written_assignment', e.target.checked)} />
-                  <Label htmlFor="has_written">Written Assignment</Label>
-                </div>
-                {activeWeekForm.has_written_assignment && (
                   <div>
-                    <Label>Assignment Prompt</Label>
-                    <Textarea className="mt-1" rows={3} value={activeWeekForm.written_assignment_en} onChange={e => setWeekField(activeWeekId, 'written_assignment_en', e.target.value)} />
+                    <Label className="text-xs text-slate-500">Or paste an image URL</Label>
+                    <Input className="mt-1 text-sm" placeholder="https://..." value={courseForm.cover_image_url} onChange={e => setCourseForm(f => ({ ...f, cover_image_url: e.target.value }))} />
                   </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <input type="checkbox" id="has_disc" checked={activeWeekForm.has_discussion} onChange={e => setWeekField(activeWeekId, 'has_discussion', e.target.checked)} />
-                  <Label htmlFor="has_disc">Discussion Forum</Label>
-                </div>
-                {activeWeekForm.has_discussion && (
-                  <div>
-                    <Label>Discussion Prompt</Label>
-                    <Textarea className="mt-1" rows={2} value={activeWeekForm.discussion_prompt_en} onChange={e => setWeekField(activeWeekId, 'discussion_prompt_en', e.target.value)} />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Quiz Editor */}
-            <Card className="mt-4">
-              <CardHeader className="flex flex-row items-center justify-between py-4 px-6">
-                <CardTitle className="text-base">Quiz</CardTitle>
-                <Button onClick={() => saveQuiz(activeWeekId)} disabled={savingQuizId === activeWeekId} size="sm" className="bg-[#1e3a5f]">
-                  <Save className="w-4 h-4 mr-1" />{savingQuizId === activeWeekId ? 'Saving...' : 'Save Quiz'}
-                </Button>
-              </CardHeader>
-              <CardContent className="px-6 pb-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  <Label className="shrink-0">Pass Threshold (%)</Label>
-                  <Input type="number" className="w-24" value={quizForms[activeWeekId]?.pass_threshold || 70}
-                    onChange={e => setQuizField(activeWeekId, 'pass_threshold', Number(e.target.value))} />
-                </div>
-                {(quizForms[activeWeekId]?.questions || []).map((q, qi) => (
-                  <div key={qi} className="border border-slate-200 rounded-lg p-4 space-y-3">
-                    <div className="flex items-start gap-2">
-                      <span className="text-sm font-medium text-slate-500 mt-2 w-5 shrink-0">{qi + 1}.</span>
-                      <Textarea className="flex-1" rows={2} placeholder="Question text" value={q.question}
-                        onChange={e => setQuestionField(activeWeekId, qi, 'question', e.target.value)} />
-                      <button onClick={() => removeQuestion(activeWeekId, qi)} className="mt-2 text-slate-400 hover:text-red-500">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+              {/* General Info */}
+              <Card>
+                <CardHeader className="py-4 px-6"><CardTitle className="text-base">General Info</CardTitle></CardHeader>
+                <CardContent className="px-6 pb-6 space-y-4">
+                  <div>
+                    <Label>Course Title</Label>
+                    <Input className="mt-1" value={courseForm.title_en} onChange={e => setCourseForm(f => ({ ...f, title_en: e.target.value }))} />
+                  </div>
+                  <div>
+                    <Label>Description</Label>
+                    <Textarea className="mt-1" rows={5} placeholder="What is this course about? Who is it for?" value={courseForm.description_en} onChange={e => setCourseForm(f => ({ ...f, description_en: e.target.value }))} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Subject Area</Label>
+                      <Select value={courseForm.primary_subject_area} onValueChange={v => setCourseForm(f => ({ ...f, primary_subject_area: v }))}>
+                        <SelectTrigger className="mt-1"><SelectValue placeholder="Select..." /></SelectTrigger>
+                        <SelectContent>
+                          {SUBJECTS.map(([val, label]) => <SelectItem key={val} value={val}>{label}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <div className="pl-7 space-y-2">
-                      {(q.options || []).map((opt, oi) => (
-                        <div key={oi} className="flex items-center gap-2">
-                          <input type="radio" name={`q${qi}-correct`} checked={q.correct_answer === oi}
-                            onChange={() => setQuestionField(activeWeekId, qi, 'correct_answer', oi)}
-                            className="w-4 h-4 shrink-0" title="Mark as correct" />
-                          <Input className="flex-1 text-sm" placeholder={`Option ${oi + 1}`} value={opt}
-                            onChange={e => setOptionText(activeWeekId, qi, oi, e.target.value)} />
+                    <div>
+                      <Label>Status</Label>
+                      <Select value={courseForm.status} onValueChange={v => setCourseForm(f => ({ ...f, status: v }))}>
+                        <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="published">Published</SelectItem>
+                          <SelectItem value="archived">Archived</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Credits</Label>
+                      <Input className="mt-1" type="number" value={courseForm.credits} onChange={e => setCourseForm(f => ({ ...f, credits: e.target.value }))} />
+                    </div>
+                    <div>
+                      <Label>Duration (weeks)</Label>
+                      <Input className="mt-1" type="number" value={courseForm.duration_weeks} onChange={e => setCourseForm(f => ({ ...f, duration_weeks: e.target.value }))} />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Prerequisites & Outcomes */}
+              <Card>
+                <CardHeader className="py-4 px-6"><CardTitle className="text-base">Prerequisites & Learning Outcomes</CardTitle></CardHeader>
+                <CardContent className="px-6 pb-6 space-y-4">
+                  <div>
+                    <Label>Prerequisites</Label>
+                    <Textarea className="mt-1" rows={3} placeholder="What should students know before taking this course?" value={courseForm.prerequisites_en} onChange={e => setCourseForm(f => ({ ...f, prerequisites_en: e.target.value }))} />
+                  </div>
+                  <div>
+                    <Label>Learning Outcomes</Label>
+                    <div className="mt-2 space-y-2">
+                      {(courseForm.learning_outcomes_en || []).map((outcome, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <Input className="flex-1 text-sm" placeholder={`Outcome ${i + 1}`} value={outcome} onChange={e => setLearningOutcome(i, e.target.value)} />
+                          <button onClick={() => removeLearningOutcome(i)} className="text-slate-400 hover:text-red-500">
+                            <X className="w-4 h-4" />
+                          </button>
                         </div>
                       ))}
+                      <Button variant="outline" size="sm" onClick={addLearningOutcome}>
+                        <Plus className="w-4 h-4 mr-1" /> Add Outcome
+                      </Button>
                     </div>
                   </div>
-                ))}
-                <Button variant="outline" size="sm" onClick={() => addQuestion(activeWeekId)}>
-                  <Plus className="w-4 h-4 mr-1" /> Add Question
-                </Button>
-                {!(quizForms[activeWeekId]?.questions?.length > 0) && (
-                  <p className="text-sm text-slate-400">No questions yet. Click "Add Question" to start building the quiz.</p>
-                )}
-              </CardContent>
-            </Card></>
-          ) : (
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* === WEEK EDITOR PANEL === */}
+          {!showCourseInfo && activeWeek && weekForms[activeTab] !== undefined && (
+            <>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between py-4 px-6">
+                  <CardTitle className="text-base">Week {activeWeek.week_number}</CardTitle>
+                  <Button onClick={() => deleteWeek.mutate(activeTab)} variant="destructive" size="sm">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </CardHeader>
+                <CardContent className="px-6 pb-6 space-y-4">
+                  <div>
+                    <Label>Title</Label>
+                    <Input className="mt-1" value={activeWeekForm.title_en} onChange={e => setWeekField(activeTab, 'title_en', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>Lesson Content (Markdown)</Label>
+                    <Textarea className="mt-1 font-mono text-sm" rows={10} value={activeWeekForm.overview_en} onChange={e => setWeekField(activeTab, 'overview_en', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>Video URL</Label>
+                    <Input className="mt-1" placeholder="https://youtube.com/..." value={activeWeekForm.video_url} onChange={e => setWeekField(activeTab, 'video_url', e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>Reading Assignment</Label>
+                    <Textarea className="mt-1" rows={3} value={activeWeekForm.reading_assignment_en} onChange={e => setWeekField(activeTab, 'reading_assignment_en', e.target.value)} />
+                  </div>
+                  {/* Attachments */}
+                  <div>
+                    <Label>Handouts / Attachments</Label>
+                    <div className="mt-1 space-y-2">
+                      {(activeWeekForm.attachments || []).map((att, i) => (
+                        <div key={i} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg border text-sm">
+                          <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                          <span className="flex-1 truncate text-slate-700">{att.title}</span>
+                          <button onClick={() => removeAttachment(activeTab, i)} className="text-slate-400 hover:text-red-500">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <label className="cursor-pointer">
+                        <input type="file" className="hidden" onChange={e => handleAttachmentUpload(activeTab, e)} disabled={!!uploadingWeekId} />
+                        <Button type="button" variant="outline" size="sm" disabled={!!uploadingWeekId} asChild>
+                          <span><Upload className="w-4 h-4 mr-1" />{uploadingWeekId === activeTab ? 'Uploading...' : 'Upload File'}</span>
+                        </Button>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="has_written" checked={activeWeekForm.has_written_assignment} onChange={e => setWeekField(activeTab, 'has_written_assignment', e.target.checked)} />
+                    <Label htmlFor="has_written">Written Assignment</Label>
+                  </div>
+                  {activeWeekForm.has_written_assignment && (
+                    <div>
+                      <Label>Assignment Prompt</Label>
+                      <Textarea className="mt-1" rows={3} value={activeWeekForm.written_assignment_en} onChange={e => setWeekField(activeTab, 'written_assignment_en', e.target.value)} />
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="has_disc" checked={activeWeekForm.has_discussion} onChange={e => setWeekField(activeTab, 'has_discussion', e.target.checked)} />
+                    <Label htmlFor="has_disc">Discussion Forum</Label>
+                  </div>
+                  {activeWeekForm.has_discussion && (
+                    <div>
+                      <Label>Discussion Prompt</Label>
+                      <Textarea className="mt-1" rows={2} value={activeWeekForm.discussion_prompt_en} onChange={e => setWeekField(activeTab, 'discussion_prompt_en', e.target.value)} />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Quiz Editor */}
+              <Card className="mt-4">
+                <CardHeader className="flex flex-row items-center justify-between py-4 px-6">
+                  <CardTitle className="text-base">Quiz</CardTitle>
+                  <Button onClick={() => saveQuiz(activeTab)} disabled={savingQuizId === activeTab} size="sm" className="bg-[#1e3a5f]">
+                    <Save className="w-4 h-4 mr-1" />{savingQuizId === activeTab ? 'Saving...' : 'Save Quiz'}
+                  </Button>
+                </CardHeader>
+                <CardContent className="px-6 pb-6 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Label className="shrink-0">Pass Threshold (%)</Label>
+                    <Input type="number" className="w-24" value={quizForms[activeTab]?.pass_threshold || 70}
+                      onChange={e => setQuizField(activeTab, 'pass_threshold', Number(e.target.value))} />
+                  </div>
+                  {(quizForms[activeTab]?.questions || []).map((q, qi) => (
+                    <div key={qi} className="border border-slate-200 rounded-lg p-4 space-y-3">
+                      <div className="flex items-start gap-2">
+                        <span className="text-sm font-medium text-slate-500 mt-2 w-5 shrink-0">{qi + 1}.</span>
+                        <Textarea className="flex-1" rows={2} placeholder="Question text" value={q.question}
+                          onChange={e => setQuestionField(activeTab, qi, 'question', e.target.value)} />
+                        <button onClick={() => removeQuestion(activeTab, qi)} className="mt-2 text-slate-400 hover:text-red-500">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="pl-7 space-y-2">
+                        {(q.options || []).map((opt, oi) => (
+                          <div key={oi} className="flex items-center gap-2">
+                            <input type="radio" name={`q${qi}-correct`} checked={q.correct_answer === oi}
+                              onChange={() => setQuestionField(activeTab, qi, 'correct_answer', oi)}
+                              className="w-4 h-4 shrink-0" title="Mark as correct" />
+                            <Input className="flex-1 text-sm" placeholder={`Option ${oi + 1}`} value={opt}
+                              onChange={e => setOptionText(activeTab, qi, oi, e.target.value)} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  <Button variant="outline" size="sm" onClick={() => addQuestion(activeTab)}>
+                    <Plus className="w-4 h-4 mr-1" /> Add Question
+                  </Button>
+                  {!(quizForms[activeTab]?.questions?.length > 0) && (
+                    <p className="text-sm text-slate-400">No questions yet. Click "Add Question" to start building the quiz.</p>
+                  )}
+                </CardContent>
+              </Card>
+            </>
+          )}
+
+          {/* Empty state */}
+          {!showCourseInfo && !activeWeek && (
             <Card>
               <CardContent className="p-12 text-center text-slate-400">
                 Select a week from the sidebar or add a new one.
