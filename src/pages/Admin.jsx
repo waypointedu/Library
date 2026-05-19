@@ -18,6 +18,7 @@ import InstructorApprovalManager from '@/components/admin/InstructorApprovalMana
 import StudentManager from '@/components/admin/StudentManager';
 import GamificationManager from '@/components/admin/GamificationManager';
 import AdvancedCourseManager from '@/components/admin/AdvancedCourseManager';
+import CourseInstanceManager from '@/components/admin/CourseInstanceManager';
 import AnnouncementManager from '@/components/communication/AnnouncementManager';
 
 export default function Admin() {
@@ -78,6 +79,7 @@ export default function Admin() {
             <TabsTrigger value="courses">{lang === 'es' ? 'Cursos' : 'Courses'}</TabsTrigger>
             {user.role === 'admin' && <TabsTrigger value="students">{lang === 'es' ? 'Estudiantes' : 'Students'}</TabsTrigger>}
             {user.role === 'admin' && <TabsTrigger value="instructors">{lang === 'es' ? 'Instructores' : 'Instructors'}</TabsTrigger>}
+            {user.role === 'admin' && <TabsTrigger value="schedule">Schedule</TabsTrigger>}
             {user.role === 'admin' && <TabsTrigger value="calendar">{lang === 'es' ? 'Calendario' : 'Calendar'}</TabsTrigger>}
             {user.role === 'admin' && <TabsTrigger value="pathways">{lang === 'es' ? 'Rutas' : 'Pathways'}</TabsTrigger>}
             {user.role === 'admin' && <TabsTrigger value="users">{lang === 'es' ? 'Usuarios' : 'Users'}</TabsTrigger>}
@@ -110,6 +112,12 @@ export default function Admin() {
           {user.role === 'admin' && (
             <TabsContent value="instructors">
               <InstructorApprovalManager />
+            </TabsContent>
+          )}
+
+          {user.role === 'admin' && (
+            <TabsContent value="schedule">
+              <CourseInstanceManager />
             </TabsContent>
           )}
 
