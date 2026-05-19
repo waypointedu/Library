@@ -128,15 +128,16 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
   const cropAndUpload = async () => {
     setUploading(true);
     const ts = totalScale();
-    // Image drawn centered on stage + offset
-    const imgLeft = SW / 2 - (naturalSize.w * ts) / 2 + offset.x;
-    const imgTop  = SH / 2 - (naturalSize.h * ts) / 2 + offset.y;
-    // Crop window top-left in stage coords
-    const cropLeft = (SW - CROP_W) / 2;
-    const cropTop  = (SH - CROP_H) / 2;
-    // Source in natural pixels
-    const srcX = (cropLeft - imgLeft) / ts;
-    const srcY = (cropTop  - imgTop)  / ts;
+    // The image is centered on stage with CSS, and offset moves it by offset.x/y.
+    // The crop box is also centered on stage.
+    // So the crop box top-left relative to image top-left:
+    //   cropLeft - imgLeft = (SW-CROP_W)/2 - (SW/2 - imgW/2 + offset.x)
+    //                      = (imgW - CROP_W)/2 - offset.x
+    // Simplifies to:
+    const imgW = naturalSize.w * ts;
+    const imgH = naturalSize.h * ts;
+    const srcX = ((imgW - CROP_W) / 2 - offset.x) / ts;
+    const srcY = ((imgH - CROP_H) / 2 - offset.y) / ts;
     const srcW = CROP_W / ts;
     const srcH = CROP_H / ts;
 
