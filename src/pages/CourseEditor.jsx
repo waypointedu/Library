@@ -70,6 +70,7 @@ export default function CourseEditor() {
         duration_weeks: course.duration_weeks || '',
         credits: course.credits || '',
         cover_image_url: course.cover_image_url || '',
+        cover_image_position: course.cover_image_position || '50% 50%',
         prerequisites_en: course.prerequisites_en || '',
         learning_outcomes_en: course.learning_outcomes_en || [],
       });
@@ -303,6 +304,8 @@ export default function CourseEditor() {
                   <ImageCropUploader
                     value={courseForm.cover_image_url}
                     onChange={url => setCourseForm(f => ({ ...f, cover_image_url: url }))}
+                    position={courseForm.cover_image_position}
+                    onPositionChange={pos => setCourseForm(f => ({ ...f, cover_image_position: pos }))}
                     shape="rect"
                     aspectRatio={16 / 9}
                   />

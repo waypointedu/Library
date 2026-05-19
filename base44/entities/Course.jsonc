@@ -1,0 +1,196 @@
+{
+  "name": "Course",
+  "type": "object",
+  "properties": {
+    "title_en": {
+      "type": "string",
+      "description": "Course title in English"
+    },
+    "title_es": {
+      "type": "string",
+      "description": "Course title in Spanish"
+    },
+    "title_ps": {
+      "type": "string",
+      "description": "Course title in Pashtu"
+    },
+    "title_fa": {
+      "type": "string",
+      "description": "Course title in Persian"
+    },
+    "title_km": {
+      "type": "string",
+      "description": "Course title in Khmer"
+    },
+    "description_en": {
+      "type": "string",
+      "description": "Course description in English"
+    },
+    "description_es": {
+      "type": "string",
+      "description": "Course description in Spanish"
+    },
+    "description_ps": {
+      "type": "string",
+      "description": "Course description in Pashtu"
+    },
+    "description_fa": {
+      "type": "string",
+      "description": "Course description in Persian"
+    },
+    "description_km": {
+      "type": "string",
+      "description": "Course description in Khmer"
+    },
+    "cover_image_url": {
+      "type": "string",
+      "description": "URL to course cover image"
+    },
+    "cover_image_position": {
+      "type": "string",
+      "default": "50% 50%",
+      "description": "CSS object-position for cover image (e.g. '50% 30%')"
+    },
+    "primary_subject_area": {
+      "type": "string",
+      "enum": [
+        "theology",
+        "biblical_studies",
+        "philosophy",
+        "history",
+        "literature",
+        "culture",
+        "psychology_cognitive_science",
+        "spiritual_formation",
+        "interdisciplinary"
+      ],
+      "description": "Primary subject area (single-select)"
+    },
+    "secondary_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Secondary tags for categorization (multi-select)"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Legacy course tags/topics"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "draft",
+      "description": "Publishing status"
+    },
+    "language_availability": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "en",
+          "es",
+          "ps",
+          "fa",
+          "km"
+        ]
+      },
+      "default": [
+        "en"
+      ],
+      "description": "Available languages for this course"
+    },
+    "credits": {
+      "type": "number",
+      "description": "Credit hours"
+    },
+    "duration_weeks": {
+      "type": "number",
+      "description": "Estimated duration in weeks"
+    },
+    "prerequisite_course_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of courses required as prerequisites"
+    },
+    "prerequisites_en": {
+      "type": "string",
+      "description": "Legacy prerequisites text in English"
+    },
+    "prerequisites_es": {
+      "type": "string",
+      "description": "Legacy prerequisites text in Spanish"
+    },
+    "prerequisites_ps": {
+      "type": "string",
+      "description": "Legacy prerequisites text in Pashtu"
+    },
+    "prerequisites_fa": {
+      "type": "string",
+      "description": "Legacy prerequisites text in Persian"
+    },
+    "prerequisites_km": {
+      "type": "string",
+      "description": "Legacy prerequisites text in Khmer"
+    },
+    "learning_outcomes_en": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Learning outcomes in English"
+    },
+    "learning_outcomes_es": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Learning outcomes in Spanish"
+    },
+    "learning_outcomes_ps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Learning outcomes in Pashtu"
+    },
+    "learning_outcomes_fa": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Learning outcomes in Persian"
+    },
+    "learning_outcomes_km": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Learning outcomes in Khmer"
+    },
+    "order_index": {
+      "type": "number",
+      "description": "Display order in catalog"
+    },
+    "pathway_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of pathways this course belongs to"
+    }
+  },
+  "required": [
+    "title_en",
+    "status"
+  ]
+}
