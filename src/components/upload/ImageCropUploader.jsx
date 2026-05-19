@@ -3,15 +3,10 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Upload, ZoomIn, ZoomOut, Check, X, Move } from 'lucide-react';
 
-/**
- * ImageCropUploader
- * Props:
- *   value       - current image URL
- *   onChange    - called with new URL after upload
- *   shape       - 'circle' | 'rect'
- *   aspectRatio - e.g. 16/9 (used for rect)
- *   label       - optional label
- */
+// Fixed crop window size (in px). The image is shown at full width around it.
+const CROP_W = 400;
+const getcropH = (shape, aspectRatio) => shape === 'circle' ? 400 : Math.round(CROP_W / aspectRatio);
+
 export default function ImageCropUploader({ value, onChange, shape = 'rect', aspectRatio = 16 / 9, label }) {
   const [localSrc, setLocalSrc] = useState(null);
   const [naturalSize, setNaturalSize] = useState({ w: 0, h: 0 });
@@ -20,42 +15,50 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [uploading, setUploading] = useState(false);
-  const [containerSize, setContainerSize] = useState({ w: 400, h: 225 });
 
   const fileInputRef = useRef(null);
-  const containerRef = useRef(null);
+  const stageRef = useRef(null); // the full editing area
+  const [stageSize, setStageSize] = useState({ w: 600, h: 400 });
 
-  // Measure the actual rendered container size
+  const CROP_H = getcropH(shape, aspectRatio);
+
+  // Measure stage width so the image fills it
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!stageRef.current) return;
     const ro = new ResizeObserver(entries => {
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) setContainerSize({ w: width, h: height });
+      const { width } = entries[0].contentRect;
+      if (width > 0) {
+        // Stage height = crop height + some padding
+        setStageSize({ w: width, h: CROP_H + 60 });
+      }
     });
-    ro.observe(containerRef.current);
+    ro.observe(stageRef.current);
     return () => ro.disconnect();
-  }, [localSrc]); // re-run when crop UI mounts
+  }, [localSrc, CROP_H]);
 
-  const CW = containerSize.w;
-  const CH = containerSize.h;
+  const SW = stageSize.w;
+  const SH = stageSize.h;
 
+  // "fit" scale: image fills the crop box at minimum
   const fitScale = useCallback(() => {
     if (!naturalSize.w || !naturalSize.h) return 1;
-    return Math.max(CW / naturalSize.w, CH / naturalSize.h);
-  }, [naturalSize, CW, CH]);
+    return Math.max(CROP_W / naturalSize.w, CROP_H / naturalSize.h);
+  }, [naturalSize, CROP_W, CROP_H]);
 
   const totalScale = useCallback(() => fitScale() * zoom, [fitScale, zoom]);
 
+  // Clamp so image always covers the crop window
   const clamp = useCallback((ox, oy, ts) => {
     const iw = naturalSize.w * ts;
     const ih = naturalSize.h * ts;
-    const maxX = Math.max(0, (iw - CW) / 2);
-    const maxY = Math.max(0, (ih - CH) / 2);
+    // Image center relative to stage center must keep crop box covered
+    const maxX = Math.max(0, (iw - CROP_W) / 2);
+    const maxY = Math.max(0, (ih - CROP_H) / 2);
     return {
       x: Math.max(-maxX, Math.min(maxX, ox)),
       y: Math.max(-maxY, Math.min(maxY, oy)),
     };
-  }, [naturalSize, CW, CH]);
+  }, [naturalSize, CROP_W, CROP_H]);
 
   const handleFile = (file) => {
     if (!file || !file.type.startsWith('image/')) return;
@@ -74,7 +77,7 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
     setOffset({ x: 0, y: 0 });
   };
 
-  // Mouse drag
+  // Mouse drag on stage
   const onMouseDown = (e) => {
     e.preventDefault();
     setDragging(true);
@@ -90,13 +93,10 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
   useEffect(() => {
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
-    };
+    return () => { window.removeEventListener('mousemove', onMouseMove); window.removeEventListener('mouseup', onMouseUp); };
   }, [onMouseMove]);
 
-  // Touch drag
+  // Touch
   const dragStartTouch = useRef({ x: 0, y: 0 });
   const onTouchStart = (e) => {
     const t = e.touches[0];
@@ -104,44 +104,46 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
   };
   const onTouchMove = (e) => {
     const t = e.touches[0];
-    const raw = { x: t.clientX - dragStartTouch.current.x, y: t.clientY - dragStartTouch.current.y };
-    setOffset(clamp(raw.x, raw.y, totalScale()));
+    setOffset(clamp(t.clientX - dragStartTouch.current.x, t.clientY - dragStartTouch.current.y, totalScale()));
   };
 
-  // Scroll to zoom
+  // Scroll zoom
   const onWheel = (e) => {
     e.preventDefault();
     const delta = e.deltaY < 0 ? 0.08 : -0.08;
     setZoom(z => {
       const next = Math.max(1, Math.min(5, z + delta));
-      const nextTs = fitScale() * next;
-      setOffset(prev => clamp(prev.x, prev.y, nextTs));
+      setOffset(prev => clamp(prev.x, prev.y, fitScale() * next));
       return next;
     });
   };
 
-  // Crop and upload — uses the exact same display values as the preview
+  const changeZoom = (next) => {
+    next = Math.max(1, Math.min(5, next));
+    setZoom(next);
+    setOffset(prev => clamp(prev.x, prev.y, fitScale() * next));
+  };
+
+  // Crop & upload: srcX/Y/W/H are in natural image pixels matching the crop window
   const cropAndUpload = async () => {
     setUploading(true);
-
     const ts = totalScale();
+    // Image drawn centered on stage + offset
+    const imgLeft = SW / 2 - (naturalSize.w * ts) / 2 + offset.x;
+    const imgTop  = SH / 2 - (naturalSize.h * ts) / 2 + offset.y;
+    // Crop window top-left in stage coords
+    const cropLeft = (SW - CROP_W) / 2;
+    const cropTop  = (SH - CROP_H) / 2;
+    // Source in natural pixels
+    const srcX = (cropLeft - imgLeft) / ts;
+    const srcY = (cropTop  - imgTop)  / ts;
+    const srcW = CROP_W / ts;
+    const srcH = CROP_H / ts;
 
-    // Top-left of image in display space
-    const imgLeft = CW / 2 - (naturalSize.w * ts) / 2 + offset.x;
-    const imgTop  = CH / 2 - (naturalSize.h * ts) / 2 + offset.y;
-
-    // Source rectangle in natural image pixels
-    const srcX = -imgLeft / ts;
-    const srcY = -imgTop  / ts;
-    const srcW =  CW / ts;
-    const srcH =  CH / ts;
-
-    // Output at 2× for crispness
-    const OUT_W = Math.round(CW * 2);
-    const OUT_H = Math.round(CH * 2);
-
+    const OUT_W = CROP_W * 2;
+    const OUT_H = CROP_H * 2;
     const canvas = document.createElement('canvas');
-    canvas.width  = OUT_W;
+    canvas.width = OUT_W;
     canvas.height = OUT_H;
     const ctx = canvas.getContext('2d');
 
@@ -154,7 +156,6 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
     const img = new Image();
     img.src = localSrc;
     await new Promise(r => { img.onload = r; if (img.complete) r(); });
-
     ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, OUT_W, OUT_H);
 
     canvas.toBlob(async (blob) => {
@@ -168,13 +169,13 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
     }, 'image/jpeg', 0.92);
   };
 
-  const cancel = () => {
-    setLocalSrc(null);
-    setZoom(1);
-    setOffset({ x: 0, y: 0 });
-  };
+  const cancel = () => { setLocalSrc(null); setZoom(1); setOffset({ x: 0, y: 0 }); };
 
   const ts = totalScale();
+
+  // Dim overlay: 4 rectangles around the crop box
+  const cropLeft = (SW - CROP_W) / 2;
+  const cropTop  = (SH - CROP_H) / 2;
 
   return (
     <div className="space-y-3">
@@ -182,30 +183,28 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
 
       {localSrc ? (
         <div className="space-y-3">
-          {/* Preview container — CSS aspect-ratio keeps it the right shape always */}
+          {/* Stage: full-width, image floats behind crop overlay */}
           <div
-            ref={containerRef}
-            className="relative overflow-hidden bg-slate-800 cursor-grab active:cursor-grabbing select-none w-full"
-            style={{
-              aspectRatio: shape === 'circle' ? '1 / 1' : `${aspectRatio} / 1`,
-              borderRadius: shape === 'circle' ? '50%' : '0.5rem',
-            }}
+            ref={stageRef}
+            className="relative overflow-hidden bg-slate-900 cursor-grab active:cursor-grabbing select-none rounded-lg"
+            style={{ width: '100%', height: SH }}
             onMouseDown={onMouseDown}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={() => setDragging(false)}
             onWheel={onWheel}
           >
+            {/* The image */}
             {naturalSize.w > 0 && (
               <img
                 src={localSrc}
                 alt=""
                 style={{
                   position: 'absolute',
-                  width:  naturalSize.w * ts,
+                  width: naturalSize.w * ts,
                   height: naturalSize.h * ts,
                   left: '50%',
-                  top:  '50%',
+                  top: '50%',
                   transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
                   pointerEvents: 'none',
                   userSelect: 'none',
@@ -213,36 +212,44 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
                 draggable={false}
               />
             )}
-            {/* Hidden img just to get natural size */}
-            <img
-              src={localSrc}
-              alt=""
-              onLoad={onImgLoad}
-              style={{ display: 'none' }}
-            />
+
+            {/* Dim overlay — 4 panels around the crop box */}
+            {naturalSize.w > 0 && (<>
+              {/* top */}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: cropTop, background: 'rgba(0,0,0,0.45)', pointerEvents: 'none' }} />
+              {/* bottom */}
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, top: cropTop + CROP_H, background: 'rgba(0,0,0,0.45)', pointerEvents: 'none' }} />
+              {/* left */}
+              <div style={{ position: 'absolute', top: cropTop, left: 0, width: cropLeft, height: CROP_H, background: 'rgba(0,0,0,0.45)', pointerEvents: 'none' }} />
+              {/* right */}
+              <div style={{ position: 'absolute', top: cropTop, left: cropLeft + CROP_W, right: 0, height: CROP_H, background: 'rgba(0,0,0,0.45)', pointerEvents: 'none' }} />
+              {/* Crop border */}
+              <div style={{
+                position: 'absolute',
+                top: cropTop, left: cropLeft,
+                width: CROP_W, height: CROP_H,
+                border: '2px dashed rgba(255,255,255,0.8)',
+                borderRadius: shape === 'circle' ? '50%' : 6,
+                pointerEvents: 'none',
+                boxSizing: 'border-box',
+              }} />
+            </>)}
+
+            {/* Hidden img to read natural size */}
+            <img src={localSrc} alt="" onLoad={onImgLoad} style={{ display: 'none' }} />
           </div>
 
-          {/* Zoom slider */}
+          {/* Zoom */}
           <div className="flex items-center gap-3 justify-center">
-            <button
-              onClick={() => setZoom(z => { const n = Math.max(1, z - 0.1); setOffset(prev => clamp(prev.x, prev.y, fitScale() * n)); return n; })}
-              className="p-1 rounded hover:bg-slate-100"
-            >
+            <button onClick={() => changeZoom(zoom - 0.1)} className="p-1 rounded hover:bg-slate-100">
               <ZoomOut className="w-4 h-4 text-slate-600" />
             </button>
             <input
               type="range" min="100" max="500" value={Math.round(zoom * 100)}
-              onChange={e => {
-                const n = e.target.value / 100;
-                setZoom(n);
-                setOffset(prev => clamp(prev.x, prev.y, fitScale() * n));
-              }}
+              onChange={e => changeZoom(e.target.value / 100)}
               className="w-32 accent-[#1e3a5f]"
             />
-            <button
-              onClick={() => setZoom(z => { const n = Math.min(5, z + 0.1); setOffset(prev => clamp(prev.x, prev.y, fitScale() * n)); return n; })}
-              className="p-1 rounded hover:bg-slate-100"
-            >
+            <button onClick={() => changeZoom(zoom + 0.1)} className="p-1 rounded hover:bg-slate-100">
               <ZoomIn className="w-4 h-4 text-slate-600" />
             </button>
             <span className="text-xs text-slate-400 w-10">{Math.round(zoom * 100)}%</span>
@@ -269,11 +276,7 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
         >
           {value ? (
             <div className="flex flex-col items-center gap-3">
-              <img
-                src={value}
-                alt="Current"
-                className={`object-cover ${shape === 'circle' ? 'w-24 h-24 rounded-full' : 'w-full h-40 rounded-lg'}`}
-              />
+              <img src={value} alt="Current" className={`object-cover ${shape === 'circle' ? 'w-24 h-24 rounded-full' : 'w-full h-40 rounded-lg'}`} />
               <p className="text-xs text-slate-500">Click or drag to replace</p>
             </div>
           ) : (
@@ -283,8 +286,7 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
               <p className="text-xs">PNG, JPG, WEBP</p>
             </div>
           )}
-          <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
-            onChange={e => handleFile(e.target.files[0])} />
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleFile(e.target.files[0])} />
         </div>
       )}
     </div>
