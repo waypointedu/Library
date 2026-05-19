@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Plus, Trash2, Save, Upload, FileText, X, BookOpen, Settings } from 'lucide-react';
+import ImageCropUploader from '@/components/upload/ImageCropUploader';
 
 const SUBJECTS = [
   ['theology', 'Theology'], ['biblical_studies', 'Biblical Studies'], ['philosophy', 'Philosophy'],
@@ -56,7 +57,6 @@ export default function CourseEditor() {
   const [courseForm, setCourseForm] = useState(null);
   const [weekForms, setWeekForms] = useState({});
   const [uploadingWeekId, setUploadingWeekId] = useState(null);
-  const [uploadingCoverImage, setUploadingCoverImage] = useState(false);
   const [quizForms, setQuizForms] = useState({});
   const [savingQuizId, setSavingQuizId] = useState(null);
 
@@ -165,16 +165,6 @@ export default function CourseEditor() {
       [weekId]: { ...prev[weekId], attachments: [...(prev[weekId].attachments || []), { title: file.name, url: file_url }] }
     }));
     setUploadingWeekId(null);
-    e.target.value = '';
-  };
-
-  const handleCoverImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setUploadingCoverImage(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setCourseForm(f => ({ ...f, cover_image_url: file_url }));
-    setUploadingCoverImage(false);
     e.target.value = '';
   };
 
@@ -309,27 +299,13 @@ export default function CourseEditor() {
               {/* Cover Image */}
               <Card>
                 <CardHeader className="py-4 px-6"><CardTitle className="text-base">Cover Image</CardTitle></CardHeader>
-                <CardContent className="px-6 pb-6 space-y-4">
-                  {courseForm.cover_image_url && (
-                    <img src={courseForm.cover_image_url} alt="Cover" className="w-full h-48 object-cover rounded-lg border border-slate-200" />
-                  )}
-                  <div className="flex items-center gap-3">
-                    <label className="cursor-pointer">
-                      <input type="file" accept="image/*" className="hidden" onChange={handleCoverImageUpload} disabled={uploadingCoverImage} />
-                      <Button type="button" variant="outline" size="sm" disabled={uploadingCoverImage} asChild>
-                        <span><Upload className="w-4 h-4 mr-1" />{uploadingCoverImage ? 'Uploading...' : 'Upload Image'}</span>
-                      </Button>
-                    </label>
-                    {courseForm.cover_image_url && (
-                      <Button type="button" variant="ghost" size="sm" onClick={() => setCourseForm(f => ({ ...f, cover_image_url: '' }))}>
-                        <X className="w-4 h-4 mr-1" /> Remove
-                      </Button>
-                    )}
-                  </div>
-                  <div>
-                    <Label className="text-xs text-slate-500">Or paste an image URL</Label>
-                    <Input className="mt-1 text-sm" placeholder="https://..." value={courseForm.cover_image_url} onChange={e => setCourseForm(f => ({ ...f, cover_image_url: e.target.value }))} />
-                  </div>
+                <CardContent className="px-6 pb-6">
+                  <ImageCropUploader
+                    value={courseForm.cover_image_url}
+                    onChange={url => setCourseForm(f => ({ ...f, cover_image_url: url }))}
+                    shape="rect"
+                    aspectRatio={16 / 9}
+                  />
                 </CardContent>
               </Card>
 

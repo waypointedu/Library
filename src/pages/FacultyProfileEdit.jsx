@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Plus, Trash2, Save, ChevronUp, ChevronDown, Pencil, Check, X } from "lucide-react";
+import ImageCropUploader from '@/components/upload/ImageCropUploader';
 
 export default function FacultyProfileEdit() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -131,9 +132,12 @@ export default function FacultyProfileEdit() {
             <Input value={form.title} onChange={e => set('title', e.target.value)} placeholder="e.g. Scholar of Religion & Culture" className="mt-1" />
           </div>
           <div>
-            <label className="text-sm font-medium text-slate-700">Photo URL</label>
-            <Input value={form.photo_url} onChange={e => set('photo_url', e.target.value)} placeholder="https://..." className="mt-1" />
-            {form.photo_url && <img src={form.photo_url} alt="Preview" className="w-16 h-16 rounded-full object-cover mt-2" />}
+            <ImageCropUploader
+              label="Profile Photo"
+              value={form.photo_url}
+              onChange={url => set('photo_url', url)}
+              shape="circle"
+            />
           </div>
           <div>
             <label className="text-sm font-medium text-slate-700">Faculty Type</label>
