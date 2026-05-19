@@ -24,7 +24,7 @@ export default function CourseCard({ course, lang = 'en', progress = 0, enrolled
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-200 h-full flex flex-col">
         {course.cover_image_url ? (
           <div className="h-40 overflow-hidden">
-            <img src={course.cover_image_url} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+            <img src={course.cover_image_url} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" style={{ objectPosition: course.cover_image_position || '50% 50%' }} />
           </div>
         ) : (
           <div className="h-40 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a8a] flex items-center justify-center">

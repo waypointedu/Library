@@ -201,7 +201,7 @@ export default function Course() {
         <div className="max-w-4xl mx-auto">
           {course.cover_image_url && (
             <div className="mb-6">
-              <img src={course.cover_image_url} alt={title} className="w-full max-h-64 object-cover rounded-xl" />
+              <img src={course.cover_image_url} alt={title} className="w-full max-h-64 object-cover rounded-xl" style={{ objectPosition: course.cover_image_position || '50% 50%' }} />
             </div>
           )}
           <div className="flex flex-wrap gap-2 mb-4">
