@@ -24,9 +24,9 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
   const fileInputRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Fixed display canvas size
-  const DISPLAY_W = 480;
-  const DISPLAY_H = shape === 'circle' ? 480 : Math.round(DISPLAY_W / aspectRatio);
+  // Fixed display canvas size — must never be shrunk by CSS or crop math breaks
+  const DISPLAY_W = 400;
+  const DISPLAY_H = shape === 'circle' ? 400 : Math.round(DISPLAY_W / aspectRatio);
 
   // "fit" scale: smallest scale that makes image cover the display canvas
   const fitScale = useCallback(() => {
@@ -170,14 +170,16 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
 
       {localSrc ? (
         <div className="space-y-3">
+          {/* Outer wrapper prevents any CSS from resizing the fixed crop window */}
+          <div style={{ overflowX: 'auto' }}>
           {/* Live preview — exactly what will be cropped */}
           <div
             ref={containerRef}
             className="relative overflow-hidden bg-slate-800 cursor-grab active:cursor-grabbing select-none mx-auto"
             style={{
               width: DISPLAY_W,
-              maxWidth: '100%',
               height: DISPLAY_H,
+              flexShrink: 0,
               borderRadius: shape === 'circle' ? '50%' : '0.5rem',
             }}
             onMouseDown={onMouseDown}
@@ -203,6 +205,7 @@ export default function ImageCropUploader({ value, onChange, shape = 'rect', asp
               }}
               draggable={false}
             />
+          </div>
           </div>
 
           {/* Zoom slider */}
