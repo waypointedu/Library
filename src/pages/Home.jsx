@@ -77,7 +77,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link to={createPageUrl('Home')} className="flex items-center gap-2">
-              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint" className="h-8 w-auto" />
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint" className="h-12 w-auto" />
             </Link>
             <div className="hidden md:flex items-center gap-6">
               <Link to={createPageUrl(`Pathways?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">Programs</Link>
@@ -236,18 +236,22 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-white py-12">
+      <footer className="bg-slate-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="mb-12 pb-8 border-b border-slate-800">
+            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-16 w-auto mb-4" />
+            <p className="text-slate-400 max-w-md">Tuition-free Christian college education that pursues the Good, the True, and the Beautiful.</p>
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-start gap-8">
             <div>
-              <p className="font-semibold">Waypoint Institute</p>
-              <p className="text-slate-400 text-sm">Tuition-free Christian college education</p>
+              <p className="font-semibold text-sm uppercase tracking-wider text-slate-300 mb-4">Links</p>
+              <div className="flex flex-col gap-2 text-sm text-slate-400">
+                <Link to={createPageUrl(`About?lang=${lang}`)} className="hover:text-white">About</Link>
+                <Link to={createPageUrl(`Contact?lang=${lang}`)} className="hover:text-white">Contact</Link>
+                <Link to={createPageUrl(`FAQ?lang=${lang}`)} className="hover:text-white">FAQ</Link>
+              </div>
             </div>
-            <div className="flex gap-6 text-sm text-slate-400">
-              <Link to={createPageUrl(`About?lang=${lang}`)} className="hover:text-white">About</Link>
-              <Link to={createPageUrl(`Contact?lang=${lang}`)} className="hover:text-white">Contact</Link>
-              <Link to={createPageUrl(`FAQ?lang=${lang}`)} className="hover:text-white">FAQ</Link>
-            </div>
+            <p className="text-xs text-slate-500">© {new Date().getFullYear()} Waypoint Institute. All rights reserved.</p>
           </div>
         </div>
       </footer>
