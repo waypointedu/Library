@@ -121,7 +121,7 @@ export default function Home() {
           <div className="max-w-3xl">
             <h1 className="text-5xl md:text-7xl font-light text-white leading-tight mb-6">
               <em className="italic">to{' '}
-              <span className="text-gold font-bold">all</span>
+              <span className="text-gold italic">all</span>
               {' '}the nations</em>
             </h1>
             <p className="text-xl text-white/90 mb-8">
