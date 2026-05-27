@@ -35,7 +35,7 @@ export default function PublicHeader({ lang = 'en', currentPage }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to={createPageUrl('Home')}>
-            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint" className="h-8 w-auto" />
+            <img src="https://media.base44.com/images/public/69826d34529ac930f0c94f5a/ee03fb6af_1F28AA65-E781-49A0-9EAF-7122DEC9B735.png" alt="Waypoint Institute" className="h-10 w-auto" />
           </Link>
 
           <div className="hidden md:flex items-center gap-5">
@@ -44,7 +44,7 @@ export default function PublicHeader({ lang = 'en', currentPage }) {
                 {link.label}
               </Link>
             ))}
-            <Link to={createPageUrl(`Apply?lang=${lang}`)} className="text-sm font-medium text-white bg-[#1e3a5f] px-4 py-2 rounded-lg hover:bg-[#2d5a8a] transition-colors whitespace-nowrap">
+            <Link to={createPageUrl(`Apply?lang=${lang}`)} className="text-sm font-medium text-white bg-[#1B2E5E] px-4 py-2 rounded-lg hover:bg-[#243b78] transition-colors whitespace-nowrap">
               {lang === 'es' ? 'Aplicar' : 'Apply'}
             </Link>
             {user ? (
@@ -71,7 +71,7 @@ export default function PublicHeader({ lang = 'en', currentPage }) {
               {link.label}
             </Link>
           ))}
-          <Link to={createPageUrl(`Apply?lang=${lang}`)} className="block text-sm font-medium text-[#1e3a5f] py-1" onClick={() => setMobileMenuOpen(false)}>
+          <Link to={createPageUrl(`Apply?lang=${lang}`)} className="block text-sm font-medium text-[#1B2E5E] py-1" onClick={() => setMobileMenuOpen(false)}>
             {lang === 'es' ? 'Aplicar' : 'Apply'}
           </Link>
           {user ? (

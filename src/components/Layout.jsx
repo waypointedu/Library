@@ -25,11 +25,8 @@ export default function Layout() {
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col transform transition-transform duration-200 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         <div className="p-6 border-b border-gray-100">
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-semibold text-slate-900">Waypoint</span>
+          <Link to="/" className="flex items-center justify-center">
+            <img src="https://media.base44.com/images/public/69826d34529ac930f0c94f5a/7468870d0_B73985D8-2303-49AE-89E1-EED45F18F805.png" alt="Waypoint" className="h-8 w-auto" />
           </Link>
         </div>
 
@@ -79,12 +76,14 @@ export default function Layout() {
       {/* Main */}
       <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
         {/* Mobile header */}
-        <header className="md:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-          <button onClick={() => setMobileOpen(true)} className="p-1">
-            <Menu className="w-5 h-5 text-gray-600" />
-          </button>
-          <span className="font-semibold text-slate-900">Waypoint</span>
-        </header>
+         <header className="md:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
+           <button onClick={() => setMobileOpen(true)} className="p-1">
+             <Menu className="w-5 h-5 text-gray-600" />
+           </button>
+           <Link to="/" className="flex-1">
+             <img src="https://media.base44.com/images/public/69826d34529ac930f0c94f5a/7468870d0_B73985D8-2303-49AE-89E1-EED45F18F805.png" alt="Waypoint" className="h-6 w-auto" />
+           </Link>
+         </header>
 
         <main className="flex-1 p-6">
           <Outlet />
