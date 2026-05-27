@@ -17,9 +17,9 @@ module.exports = {
         'dm-sans': ['var(--font-dm-sans)'],
       },
       colors: {
-        navy: '#1e3a5f',
-        gold: '#c4933f',
-        'gold-hover': '#e8b86d',
+        navy: '#1B2E5E',
+        gold: '#C9A84C',
+        'gold-hover': '#DFC070',
         cream: '#faf8f4',
         ink: '#1a1a18',
         'ink-muted': '#6b6b65',

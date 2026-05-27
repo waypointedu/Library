@@ -15,7 +15,7 @@ function HeroBackground() {
         alt=""
         className="w-full h-full object-cover"
       />
-      <div className="absolute inset-0 bg-[#1e3a5f]/70"></div>
+      <div className="absolute inset-0 bg-[#1B2E5E]/70"></div>
     </div>
   );
 }
@@ -77,14 +77,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link to={createPageUrl('Home')} className="flex items-center gap-2">
-              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint" className="h-12 w-auto" />
+              <img src="https://media.base44.com/images/public/69826d34529ac930f0c94f5a/ee03fb6af_1F28AA65-E781-49A0-9EAF-7122DEC9B735.png" alt="Waypoint Institute" className="h-10 w-auto" />
             </Link>
             <div className="hidden md:flex items-center gap-6">
               <Link to={createPageUrl(`Pathways?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">Programs</Link>
               <Link to={createPageUrl(`About?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">About</Link>
               <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">Courses</Link>
               <Link to={createPageUrl(`Faculty?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">Faculty</Link>
-              <Link to={createPageUrl(`Apply?lang=${lang}`)} className="text-sm font-medium text-white bg-[#1e3a5f] px-4 py-2 rounded-lg hover:bg-[#2d5a8a] transition-colors">Apply</Link>
+              <Link to={createPageUrl(`Apply?lang=${lang}`)} className="text-sm font-medium text-white bg-[#1B2E5E] px-4 py-2 rounded-lg hover:bg-[#243b78] transition-colors">Apply</Link>
               {user ? (
                 <Link to={createPageUrl(user.role === 'admin' ? `Admin?lang=${lang}` : `Dashboard?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">Dashboard</Link>
               ) : (
@@ -102,12 +102,12 @@ export default function Home() {
             <Link to={createPageUrl(`About?lang=${lang}`)} className="block text-sm text-slate-600" onClick={() => setMobileMenuOpen(false)}>About</Link>
             <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="block text-sm text-slate-600" onClick={() => setMobileMenuOpen(false)}>Courses</Link>
             <Link to={createPageUrl(`Faculty?lang=${lang}`)} className="block text-sm text-slate-600" onClick={() => setMobileMenuOpen(false)}>Faculty</Link>
-            <Link to={createPageUrl(`Apply?lang=${lang}`)} className="block text-sm font-medium text-[#1e3a5f]" onClick={() => setMobileMenuOpen(false)}>Apply</Link>
+            <Link to={createPageUrl(`Apply?lang=${lang}`)} className="block text-sm font-medium text-[#1B2E5E]" onClick={() => setMobileMenuOpen(false)}>Apply</Link>
             <div className="pt-2 border-t border-slate-100">
               {user ? (
-                <Link to={createPageUrl(user.role === 'admin' ? `Admin?lang=${lang}` : `Dashboard?lang=${lang}`)} className="block text-sm font-semibold text-[#1e3a5f]" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+                <Link to={createPageUrl(user.role === 'admin' ? `Admin?lang=${lang}` : `Dashboard?lang=${lang}`)} className="block text-sm font-semibold text-[#1B2E5E]" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
               ) : (
-                <button onClick={() => { setMobileMenuOpen(false); base44.auth.redirectToLogin(); }} className="block text-sm font-semibold text-[#1e3a5f]">Sign In</button>
+                <button onClick={() => { setMobileMenuOpen(false); base44.auth.redirectToLogin(); }} className="block text-sm font-semibold text-[#1B2E5E]">Sign In</button>
               )}
             </div>
           </div>
@@ -129,7 +129,7 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to={createPageUrl(`Apply?lang=${lang}`)}>
-                <Button size="lg" className="bg-white text-[#1e3a5f] hover:bg-slate-100">
+                <Button size="lg" className="bg-white text-[#1B2E5E] hover:bg-slate-100">
                   {lang === 'es' ? 'Aplicar' : 'Apply'}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
@@ -155,7 +155,7 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to={createPageUrl(`Apply?lang=${lang}`)}>
-              <Button className="bg-[#1e3a5f] hover:bg-[#2d5a8a]">{lang === 'es' ? 'Aplicar' : 'Apply'}</Button>
+              <Button className="bg-[#1B2E5E] hover:bg-[#243b78]">{lang === 'es' ? 'Aplicar' : 'Apply'}</Button>
             </Link>
             <Link to={createPageUrl(`Support?lang=${lang}`)}>
               <Button variant="outline">{lang === 'es' ? 'Apoyar' : 'Support'}</Button>
@@ -169,17 +169,17 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6">
-              <GraduationCap className="w-10 h-10 text-[#1e3a5f] mx-auto mb-4" />
+              <GraduationCap className="w-10 h-10 text-[#1B2E5E] mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-slate-900 mb-2">Tuition-free college</h3>
               <p className="text-slate-600">Your college-level formation is fully covered by supporters, so tuition, testing, and resources never become barriers.</p>
             </div>
             <div className="text-center p-6">
-              <BookOpen className="w-10 h-10 text-[#1e3a5f] mx-auto mb-4" />
+              <BookOpen className="w-10 h-10 text-[#1B2E5E] mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-slate-900 mb-2">Self-paced flexibility</h3>
               <p className="text-slate-600">Move through modular lessons and shared checkpoints so you can study around real life while staying on track.</p>
             </div>
             <div className="text-center p-6">
-              <Users className="w-10 h-10 text-[#1e3a5f] mx-auto mb-4" />
+              <Users className="w-10 h-10 text-[#1B2E5E] mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-slate-900 mb-2">Capstones that form witnesses</h3>
               <p className="text-slate-600">Every course ends with a recorded oral examination so faculty can affirm mastery and shepherd growth.</p>
             </div>
@@ -195,7 +195,7 @@ export default function Home() {
               <h2 className="text-2xl font-bold text-slate-900">{t.featured}</h2>
               <p className="text-slate-600">{lang === 'es' ? 'Explora nuestros programas de estudio' : 'Explore our programs of study'}</p>
             </div>
-            <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="text-[#1e3a5f] font-medium hover:underline flex items-center gap-1">
+            <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="text-[#1B2E5E] font-medium hover:underline flex items-center gap-1">
               {t.viewAll} <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
@@ -224,7 +224,7 @@ export default function Home() {
       </section>
 
       {/* Who We Serve */}
-      <section className="py-16 bg-[#1e3a5f] text-white">
+      <section className="py-16 bg-[#1B2E5E] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold mb-6">Who we serve</h2>
           <div className="space-y-4">
@@ -239,7 +239,7 @@ export default function Home() {
       <footer className="bg-slate-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12 pb-8 border-b border-slate-800">
-            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69826d34529ac930f0c94f5a/f6dc8e0ae_waypoint-logo-transparent.png" alt="Waypoint Institute" className="h-16 w-auto mb-4" />
+            <img src="https://media.base44.com/images/public/69826d34529ac930f0c94f5a/ee03fb6af_1F28AA65-E781-49A0-9EAF-7122DEC9B735.png" alt="Waypoint Institute" className="h-20 w-auto mb-4" />
             <p className="text-slate-400 max-w-md">Tuition-free Christian college education that pursues the Good, the True, and the Beautiful.</p>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-start gap-8">

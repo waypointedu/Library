@@ -21,7 +21,7 @@
     --popover-foreground: 60 5% 10%;
 
     /* Primary: deep scholarly navy */
-    --primary: 214 52% 24%;
+    --primary: 225 55% 23%;
     --primary-foreground: 40 30% 97%;
 
     /* Secondary: light cream/slate surface */
@@ -33,16 +33,16 @@
     --muted-foreground: 50 5% 42%;
 
     /* Accent: warm gold */
-    --accent: 36 54% 51%;
+    --accent: 40 56% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     /* Border: light navy-tinted */
-    --border: 214 40% 88%;
-    --input: 214 40% 88%;
-    --ring: 214 52% 24%;
+    --border: 225 40% 88%;
+    --input: 225 40% 88%;
+    --ring: 225 55% 23%;
 
     --radius: 0.5rem;
 
@@ -54,23 +54,23 @@
     --chart-5: 27 87% 67%;
 
     /* Sidebar */
-    --sidebar-background: 214 52% 18%;
+    --sidebar-background: 225 55% 16%;
     --sidebar-foreground: 40 30% 92%;
-    --sidebar-primary: 36 54% 51%;
+    --sidebar-primary: 40 56% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 214 52% 26%;
+    --sidebar-accent: 225 55% 24%;
     --sidebar-accent-foreground: 40 30% 92%;
-    --sidebar-border: 214 40% 28%;
-    --sidebar-ring: 36 54% 51%;
+    --sidebar-border: 225 40% 28%;
+    --sidebar-ring: 40 56% 55%;
 
     /* Custom tokens */
-    --navy: #1e3a5f;
-    --gold: #c4933f;
-    --gold-hover: #e8b86d;
+    --navy: #1B2E5E;
+    --gold: #C9A84C;
+    --gold-hover: #DFC070;
     --cream: #faf8f4;
     --ink: #1a1a18;
     --ink-muted: #6b6b65;
-    --border-soft: rgba(30,58,95,0.12);
+    --border-soft: rgba(27,46,94,0.12);
 
     --font-lora: 'Lora', Georgia, serif;
     --font-dm-sans: 'DM Sans', system-ui, sans-serif;
