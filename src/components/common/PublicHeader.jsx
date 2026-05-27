@@ -35,7 +35,7 @@ export default function PublicHeader({ lang = 'en', currentPage }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to={createPageUrl('Home')}>
-            <img src="https://media.base44.com/images/public/69826d34529ac930f0c94f5a/ee03fb6af_1F28AA65-E781-49A0-9EAF-7122DEC9B735.png" alt="Waypoint Institute" className="h-10 w-auto" />
+            <img src="https://media.base44.com/images/public/69826d34529ac930f0c94f5a/d92625ed6_B73985D8-2303-49AE-89E1-EED45F18F805.png" alt="Waypoint" className="h-8 w-auto" />
           </Link>
 
           <div className="hidden md:flex items-center gap-5">
