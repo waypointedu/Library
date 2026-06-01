@@ -1,0 +1,71 @@
+{
+  "name": "WeekQuizAttempt",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User email"
+    },
+    "quiz_id": {
+      "type": "string",
+      "description": "Quiz ID"
+    },
+    "week_id": {
+      "type": "string",
+      "description": "Parent week ID"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Parent course ID"
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question_index": {
+            "type": "number"
+          },
+          "selected_option_index": {
+            "type": "number"
+          },
+          "is_correct": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "User's answers"
+    },
+    "raw_score": {
+      "type": "number",
+      "description": "Score before penalty (percentage)"
+    },
+    "final_score": {
+      "type": "number",
+      "description": "Score after retake penalty (percentage)"
+    },
+    "attempt_number": {
+      "type": "number",
+      "description": "Attempt number (1, 2, 3...)"
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "Whether the attempt passed"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_email",
+    "quiz_id",
+    "week_id",
+    "course_id",
+    "answers",
+    "raw_score",
+    "final_score",
+    "attempt_number",
+    "passed"
+  ]
+}

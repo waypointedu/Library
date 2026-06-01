@@ -1,0 +1,43 @@
+{
+  "name": "ReadingSession",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User email"
+    },
+    "week_id": {
+      "type": "string",
+      "description": "Week/lesson being read"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Parent course"
+    },
+    "time_spent_seconds": {
+      "type": "number",
+      "description": "Time spent reading (in seconds)"
+    },
+    "scroll_percentage": {
+      "type": "number",
+      "description": "How far user scrolled (0-100)"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of reading session"
+    },
+    "qualified_as_read": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this counts as a quality reading session (5+ min, 70%+ scroll)"
+    }
+  },
+  "required": [
+    "user_email",
+    "week_id",
+    "course_id",
+    "time_spent_seconds",
+    "session_date"
+  ]
+}

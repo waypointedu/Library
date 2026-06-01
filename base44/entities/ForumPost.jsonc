@@ -1,0 +1,57 @@
+{
+  "name": "ForumPost",
+  "type": "object",
+  "properties": {
+    "forum_id": {
+      "type": "string",
+      "description": "Parent forum"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Course ID for easy filtering"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Post author email"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Post author name"
+    },
+    "title": {
+      "type": "string",
+      "description": "Post title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Post content"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Pin to top"
+    },
+    "is_locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Lock replies"
+    },
+    "reply_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of replies"
+    },
+    "last_reply_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last reply timestamp"
+    }
+  },
+  "required": [
+    "forum_id",
+    "course_id",
+    "user_email",
+    "title",
+    "content"
+  ]
+}

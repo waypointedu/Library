@@ -1,0 +1,112 @@
+{
+  "name": "Application",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string",
+      "description": "Applicant's full legal name"
+    },
+    "preferred_name": {
+      "type": "string",
+      "description": "Preferred name or pseudonym (optional)"
+    },
+    "email": {
+      "type": "string",
+      "description": "Contact email"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country of residence"
+    },
+    "city": {
+      "type": "string",
+      "description": "City"
+    },
+    "birth_year": {
+      "type": "number",
+      "description": "Year of birth"
+    },
+    "primary_language": {
+      "type": "string",
+      "description": "Primary language"
+    },
+    "education_background": {
+      "type": "string",
+      "description": "Previous education and qualifications"
+    },
+    "ministry_experience": {
+      "type": "string",
+      "description": "Ministry or work experience"
+    },
+    "faith_journey": {
+      "type": "string",
+      "description": "Personal faith journey story (300-500 words)"
+    },
+    "why_waypoint": {
+      "type": "string",
+      "description": "Why applying to Waypoint"
+    },
+    "has_internet": {
+      "type": "boolean",
+      "default": true,
+      "description": "Has consistent internet access"
+    },
+    "has_device": {
+      "type": "boolean",
+      "default": true,
+      "description": "Has computer or device"
+    },
+    "can_join_google_meet": {
+      "type": "boolean",
+      "default": true,
+      "description": "Can join Google Meet calls"
+    },
+    "affirms_apostles_creed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Affirms the Apostles' Creed"
+    },
+    "affirms_waypoint_ethos": {
+      "type": "boolean",
+      "default": false,
+      "description": "Affirms Waypoint ethos"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "under_review",
+        "interview_scheduled",
+        "accepted",
+        "waitlisted",
+        "declined"
+      ],
+      "default": "submitted",
+      "description": "Application status"
+    },
+    "interview_notes": {
+      "type": "string",
+      "description": "Admin notes from interview"
+    },
+    "admin_notes": {
+      "type": "string",
+      "description": "Internal admin notes"
+    },
+    "decision_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date of final decision"
+    }
+  },
+  "required": [
+    "full_name",
+    "email",
+    "faith_journey",
+    "affirms_apostles_creed",
+    "affirms_waypoint_ethos"
+  ]
+}

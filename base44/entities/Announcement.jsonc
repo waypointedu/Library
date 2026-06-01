@@ -1,0 +1,58 @@
+{
+  "name": "Announcement",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Announcement title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Announcement content (HTML/Markdown)"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Course this announcement belongs to (optional for global announcements)"
+    },
+    "target_audience": {
+      "type": "string",
+      "enum": [
+        "all",
+        "students",
+        "instructors",
+        "admins"
+      ],
+      "default": "all",
+      "description": "Who this announcement is for"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "normal",
+        "high",
+        "urgent"
+      ],
+      "default": "normal",
+      "description": "Announcement priority level"
+    },
+    "published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether announcement is published"
+    },
+    "scheduled_publish_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When to publish (optional scheduling)"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Admin who created announcement"
+    }
+  },
+  "required": [
+    "title",
+    "content"
+  ]
+}

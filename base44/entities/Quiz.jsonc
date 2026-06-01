@@ -1,0 +1,48 @@
+{
+  "name": "Quiz",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string",
+      "description": "Parent lesson ID (or module_id if module-level quiz)"
+    },
+    "module_id": {
+      "type": "string",
+      "description": "Parent module ID (if module-level quiz)"
+    },
+    "title_en": {
+      "type": "string",
+      "description": "Quiz title in English"
+    },
+    "title_es": {
+      "type": "string",
+      "description": "Quiz title in Spanish"
+    },
+    "instructions_en": {
+      "type": "string",
+      "description": "Instructions in English"
+    },
+    "instructions_es": {
+      "type": "string",
+      "description": "Instructions in Spanish"
+    },
+    "pass_threshold": {
+      "type": "number",
+      "default": 70,
+      "description": "Percentage needed to pass"
+    },
+    "max_attempts": {
+      "type": "number",
+      "default": 2,
+      "description": "Maximum attempts allowed"
+    },
+    "show_immediate_feedback": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show correct answers immediately"
+    }
+  },
+  "required": [
+    "title_en"
+  ]
+}

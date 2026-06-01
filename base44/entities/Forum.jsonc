@@ -1,0 +1,35 @@
+{
+  "name": "Forum",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Course this forum belongs to"
+    },
+    "title_en": {
+      "type": "string",
+      "description": "Forum title in English"
+    },
+    "title_es": {
+      "type": "string",
+      "description": "Forum title in Spanish"
+    },
+    "description_en": {
+      "type": "string",
+      "description": "Forum description in English"
+    },
+    "description_es": {
+      "type": "string",
+      "description": "Forum description in Spanish"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Pin to top"
+    }
+  },
+  "required": [
+    "course_id",
+    "title_en"
+  ]
+}

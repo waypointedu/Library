@@ -1,0 +1,76 @@
+{
+  "name": "UserProfile",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User email"
+    },
+    "total_xp": {
+      "type": "number",
+      "default": 0,
+      "description": "Total experience points"
+    },
+    "current_level": {
+      "type": "number",
+      "default": 1,
+      "description": "Current level (1-10+)"
+    },
+    "avatar_border": {
+      "type": "string",
+      "enum": [
+        "none",
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "none",
+      "description": "Unlocked avatar border"
+    },
+    "theme_color": {
+      "type": "string",
+      "enum": [
+        "default",
+        "forest",
+        "ocean",
+        "sunset",
+        "royal"
+      ],
+      "default": "default",
+      "description": "Unlocked theme color"
+    },
+    "custom_banner": {
+      "type": "string",
+      "description": "Unlocked custom banner image URL"
+    },
+    "reading_streak_days": {
+      "type": "number",
+      "default": 0,
+      "description": "Current consecutive reading streak"
+    },
+    "longest_reading_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Longest reading streak achieved"
+    },
+    "last_reading_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Last date user had a qualified reading session"
+    },
+    "total_pages_read": {
+      "type": "number",
+      "default": 0,
+      "description": "Estimated total pages read"
+    },
+    "total_reading_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Total minutes spent reading"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

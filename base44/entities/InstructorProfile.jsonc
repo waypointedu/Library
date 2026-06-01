@@ -1,0 +1,182 @@
+{
+  "name": "InstructorProfile",
+  "type": "object",
+  "properties": {
+    "instructor_email": {
+      "type": "string",
+      "description": "Instructor email address (links to User account)"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Full display name (e.g. Michael C. Barros)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Academic/institutional title (core faculty only, e.g. Scholar of Religion & Culture)"
+    },
+    "photo_url": {
+      "type": "string",
+      "description": "URL to portrait photo"
+    },
+    "positioning_sentence": {
+      "type": "string",
+      "description": "One-sentence researcher positioning (appears in profile hero)"
+    },
+    "overview": {
+      "type": "string",
+      "description": "Biographical overview (5-7 sentences, narrative not r\u00e9sum\u00e9)"
+    },
+    "faculty_type": {
+      "type": "string",
+      "enum": [
+        "core",
+        "contributing"
+      ],
+      "default": "contributing",
+      "description": "Core faculty have titles displayed; contributing do not"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this profile appears on the public faculty page"
+    },
+    "courses_taught": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Category label (e.g. Core Formation, Advanced)"
+          },
+          "title": {
+            "type": "string",
+            "description": "Course title"
+          }
+        }
+      },
+      "description": "Courses taught, grouped by category"
+    },
+    "seminars": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Seminars and intensives led"
+    },
+    "research_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Research interest areas"
+    },
+    "books": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string",
+            "description": "e.g. forthcoming, publisher"
+          }
+        }
+      },
+      "description": "Books (monographs only)"
+    },
+    "lectures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Public lectures and media appearances"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Legacy biography field"
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "degree": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "institution": {
+            "type": "string"
+          },
+          "year": {
+            "type": "string",
+            "description": "Year or status (e.g. 2018, current, expected 2026)"
+          },
+          "note": {
+            "type": "string",
+            "description": "e.g. ABD, in progress"
+          },
+          "dissertation": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Educational background"
+    },
+    "professional_development": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "paper",
+              "conference_presentation",
+              "conference_attendance",
+              "research",
+              "other"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "description": "Professional development activities"
+    },
+    "total_xp": {
+      "type": "number",
+      "default": 0
+    },
+    "current_level": {
+      "type": "number",
+      "default": 1
+    }
+  },
+  "required": [
+    "instructor_email"
+  ]
+}

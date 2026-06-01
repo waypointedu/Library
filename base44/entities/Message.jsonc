@@ -1,0 +1,38 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "sender_email": {
+      "type": "string",
+      "description": "Sender email address"
+    },
+    "recipient_email": {
+      "type": "string",
+      "description": "Recipient email address"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Message subject"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message body"
+    },
+    "read": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether message has been read"
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether message is archived"
+    }
+  },
+  "required": [
+    "sender_email",
+    "recipient_email",
+    "subject",
+    "content"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "Achievement",
+  "type": "object",
+  "properties": {
+    "title_en": {
+      "type": "string",
+      "description": "Achievement title in English"
+    },
+    "title_es": {
+      "type": "string",
+      "description": "Achievement title in Spanish"
+    },
+    "description_en": {
+      "type": "string",
+      "description": "Description in English"
+    },
+    "description_es": {
+      "type": "string",
+      "description": "Description in Spanish"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon name from lucide-react"
+    },
+    "badge_color": {
+      "type": "string",
+      "enum": [
+        "blue",
+        "green",
+        "purple",
+        "gold",
+        "red"
+      ],
+      "default": "blue",
+      "description": "Badge color theme"
+    },
+    "points": {
+      "type": "number",
+      "description": "Points awarded for earning this"
+    },
+    "trigger_type": {
+      "type": "string",
+      "enum": [
+        "first_lesson",
+        "first_quiz",
+        "course_complete",
+        "streak_7",
+        "streak_30",
+        "perfect_quiz"
+      ],
+      "description": "What triggers this achievement"
+    }
+  },
+  "required": [
+    "title_en",
+    "trigger_type",
+    "points"
+  ]
+}

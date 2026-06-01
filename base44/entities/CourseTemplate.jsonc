@@ -1,0 +1,54 @@
+{
+  "name": "CourseTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Template description"
+    },
+    "structure": {
+      "type": "object",
+      "properties": {
+        "num_modules": {
+          "type": "number",
+          "description": "Number of modules in template"
+        },
+        "lessons_per_module": {
+          "type": "number",
+          "description": "Default lessons per module"
+        },
+        "default_credits": {
+          "type": "number",
+          "description": "Default credit hours"
+        }
+      },
+      "description": "Template structure details"
+    },
+    "content_blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "module_title": {
+            "type": "string"
+          },
+          "lesson_titles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "Predefined content structure"
+    }
+  },
+  "required": [
+    "name",
+    "structure"
+  ]
+}

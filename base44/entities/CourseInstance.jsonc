@@ -1,0 +1,66 @@
+{
+  "name": "CourseInstance",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Base course template ID"
+    },
+    "term_id": {
+      "type": "string",
+      "description": "Academic term ID"
+    },
+    "cohort_name": {
+      "type": "string",
+      "description": "Cohort identifier (e.g., 'Cohort A', 'Evening Section')"
+    },
+    "instructor_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Instructor email addresses"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Instance start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Instance end date"
+    },
+    "max_students": {
+      "type": "number",
+      "description": "Maximum enrollment"
+    },
+    "current_enrollment": {
+      "type": "number",
+      "default": 0,
+      "description": "Current number of enrolled students"
+    },
+    "meeting_schedule": {
+      "type": "string",
+      "description": "Meeting schedule description (e.g., 'Tuesdays 7pm GMT')"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "active",
+        "completed",
+        "cancelled"
+      ],
+      "default": "scheduled",
+      "description": "Instance status"
+    }
+  },
+  "required": [
+    "course_id",
+    "term_id",
+    "cohort_name",
+    "start_date",
+    "end_date"
+  ]
+}

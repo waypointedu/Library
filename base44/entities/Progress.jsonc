@@ -1,0 +1,38 @@
+{
+  "name": "Progress",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User email"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Completed lesson ID"
+    },
+    "module_id": {
+      "type": "string",
+      "description": "Parent module ID"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Parent course ID"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Completion status"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Completion timestamp"
+    }
+  },
+  "required": [
+    "user_email",
+    "lesson_id",
+    "module_id",
+    "course_id"
+  ]
+}

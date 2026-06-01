@@ -1,0 +1,65 @@
+{
+  "name": "Question",
+  "type": "object",
+  "properties": {
+    "quiz_id": {
+      "type": "string",
+      "description": "Parent quiz ID"
+    },
+    "question_text_en": {
+      "type": "string",
+      "description": "Question text in English"
+    },
+    "question_text_es": {
+      "type": "string",
+      "description": "Question text in Spanish"
+    },
+    "question_type": {
+      "type": "string",
+      "enum": [
+        "multiple_choice",
+        "multi_select",
+        "short_answer"
+      ],
+      "default": "multiple_choice",
+      "description": "Type of question"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text_en": {
+            "type": "string"
+          },
+          "text_es": {
+            "type": "string"
+          },
+          "is_correct": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "Answer options (for MCQ/multi-select)"
+    },
+    "correct_answer": {
+      "type": "string",
+      "description": "Correct answer (for short answer)"
+    },
+    "points": {
+      "type": "number",
+      "default": 1,
+      "description": "Points awarded for correct answer"
+    },
+    "order_index": {
+      "type": "number",
+      "description": "Display order in quiz"
+    }
+  },
+  "required": [
+    "quiz_id",
+    "question_text_en",
+    "question_type",
+    "order_index"
+  ]
+}

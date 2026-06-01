@@ -1,0 +1,22 @@
+{
+  "name": "CourseInstructor",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Course ID"
+    },
+    "instructor_email": {
+      "type": "string",
+      "description": "Instructor email"
+    },
+    "instructor_name": {
+      "type": "string",
+      "description": "Instructor name"
+    }
+  },
+  "required": [
+    "course_id",
+    "instructor_email"
+  ]
+}

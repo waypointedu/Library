@@ -1,0 +1,65 @@
+{
+  "name": "QuizAttempt",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User email"
+    },
+    "quiz_id": {
+      "type": "string",
+      "description": "Quiz ID"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Parent lesson ID"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Parent course ID"
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question_id": {
+            "type": "string"
+          },
+          "selected_answer": {
+            "type": "string"
+          },
+          "is_correct": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "User's answers"
+    },
+    "score": {
+      "type": "number",
+      "description": "Score achieved (percentage)"
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "Whether the attempt passed"
+    },
+    "attempt_number": {
+      "type": "number",
+      "description": "Attempt number (1, 2, etc.)"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Submission timestamp"
+    }
+  },
+  "required": [
+    "user_email",
+    "quiz_id",
+    "answers",
+    "score",
+    "passed",
+    "attempt_number"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "WrittenAssignmentSubmission",
+  "type": "object",
+  "properties": {
+    "week_id": {
+      "type": "string",
+      "description": "Parent week ID"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Parent course ID"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Student email"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Student name"
+    },
+    "google_docs_url": {
+      "type": "string",
+      "description": "Google Docs link submitted by student"
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Submission timestamp"
+    },
+    "grade": {
+      "type": "number",
+      "description": "Grade (0-100)"
+    },
+    "instructor_feedback": {
+      "type": "string",
+      "description": "Instructor feedback/comments"
+    },
+    "graded_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Grading timestamp"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "graded"
+      ],
+      "default": "submitted",
+      "description": "Submission status"
+    }
+  },
+  "required": [
+    "week_id",
+    "course_id",
+    "user_email",
+    "google_docs_url"
+  ]
+}

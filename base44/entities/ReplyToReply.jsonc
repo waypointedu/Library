@@ -1,0 +1,32 @@
+{
+  "name": "ReplyToReply",
+  "type": "object",
+  "properties": {
+    "parent_reply_id": {
+      "type": "string",
+      "description": "Parent reply ID"
+    },
+    "post_id": {
+      "type": "string",
+      "description": "Original post ID"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Reply author email"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Reply author name"
+    },
+    "content": {
+      "type": "string",
+      "description": "Reply content"
+    }
+  },
+  "required": [
+    "parent_reply_id",
+    "post_id",
+    "user_email",
+    "content"
+  ]
+}

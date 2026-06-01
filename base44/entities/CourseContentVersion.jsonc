@@ -1,0 +1,36 @@
+{
+  "name": "CourseContentVersion",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Parent course ID"
+    },
+    "version_number": {
+      "type": "number",
+      "description": "Version number"
+    },
+    "change_summary": {
+      "type": "string",
+      "description": "Summary of changes made"
+    },
+    "course_snapshot": {
+      "type": "object",
+      "description": "Complete course data snapshot"
+    },
+    "changed_by": {
+      "type": "string",
+      "description": "Email of user who made changes"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is the current active version"
+    }
+  },
+  "required": [
+    "course_id",
+    "version_number",
+    "course_snapshot"
+  ]
+}

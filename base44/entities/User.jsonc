@@ -1,0 +1,48 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "display_name": {
+      "type": "string",
+      "description": "Preferred display name"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number"
+    },
+    "mailing_address": {
+      "type": "string",
+      "description": "Mailing address"
+    },
+    "city": {
+      "type": "string",
+      "description": "City"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Short bio"
+    },
+    "user_type": {
+      "type": "string",
+      "enum": [
+        "student",
+        "instructor",
+        "admin"
+      ],
+      "default": "student",
+      "description": "User type in the system"
+    }
+  },
+  "required": [
+    "display_name",
+    "phone",
+    "mailing_address",
+    "city",
+    "country",
+    "bio"
+  ]
+}

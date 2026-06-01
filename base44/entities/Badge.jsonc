@@ -1,0 +1,68 @@
+{
+  "name": "Badge",
+  "type": "object",
+  "properties": {
+    "title_en": {
+      "type": "string",
+      "description": "Badge title in English"
+    },
+    "title_es": {
+      "type": "string",
+      "description": "Badge title in Spanish"
+    },
+    "description_en": {
+      "type": "string",
+      "description": "Badge description in English"
+    },
+    "description_es": {
+      "type": "string",
+      "description": "Badge description in Spanish"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name"
+    },
+    "color": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "blue",
+        "green",
+        "purple"
+      ],
+      "default": "bronze",
+      "description": "Badge color tier"
+    },
+    "badge_type": {
+      "type": "string",
+      "enum": [
+        "course_completion",
+        "reading_streak",
+        "peer_endorsement",
+        "milestone",
+        "special"
+      ],
+      "description": "Type of badge"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Associated course ID (for course badges)"
+    },
+    "requirement_count": {
+      "type": "number",
+      "description": "Number needed to unlock (e.g., 30 days, 25 endorsements)"
+    },
+    "xp_reward": {
+      "type": "number",
+      "default": 100,
+      "description": "XP awarded when earned"
+    }
+  },
+  "required": [
+    "title_en",
+    "badge_type",
+    "icon"
+  ]
+}

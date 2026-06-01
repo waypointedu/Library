@@ -1,0 +1,328 @@
+{
+  "name": "Week",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Parent course ID"
+    },
+    "week_number": {
+      "type": "number",
+      "description": "Week number (1, 2, 3...)"
+    },
+    "title_en": {
+      "type": "string",
+      "description": "Week title in English"
+    },
+    "title_es": {
+      "type": "string",
+      "description": "Week title in Spanish"
+    },
+    "title_ps": {
+      "type": "string",
+      "description": "Week title in Pashtu"
+    },
+    "title_fa": {
+      "type": "string",
+      "description": "Week title in Persian"
+    },
+    "title_km": {
+      "type": "string",
+      "description": "Week title in Khmer"
+    },
+    "overview_en": {
+      "type": "string",
+      "description": "Week overview/introduction in English"
+    },
+    "overview_es": {
+      "type": "string",
+      "description": "Week overview/introduction in Spanish"
+    },
+    "overview_ps": {
+      "type": "string",
+      "description": "Week overview/introduction in Pashtu"
+    },
+    "overview_fa": {
+      "type": "string",
+      "description": "Week overview/introduction in Persian"
+    },
+    "overview_km": {
+      "type": "string",
+      "description": "Week overview/introduction in Khmer"
+    },
+    "content_blocks_en": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "video",
+              "image",
+              "richtext",
+              "audio"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Flexible content blocks for English"
+    },
+    "content_blocks_es": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "video",
+              "image",
+              "richtext",
+              "audio"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Flexible content blocks for Spanish"
+    },
+    "content_blocks_ps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "video",
+              "image",
+              "richtext",
+              "audio"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Flexible content blocks for Pashtu"
+    },
+    "content_blocks_fa": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "video",
+              "image",
+              "richtext",
+              "audio"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Flexible content blocks for Persian"
+    },
+    "content_blocks_km": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "video",
+              "image",
+              "richtext",
+              "audio"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Flexible content blocks for Khmer"
+    },
+    "lesson_content_en": {
+      "type": "string",
+      "description": "Legacy lesson content in English (HTML)"
+    },
+    "lesson_content_es": {
+      "type": "string",
+      "description": "Legacy lesson content in Spanish (HTML)"
+    },
+    "lesson_content_ps": {
+      "type": "string",
+      "description": "Legacy lesson content in Pashtu (HTML)"
+    },
+    "lesson_content_fa": {
+      "type": "string",
+      "description": "Legacy lesson content in Persian (HTML)"
+    },
+    "lesson_content_km": {
+      "type": "string",
+      "description": "Legacy lesson content in Khmer (HTML)"
+    },
+    "reading_assignment_en": {
+      "type": "string",
+      "description": "Reading assignment in English"
+    },
+    "reading_assignment_es": {
+      "type": "string",
+      "description": "Reading assignment in Spanish"
+    },
+    "reading_assignment_ps": {
+      "type": "string",
+      "description": "Reading assignment in Pashtu"
+    },
+    "reading_assignment_fa": {
+      "type": "string",
+      "description": "Reading assignment in Persian"
+    },
+    "reading_assignment_km": {
+      "type": "string",
+      "description": "Reading assignment in Khmer"
+    },
+    "written_assignment_en": {
+      "type": "string",
+      "description": "Written assignment prompt in English"
+    },
+    "written_assignment_es": {
+      "type": "string",
+      "description": "Written assignment prompt in Spanish"
+    },
+    "written_assignment_ps": {
+      "type": "string",
+      "description": "Written assignment prompt in Pashtu"
+    },
+    "written_assignment_fa": {
+      "type": "string",
+      "description": "Written assignment prompt in Persian"
+    },
+    "written_assignment_km": {
+      "type": "string",
+      "description": "Written assignment prompt in Khmer"
+    },
+    "discussion_prompt_en": {
+      "type": "string",
+      "description": "Discussion forum prompt in English"
+    },
+    "discussion_prompt_es": {
+      "type": "string",
+      "description": "Discussion forum prompt in Spanish"
+    },
+    "discussion_prompt_ps": {
+      "type": "string",
+      "description": "Discussion forum prompt in Pashtu"
+    },
+    "discussion_prompt_fa": {
+      "type": "string",
+      "description": "Discussion forum prompt in Persian"
+    },
+    "discussion_prompt_km": {
+      "type": "string",
+      "description": "Discussion forum prompt in Khmer"
+    },
+    "has_quiz": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this week has a quiz"
+    },
+    "has_discussion": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this week has a discussion forum"
+    },
+    "has_written_assignment": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this week has a written assignment"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Optional video URL (legacy)"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "File attachments"
+    }
+  },
+  "required": [
+    "course_id",
+    "week_number",
+    "title_en"
+  ]
+}

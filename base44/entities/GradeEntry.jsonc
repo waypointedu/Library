@@ -1,0 +1,60 @@
+{
+  "name": "GradeEntry",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Student email"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Course ID"
+    },
+    "week_id": {
+      "type": "string",
+      "description": "Week ID (if week-based assignment)"
+    },
+    "assignment_type": {
+      "type": "string",
+      "enum": [
+        "quiz",
+        "written_assignment",
+        "manual"
+      ],
+      "description": "Type of graded item"
+    },
+    "assignment_name": {
+      "type": "string",
+      "description": "Name of assignment"
+    },
+    "grade": {
+      "type": "number",
+      "description": "Numeric grade (0-100)"
+    },
+    "weight": {
+      "type": "number",
+      "default": 1,
+      "description": "Weight in final grade calculation"
+    },
+    "graded_by": {
+      "type": "string",
+      "description": "Email of grader (instructor or system)"
+    },
+    "graded_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When graded"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Instructor notes"
+    }
+  },
+  "required": [
+    "user_email",
+    "course_id",
+    "assignment_type",
+    "assignment_name",
+    "grade"
+  ]
+}

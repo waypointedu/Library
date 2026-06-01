@@ -1,0 +1,23 @@
+{
+  "name": "UserAchievement",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User who earned this"
+    },
+    "achievement_id": {
+      "type": "string",
+      "description": "Achievement earned"
+    },
+    "earned_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When it was earned"
+    }
+  },
+  "required": [
+    "user_email",
+    "achievement_id"
+  ]
+}

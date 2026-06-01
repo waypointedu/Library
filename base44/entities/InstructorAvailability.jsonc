@@ -1,0 +1,37 @@
+{
+  "name": "InstructorAvailability",
+  "type": "object",
+  "properties": {
+    "instructor_email": {
+      "type": "string",
+      "description": "Instructor email address"
+    },
+    "course_instance_id": {
+      "type": "string",
+      "description": "ID of the course instance instructor is volunteering for"
+    },
+    "volunteered": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether instructor has volunteered for this course"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Admin approval status of the volunteer request"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Admin notes about the assignment"
+    }
+  },
+  "required": [
+    "instructor_email",
+    "course_instance_id"
+  ]
+}

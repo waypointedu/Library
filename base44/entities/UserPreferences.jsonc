@@ -1,0 +1,40 @@
+{
+  "name": "UserPreferences",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User email"
+    },
+    "preferred_language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "es"
+      ],
+      "default": "en",
+      "description": "Preferred language"
+    },
+    "high_contrast_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "High contrast UI"
+    },
+    "text_to_speech": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable TTS"
+    },
+    "last_lesson_id": {
+      "type": "string",
+      "description": "Resume from here"
+    },
+    "last_course_id": {
+      "type": "string",
+      "description": "Last active course"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

@@ -239,7 +239,6 @@ export default function Home() {
       <footer className="bg-slate-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12 pb-8 border-b border-slate-800">
-            <img src="https://media.base44.com/images/public/69826d34529ac930f0c94f5a/ee03fb6af_1F28AA65-E781-49A0-9EAF-7122DEC9B735.png" alt="Waypoint Institute" className="h-20 w-auto mb-4" />
             <p className="text-slate-400 max-w-md">Tuition-free Christian college education that pursues the Good, the True, and the Beautiful.</p>
           </div>
           <div className="flex flex-col md:flex-row justify-between items-start gap-8">

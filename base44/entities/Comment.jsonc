@@ -1,0 +1,31 @@
+{
+  "name": "Comment",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string",
+      "description": "Lesson being commented on"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Commenter email"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Commenter display name"
+    },
+    "content": {
+      "type": "string",
+      "description": "Comment text"
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Reply to another comment"
+    }
+  },
+  "required": [
+    "lesson_id",
+    "user_email",
+    "content"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Module",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Parent course ID"
+    },
+    "title_en": {
+      "type": "string",
+      "description": "Module title in English"
+    },
+    "title_es": {
+      "type": "string",
+      "description": "Module title in Spanish"
+    },
+    "description_en": {
+      "type": "string",
+      "description": "Module description in English"
+    },
+    "description_es": {
+      "type": "string",
+      "description": "Module description in Spanish"
+    },
+    "order_index": {
+      "type": "number",
+      "description": "Display order within course"
+    },
+    "estimated_hours": {
+      "type": "number",
+      "description": "Estimated completion time in hours"
+    }
+  },
+  "required": [
+    "course_id",
+    "title_en",
+    "order_index"
+  ]
+}

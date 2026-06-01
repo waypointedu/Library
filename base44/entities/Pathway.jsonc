@@ -1,0 +1,69 @@
+{
+  "name": "Pathway",
+  "type": "object",
+  "properties": {
+    "title_en": {
+      "type": "string",
+      "description": "Pathway title in English"
+    },
+    "title_es": {
+      "type": "string",
+      "description": "Pathway title in Spanish"
+    },
+    "description_en": {
+      "type": "string",
+      "description": "Pathway description in English"
+    },
+    "description_es": {
+      "type": "string",
+      "description": "Pathway description in Spanish"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "certificate",
+        "post_certificate"
+      ],
+      "default": "certificate",
+      "description": "Type of pathway"
+    },
+    "is_linear": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether courses must be taken in sequence (locked progression)"
+    },
+    "course_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered list of course IDs required"
+    },
+    "estimated_months": {
+      "type": "number",
+      "description": "Estimated completion time in months"
+    },
+    "total_credits": {
+      "type": "number",
+      "description": "Total credit hours"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "certificate_template": {
+      "type": "string",
+      "description": "Certificate text template"
+    }
+  },
+  "required": [
+    "title_en",
+    "type",
+    "course_ids"
+  ]
+}

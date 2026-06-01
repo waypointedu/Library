@@ -1,0 +1,41 @@
+{
+  "name": "Enrollment",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Enrolled course ID (for backward compatibility)"
+    },
+    "course_instance_id": {
+      "type": "string",
+      "description": "Enrolled course instance ID"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Enrolled user email"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "dropped"
+      ],
+      "default": "active",
+      "description": "Enrollment status"
+    },
+    "enrolled_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Enrollment timestamp"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Completion timestamp"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

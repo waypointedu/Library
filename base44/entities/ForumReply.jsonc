@@ -1,0 +1,36 @@
+{
+  "name": "ForumReply",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "Parent post ID"
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent reply ID (null = top-level reply to post)"
+    },
+    "depth": {
+      "type": "number",
+      "default": 0,
+      "description": "Nesting depth (0 = top-level, max 4)"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Reply author email"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Reply author name"
+    },
+    "content": {
+      "type": "string",
+      "description": "Reply content"
+    }
+  },
+  "required": [
+    "post_id",
+    "user_email",
+    "content"
+  ]
+}

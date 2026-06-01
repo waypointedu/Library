@@ -1,0 +1,58 @@
+{
+  "name": "Lesson",
+  "type": "object",
+  "properties": {
+    "module_id": {
+      "type": "string",
+      "description": "Parent module ID"
+    },
+    "title_en": {
+      "type": "string",
+      "description": "Lesson title in English"
+    },
+    "title_es": {
+      "type": "string",
+      "description": "Lesson title in Spanish"
+    },
+    "content_en": {
+      "type": "string",
+      "description": "Lesson content body in English (Markdown)"
+    },
+    "content_es": {
+      "type": "string",
+      "description": "Lesson content body in Spanish (Markdown)"
+    },
+    "order_index": {
+      "type": "number",
+      "description": "Display order within module"
+    },
+    "estimated_minutes": {
+      "type": "number",
+      "description": "Estimated reading time in minutes"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Optional embedded video URL (YouTube/Vimeo)"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Downloadable attachments"
+    }
+  },
+  "required": [
+    "module_id",
+    "title_en",
+    "order_index"
+  ]
+}

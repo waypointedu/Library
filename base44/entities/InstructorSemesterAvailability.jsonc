@@ -1,0 +1,32 @@
+{
+  "name": "InstructorSemesterAvailability",
+  "type": "object",
+  "properties": {
+    "instructor_email": {
+      "type": "string",
+      "description": "Instructor email"
+    },
+    "term_id": {
+      "type": "string",
+      "description": "Academic term ID"
+    },
+    "is_available": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether instructor is available for this semester"
+    },
+    "max_courses": {
+      "type": "number",
+      "default": 3,
+      "description": "Maximum number of courses instructor can teach this semester"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes from instructor"
+    }
+  },
+  "required": [
+    "instructor_email",
+    "term_id"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "name": "AcademicTerm",
+  "type": "object",
+  "properties": {
+    "season": {
+      "type": "string",
+      "enum": [
+        "Spring",
+        "Summer",
+        "Fall",
+        "Winter"
+      ],
+      "description": "Term season"
+    },
+    "year": {
+      "type": "number",
+      "description": "Term year (e.g., 2025)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Auto-generated term name (e.g., 'Spring 2025')"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Term start date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Term end date"
+    },
+    "enrollment_open_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When enrollment opens"
+    },
+    "enrollment_close_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When enrollment closes"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "active",
+        "completed"
+      ],
+      "default": "upcoming",
+      "description": "Term status"
+    }
+  },
+  "required": [
+    "season",
+    "year",
+    "start_date",
+    "end_date"
+  ]
+}

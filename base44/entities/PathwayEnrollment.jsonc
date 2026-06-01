@@ -1,0 +1,39 @@
+{
+  "name": "PathwayEnrollment",
+  "type": "object",
+  "properties": {
+    "pathway_id": {
+      "type": "string",
+      "description": "Pathway ID"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Student email"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "dropped"
+      ],
+      "default": "active"
+    },
+    "enrolled_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "certificate_issued": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "pathway_id",
+    "user_email"
+  ]
+}
