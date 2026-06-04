@@ -8,11 +8,20 @@ Deno.serve(async (req) => {
     const { action, product_id, order_data } = await req.json();
 
     if (action === "get_products") {
-      const res = await fetch("https://api.printful.com/store/products", {
+      // First, get the list of stores to find the right store_id
+      const storesRes = await fetch("https://api.printful.com/stores", {
         headers: { "Authorization": `Bearer ${apiKey}` }
       });
+      const storesData = await storesRes.json();
+      const storeId = storesData?.result?.[0]?.id;
+
+      // Fetch sync products using the store_id header
+      const headers = { "Authorization": `Bearer ${apiKey}` };
+      if (storeId) headers["X-PF-Store-Id"] = String(storeId);
+
+      const res = await fetch("https://api.printful.com/store/products", { headers });
       const data = await res.json();
-      return Response.json(data);
+      return Response.json({ ...data, _debug: { storeId, stores: storesData?.result?.map(s => ({ id: s.id, name: s.name })) } });
     }
 
     if (action === "get_product") {
