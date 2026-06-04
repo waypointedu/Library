@@ -84,6 +84,7 @@ export default function Home() {
               <Link to={createPageUrl(`About?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">About</Link>
               <Link to={createPageUrl(`Catalog?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">Courses</Link>
               <Link to={createPageUrl(`Faculty?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">Faculty</Link>
+              <Link to={createPageUrl(`Store?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">Store</Link>
               <Link to={createPageUrl(`Apply?lang=${lang}`)} className="text-sm font-medium text-white bg-[#1B2E5E] px-4 py-2 rounded-lg hover:bg-[#243b78] transition-colors">Apply</Link>
               {user ? (
                 <Link to={createPageUrl(user.role === 'admin' ? `Admin?lang=${lang}` : `Dashboard?lang=${lang}`)} className="text-sm text-slate-600 hover:text-slate-900">Dashboard</Link>
